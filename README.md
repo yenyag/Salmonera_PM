@@ -1,5 +1,4 @@
 ﻿# Salmonera_PM
-# Salmonera_PM
 # Sistema de Gestión Salmonera
 
 Aplicación web para administrar centros de cultivo, lotes, cosechas y ventas de salmón.
