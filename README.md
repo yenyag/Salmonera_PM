@@ -23,7 +23,7 @@ SweetAlert2
 
 ⚙️ Instalación
 Clona este repositorio:
-git clone https://github.com/tu-usuario/salmonera_pm.git
+[git clone https://github.com/tu-usuario/salmonera_pm.git](https://github.com/yenyag/Salmonera_PM?tab=readme-ov-file)
 
 Abre public/index.html con Live Server o cualquier servidor local.
 
