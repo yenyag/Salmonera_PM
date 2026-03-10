@@ -1,81 +1,102 @@
-import { supabase } from './supabase.js'
+import { supabase } from './supabase.js';
 
-// 1. Gráfico de Ventas Mensuales (mejorado)
+// Configuración global de Chart.js
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.color = '#6b7280';
+
+// 1. Gráfico de Ventas Mensuales
 async function renderVentasChart() {
-  const { data, error } = await supabase.from('v_ventas_por_mes').select();
-  
+  const { data, error } = await supabase
+    .from('v_ventas_por_mes')
+    .select('*')
+    .order('mes', { ascending: true });
+
   if (error) {
-    console.error("Error cargando ventas:", error);
-    document.getElementById('ventasChart').closest('.dashboard-card').innerHTML = `
-      <div class="h-80 flex flex-col items-center justify-center text-center p-4">
-        <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-3"></i>
-        <h3 class="text-lg font-medium text-gray-800">Datos no disponibles</h3>
-        <p class="text-gray-600 mt-1">No se pudieron cargar los datos de ventas</p>
-      </div>
-    `;
+    console.error('Error cargando ventas:', error);
     return;
   }
-  
-  // Formatear datos para Chart.js
-  const months = data.map(row => new Date(row.mes).toLocaleDateString('es-CL', { month: 'short' }));
-  const amounts = data.map(row => row.total_mensual);
-  
-  // Crear gradiente para el gráfico
+
   const ctx = document.getElementById('ventasChart').getContext('2d');
   const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-  gradient.addColorStop(0, 'rgba(59, 130, 246, 0.7)');
+  gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
   gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
-  
+
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: months,
+      labels: data.map(row =>
+        new Date(row.mes).toLocaleDateString('es-CL', { month: 'short', year: 'numeric' })
+      ),
       datasets: [{
-        label: 'Ventas Mensuales (CLP)',
-        data: amounts,
+        label: 'Ventas (CLP)',
+        data: data.map(row => row.total_mensual),
         backgroundColor: gradient,
         borderColor: 'rgba(59, 130, 246, 1)',
-        borderWidth: 1,
-        borderRadius: 8,
-        borderSkipped: false,
+        borderWidth: 2,
+        borderRadius: 6
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         tooltip: {
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          titleColor: '#1e293b',
-          bodyColor: '#1e293b',
-          borderColor: '#e2e8f0',
-          borderWidth: 1,
-          padding: 12,
-          boxPadding: 6,
-          usePointStyle: true,
           callbacks: {
-            label: function(context) {
-              return `$${context.raw.toLocaleString('es-CL')}`;
-            }
+            label: (ctx) => `$${ctx.raw.toLocaleString('es-CL')}`
           }
         }
       },
       scales: {
         y: {
           beginAtZero: true,
-          grid: {
-            color: 'rgba(226, 232, 240, 0.5)'
-          },
           ticks: {
-            callback: (value) => '$' + value.toLocaleString('es-CL')
-          }
+            callback: (value) => `$${value.toLocaleString('es-CL')}`
+          },
+          grid: { color: 'rgba(229, 231, 235, 0.5)' }
         },
-        x: {
-          grid: {
-            display: false
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// 2. Gráfico de Calidad (Doughnut)
+async function renderCalidadChart() {
+  const { data, error } = await supabase
+    .from('vista_distribucion_por_calidad')
+    .select('*');
+
+  if (error) {
+    console.error('Error cargando calidad:', error);
+    return;
+  }
+
+  const colores = {
+    premium: 'rgba(16, 185, 129, 0.8)',
+    exportacion: 'rgba(59, 130, 246, 0.8)',
+    mercado_local: 'rgba(245, 158, 11, 0.8)',
+    descarte: 'rgba(239, 68, 68, 0.8)'
+  };
+
+  new Chart(document.getElementById('calidadChart'), {
+    type: 'doughnut',
+    data: {
+      labels: data.map(row => `${row.calidad.toUpperCase()} (${row.cantidad_cosechas})`),
+      datasets: [{
+        data: data.map(row => row.cantidad_cosechas),
+        backgroundColor: data.map(row => colores[row.calidad] || 'gray'),
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: { position: 'right' },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ${ctx.raw} unidades`
           }
         }
       }
@@ -83,93 +104,92 @@ async function renderVentasChart() {
   });
 }
 
-// 2. Gráfico de Calidad (mejorado)
-async function renderCalidadChart() {
+// 3. Gráfico de Mortalidad (Línea)
+async function renderMortalidadChart() {
   const { data, error } = await supabase
-    .from('cosechas')
-    .select('calidad, count')
-    .groupBy('calidad');
-  
+    .from('vista_mortalidad_acumulada')
+    .select('*')
+    .order('lote_codigo', { ascending: true });
+
   if (error) {
-    console.error("Error cargando calidad:", error);
-    document.getElementById('calidadChart').closest('.dashboard-card').innerHTML = `
-      <div class="h-80 flex flex-col items-center justify-center text-center p-4">
-        <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-3"></i>
-        <h3 class="text-lg font-medium text-gray-800">Datos no disponibles</h3>
-        <p class="text-gray-600 mt-1">No se pudieron cargar los datos de calidad</p>
-      </div>
-    `;
+    console.error('Error cargando mortalidad:', error);
     return;
   }
-  
-  const calidadLabels = {
-    premium: 'Premium',
-    exportacion: 'Exportación',
-    mercado_local: 'Mercado Local',
-    descarte: 'Descarte'
-  };
-  
-  const backgroundColors = [
-    'rgba(16, 185, 129, 0.8)', // verde
-    'rgba(59, 130, 246, 0.8)', // azul
-    'rgba(245, 158, 11, 0.8)', // amarillo
-    'rgba(239, 68, 68, 0.8)'  // rojo
-  ];
-  
-  const borderColors = [
-    'rgba(16, 185, 129, 1)',
-    'rgba(59, 130, 246, 1)',
-    'rgba(245, 158, 11, 1)',
-    'rgba(239, 68, 68, 1)'
-  ];
-  
-  const labels = data.map(row => calidadLabels[row.calidad]);
-  const counts = data.map(row => row.count);
-  
-  new Chart(document.getElementById('calidadChart'), {
-    type: 'doughnut',
+
+  new Chart(document.getElementById('mortalidadChart'), {
+    type: 'line',
     data: {
-      labels: labels,
+      labels: data.map(row => row.lote_codigo),
       datasets: [{
-        label: 'Cantidad',
-        data: counts,
-        backgroundColor: backgroundColors,
-        borderColor: borderColors,
-        borderWidth: 2
+        label: 'Mortalidad acumulada',
+        data: data.map(row => row.mortalidad_total),
+        borderColor: 'rgba(127, 37, 37, 0.8)',
+        backgroundColor: 'rgba(185, 37, 37, 0.33)',
+        borderWidth: 3,
+        tension: 0.3,
+        fill: true
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '70%',
       plugins: {
-        legend: {
-          position: 'right',
-          labels: {
-            boxWidth: 12,
-            padding: 20,
-            font: {
-              size: 13
-            }
-          }
-        },
         tooltip: {
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          titleColor: '#1e293b',
-          bodyColor: '#1e293b',
-          borderColor: '#e2e8f0',
-          borderWidth: 1,
-          padding: 12,
-          boxPadding: 6,
-          usePointStyle: true
+          callbacks: {
+            label: (ctx) => `${ctx.raw} peces muertos`
+          }
+        }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+
+// 4. Gráfico de Rentabilidad (Barras Horizontales)
+async function renderRentabilidadChart() {
+  const { data, error } = await supabase
+    .from('vista_rentabilidad_por_centro')
+    .select('*');
+
+  if (error) {
+    console.error('Error cargando rentabilidad:', error);
+    return;
+  }
+
+  new Chart(document.getElementById('rentabilidadChart'), {
+    type: 'bar',
+    data: {
+      labels: data.map(row => row.centro_nombre),
+      datasets: [{
+        label: 'Ingresos (CLP)',
+        data: data.map(row => row.total_ingresos_clp),
+        backgroundColor: 'rgba(85, 238, 118, 0.8)',
+        borderColor: 'rgba(48, 174, 97, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `$${ctx.raw.toLocaleString('es-CL')}`
+          }
         }
       }
     }
   });
 }
 
-// Inicializar gráficos al cargar
+// Inicializar todos los gráficos al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
   renderVentasChart();
   renderCalidadChart();
+  renderMortalidadChart();
+  renderRentabilidadChart();
 });

@@ -3,156 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | Sistema Salmonero</title>
-  <link href="./css/output.css" rel="stylesheet">
+  <title>Dashboard - Sistema Salmonero</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      font-family: 'Inter', sans-serif;
-      display: grid;
-      place-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-    .bubble {
-      border-radius: 50px;
-      transition: all 0.3s ease;
-    }
-    .card-bubble {
-      border-radius: 30px;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    }
     .chart-container {
-      position: relative;
       height: 300px;
       width: 100%;
     }
   </style>
 </head>
-<body>
-  <div class="text-center w-full max-w-2xl">
-    <!-- Título -->
+<body class="bg-gray-50">
+  <!-- Barra Superior -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-fish text-blue-600 text-2xl"></i>
+        <h1 class="text-xl font-bold text-gray-800">Panel de Control</h1>
+      </div>
+      <button id="logoutBtn" class="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-800 mb-2">Ventas Mensuales</h1>
-      <p class="text-gray-600">Datos actualizados en tiempo real</p>
+      <h2 class="text-2xl font-bold text-gray-800">Bienvenido, <span id="username" class="text-blue-600">Administrador</span></h2>
+      <p class="text-gray-600">Resumen de operaciones y métricas clave</p>
     </div>
-    
-    <!-- Gráfico en burbuja -->
-    <div class="card-bubble p-6 mb-6">
-      <div class="chart-container">
-        <canvas id="ventasChart"></canvas>
+
+    <!-- Gráficos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <!-- Gráfico 1 -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold mb-4">Ventas Mensuales (CLP)</h3>
+        <div class="chart-container">
+          <canvas id="ventasChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico 2 -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold mb-4">Distribución por Calidad</h3>
+        <div class="chart-container">
+          <canvas id="calidadChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico 3 -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold mb-4">Mortalidad Acumulada</h3>
+        <div class="chart-container">
+          <canvas id="mortalidadChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico 4 -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold mb-4">Rentabilidad por Centro</h3>
+        <div class="chart-container">
+          <canvas id="rentabilidadChart"></canvas>
+        </div>
       </div>
     </div>
-    
-    <!-- Leyenda -->
-    <div class="flex justify-center space-x-4 mb-8">
-      <div class="flex items-center bubble px-4 py-2 bg-blue-50">
-        <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-        <span class="text-sm text-gray-700">2023</span>
-      </div>
-      <div class="flex items-center bubble px-4 py-2 bg-green-50">
-        <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-        <span class="text-sm text-gray-700">2024</span>
-      </div>
-    </div>
-    
-    <!-- Botones de acción -->
-    <div class="flex justify-center space-x-4">
-      <button class="bubble px-6 py-3 bg-blue-500 text-white hover:bg-blue-600">
-        <i class="fas fa-download mr-2"></i> Exportar
-      </button>
-      <button class="bubble px-6 py-3 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50">
-        <i class="fas fa-filter mr-2"></i> Filtrar
-      </button>
-    </div>
-  </div>
+  </main>
 
-  <script>
-    // Datos de ejemplo para el gráfico
-    const data = {
-      labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-      datasets: [
-        {
-          label: 'Ventas 2023',
-          data: [12000, 19000, 15000, 22000, 18000, 25000],
-          backgroundColor: 'rgba(59, 130, 246, 0.7)',
-          borderColor: 'rgba(59, 130, 246, 1)',
-          borderWidth: 2,
-          borderRadius: 20, // Bordes redondeados en las barras
-          borderSkipped: false,
-        },
-        {
-          label: 'Ventas 2024',
-          data: [15000, 22000, 18000, 25000, 21000, 28000],
-          backgroundColor: 'rgba(16, 185, 129, 0.7)',
-          borderColor: 'rgba(16, 185, 129, 1)',
-          borderWidth: 2,
-          borderRadius: 20, // Bordes redondeados en las barras
-          borderSkipped: false,
-        }
-      ]
-    };
+  <!-- Scripts -->
+  <script type="module" src="./js/supabase.js"></script>
+  <script type="module" src="./js/charts.js"></script>
+  <script type="module">
+    import { supabase } from './js/supabase.js';
 
-    // Configuración del gráfico
-    const config = {
-      type: 'bar',
-      data: data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            titleColor: '#1e293b',
-            bodyColor: '#1e293b',
-            borderColor: '#e2e8f0',
-            borderWidth: 1,
-            padding: 12,
-            bodyFont: {
-              weight: 'bold'
-            },
-            callbacks: {
-              label: function(context) {
-                return '$' + context.raw.toLocaleString('es-CL');
-              }
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            grid: {
-              color: 'rgba(226, 232, 240, 0.5)'
-            },
-            ticks: {
-              callback: function(value) {
-                return '$' + value.toLocaleString('es-CL');
-              }
-            }
-          },
-          x: {
-            grid: {
-              display: false
-            }
-          }
-        }
-      }
-    };
+    // Cargar nombre de usuario
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) window.location.href = 'index.html';
+    document.getElementById('username').textContent = user.nombre;
 
-    // Renderizar gráfico
-    new Chart(
-      document.getElementById('ventasChart'),
-      config
-    );
+    // Cerrar sesión
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    });
   </script>
 </body>
 </html>
