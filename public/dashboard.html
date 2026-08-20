@@ -73,11 +73,8 @@
   </main>
 
   <!-- Scripts -->
-  <script type="module" src="./js/supabase.js"></script>
   <script type="module" src="./js/charts.js"></script>
   <script type="module">
-    import { supabase } from './js/supabase.js';
-
     // Cargar nombre de usuario
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) window.location.href = 'index.html';

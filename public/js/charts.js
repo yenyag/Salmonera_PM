@@ -1,4 +1,4 @@
-import { supabase } from './supabase.js';
+import { api } from './api.js';
 
 // Configuración global de Chart.js
 Chart.defaults.font.family = 'Inter, sans-serif';
@@ -6,12 +6,10 @@ Chart.defaults.color = '#6b7280';
 
 // 1. Gráfico de Ventas Mensuales
 async function renderVentasChart() {
-  const { data, error } = await supabase
-    .from('v_ventas_por_mes')
-    .select('*')
-    .order('mes', { ascending: true });
-
-  if (error) {
+  let data;
+  try {
+    data = await api.ventas();
+  } catch (error) {
     console.error('Error cargando ventas:', error);
     return;
   }
@@ -29,7 +27,7 @@ async function renderVentasChart() {
       ),
       datasets: [{
         label: 'Ventas (CLP)',
-        data: data.map(row => row.total_mensual),
+        data: data.map(row => Number(row.total_mensual)),
         backgroundColor: gradient,
         borderColor: 'rgba(59, 130, 246, 1)',
         borderWidth: 2,
@@ -63,11 +61,10 @@ async function renderVentasChart() {
 
 // 2. Gráfico de Calidad (Doughnut)
 async function renderCalidadChart() {
-  const { data, error } = await supabase
-    .from('vista_distribucion_por_calidad')
-    .select('*');
-
-  if (error) {
+  let data;
+  try {
+    data = await api.calidad();
+  } catch (error) {
     console.error('Error cargando calidad:', error);
     return;
   }
@@ -84,7 +81,7 @@ async function renderCalidadChart() {
     data: {
       labels: data.map(row => `${row.calidad.toUpperCase()} (${row.cantidad_cosechas})`),
       datasets: [{
-        data: data.map(row => row.cantidad_cosechas),
+        data: data.map(row => Number(row.cantidad_cosechas)),
         backgroundColor: data.map(row => colores[row.calidad] || 'gray'),
         borderWidth: 2,
         borderColor: '#fff'
@@ -106,12 +103,10 @@ async function renderCalidadChart() {
 
 // 3. Gráfico de Mortalidad (Línea)
 async function renderMortalidadChart() {
-  const { data, error } = await supabase
-    .from('vista_mortalidad_acumulada')
-    .select('*')
-    .order('lote_codigo', { ascending: true });
-
-  if (error) {
+  let data;
+  try {
+    data = await api.mortalidad();
+  } catch (error) {
     console.error('Error cargando mortalidad:', error);
     return;
   }
@@ -122,7 +117,7 @@ async function renderMortalidadChart() {
       labels: data.map(row => row.lote_codigo),
       datasets: [{
         label: 'Mortalidad acumulada',
-        data: data.map(row => row.mortalidad_total),
+        data: data.map(row => Number(row.mortalidad_total)),
         borderColor: 'rgba(127, 37, 37, 0.8)',
         backgroundColor: 'rgba(185, 37, 37, 0.33)',
         borderWidth: 3,
@@ -149,11 +144,10 @@ async function renderMortalidadChart() {
 
 // 4. Gráfico de Rentabilidad (Barras Horizontales)
 async function renderRentabilidadChart() {
-  const { data, error } = await supabase
-    .from('vista_rentabilidad_por_centro')
-    .select('*');
-
-  if (error) {
+  let data;
+  try {
+    data = await api.rentabilidad();
+  } catch (error) {
     console.error('Error cargando rentabilidad:', error);
     return;
   }
@@ -164,7 +158,7 @@ async function renderRentabilidadChart() {
       labels: data.map(row => row.centro_nombre),
       datasets: [{
         label: 'Ingresos (CLP)',
-        data: data.map(row => row.total_ingresos_clp),
+        data: data.map(row => Number(row.total_ingresos_clp)),
         backgroundColor: 'rgba(85, 238, 118, 0.8)',
         borderColor: 'rgba(48, 174, 97, 1)',
         borderWidth: 1
