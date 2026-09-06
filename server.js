@@ -1,7 +1,14 @@
 import express from 'express';
 import { Pool } from 'pg';
+import { execFile } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+
+try {
+  process.loadEnvFile();
+} catch {
+  console.log('Sin archivo .env (se usarán valores por defecto)');
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -66,6 +73,42 @@ app.get('/api/rentabilidad', async (_req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// --- Asistente RAG (FASE 4) ------------------------------------------------
+
+const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada/IngenierInteligencia-Artificial/.venv/bin/python';
+const RAG_SCRIPT = join(__dirname, 'scripts', 'query_rag.py');
+
+app.post('/api/consultar', (req, res) => {
+  const { pregunta } = req.body || {};
+
+  if (!pregunta || !pregunta.trim()) {
+    return res.status(400).json({ error: 'Falta el campo "pregunta"' });
+  }
+
+  const maxLen = 300;
+  const texto = String(pregunta).trim().slice(0, maxLen);
+
+  execFile(
+    PYTHON,
+    [RAG_SCRIPT, texto, '--json'],
+    { timeout: 60000, maxBuffer: 1024 * 1024 },
+    (err, stdout, stderr) => {
+      if (err) {
+        console.error('Error ejecutando RAG:', stderr || err.message);
+        return res.status(500).json({ error: 'Error al consultar el asistente IA' });
+      }
+
+      try {
+        const resultado = JSON.parse(stdout.trim());
+        res.json({ respuesta: resultado.respuesta, fuentes: resultado.fuentes });
+      } catch (e) {
+        console.error('Respuesta RAG no parseable:', stdout);
+        res.status(500).json({ error: 'Respuesta inválida del asistente IA' });
+      }
+    }
+  );
 });
 
 app.use(express.static(join(__dirname, 'public')));

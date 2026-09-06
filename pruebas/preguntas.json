@@ -1,0 +1,54 @@
+{
+  "descripcion": "Pruebas de coherencia RAG - SalmoSUR S.A. (IE4)",
+  "preguntas": [
+    {
+      "id": "P1",
+      "pregunta": "¿Qué lote tiene mayor mortalidad acumulada?",
+      "dato_esperado": "LOTE-B2 2300",
+      "fuente_esperada": "mortalidad.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P2",
+      "pregunta": "¿Cuáles fueron las ventas de enero de 2025 y cuál fue el total semestral?",
+      "dato_esperado": "125 000 000 905 000 000",
+      "fuente_esperada": "ventas.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P3",
+      "pregunta": "¿Qué centro es el más rentable y cuánto generó?",
+      "dato_esperado": "Los Lagos 510 000 000",
+      "fuente_esperada": "rentabilidad.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P4",
+      "pregunta": "¿Cuántas unidades se cosecharon de calidad premium y de descarte?",
+      "dato_esperado": "premium 320 descarte 95",
+      "fuente_esperada": "calidad.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P5",
+      "pregunta": "¿Qué lote tiene mayor mortalidad y qué recomiendas según la normativa de bioseguridad?",
+      "dato_esperado": "LOTE-B2 2300 contingencia Sernapesca",
+      "fuente_esperada": "mortalidad.txt (interna) + bioseguridad.txt y/o sernapesca_normativa.txt (externa)",
+      "tipo": "interna_mas_externa"
+    },
+    {
+      "id": "P6",
+      "pregunta": "¿Qué requisitos debe cumplir el salmón para su exportación?",
+      "dato_esperado": "trazabilidad certificado sanitario estándares país destino residuos",
+      "fuente_esperada": "exportacion_calidad.txt (externa)",
+      "tipo": "dato_externo"
+    },
+    {
+      "id": "P7",
+      "pregunta": "¿Quién es el gerente comercial y cuántos empleados tiene la planta de proceso?",
+      "dato_esperado": "No tengo información suficiente para responder eso (dato no existe en las fuentes)",
+      "fuente_esperada": "ninguna (debe decir NO)",
+      "tipo": "sin_dato"
+    }
+  ]
+}

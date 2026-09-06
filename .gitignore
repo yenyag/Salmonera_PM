@@ -1,0 +1,20 @@
+# Credenciales y secretos
+.env
+.env.*
+!.env.example
+
+# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+uv.lock
+
+# Datos e índices generados
+data/faiss_index/
+
+# Otros
+*.log
+.DS_Store

@@ -1,0 +1,29 @@
+SALMONCHILE Y EL MERCADO DEL SALMÓN EN CHILE
+=============================================
+
+Chile es el segundo mayor productor mundial de salmón, después de Noruega. La
+industria salmonera chilena se concentra principalmente en la Región de Los Lagos
+y la Región de Aysén, donde operan centros de cultivo marinos y plantas de proceso.
+
+CONTEXTO DEL MERCADO
+--------------------
+1. Los principales mercados de exportación del salmón chileno son Estados Unidos,
+   Japón, Brasil y la Unión Europea.
+
+2. La rentabilidad de un centro de cultivo depende de múltiples factores:
+   volumen y calidad de la cosecha, mortalidad del lote, costos operativos,
+   precios internacionales y tipo de cambio.
+
+3. Una alta mortalidad en un lote reduce directamente el volumen cosechable y,
+   por tanto, los ingresos del centro. Por eso el control de mortalidad es un
+   factor crítico para la rentabilidad.
+
+4. El precio del salmón varía según la calidad del producto: la calidad premium
+   alcanza un valor superior, mientras que el descarte tiene poco o nulo valor
+   comercial.
+
+5. Las decisiones de producción (qué lote priorizar, cuándo cosechar, qué centro
+   expandir) deben basarse en datos operativos confiables: ventas, mortalidad,
+   calidad y rentabilidad por centro.
+
+Fuente: SalmonChile (https://www.salmonchile.cl/)

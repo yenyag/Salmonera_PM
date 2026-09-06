@@ -1,0 +1,13 @@
+REPORTE DE MORTALIDAD ACUMULADA POR LOTE - SalmoSUR S.A.
+========================================
+La siguiente información detalla la mortalidad acumulada (en unidades) de cada lote de cultivo.
+
+- El lote LOTE-B2 registró una mortalidad acumulada de 2300 unidades.
+- El lote LOTE-A2 registró una mortalidad acumulada de 1850 unidades.
+- El lote LOTE-C1 registró una mortalidad acumulada de 1450 unidades.
+- El lote LOTE-A1 registró una mortalidad acumulada de 1200 unidades.
+- El lote LOTE-B1 registró una mortalidad acumulada de 980 unidades.
+
+El lote con MAYOR mortalidad es LOTE-B2 con 2300 unidades, lo que indica un posible problema sanitario o de manejo que requiere atención.
+
+Fuente: tabla lotes / vista vista_mortalidad_acumulada.
