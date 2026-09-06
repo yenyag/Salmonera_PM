@@ -1,0 +1,12 @@
+REPORTE DE RENTABILIDAD POR CENTRO - SalmoSUR S.A.
+========================================
+La siguiente información detalla los ingresos totales (CLP) generados por cada centro de cultivo.
+
+- El Centro Los Lagos generó ingresos por $510,000,000 CLP.
+- El Centro Quellón generó ingresos por $420,000,000 CLP.
+- El Centro Chiloé generó ingresos por $380,000,000 CLP.
+- El Centro Aysén generó ingresos por $295,000,000 CLP.
+
+El centro con MAYOR rentabilidad es Centro Los Lagos con $510,000,000 CLP de ingresos.
+
+Fuente: tabla centros / vista vista_rentabilidad_por_centro.

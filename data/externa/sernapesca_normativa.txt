@@ -1,0 +1,28 @@
+NORMATIVA SANITARIA PARA ACUICULTURA EN CHILE (Sernapesca)
+==========================================================
+
+El Servicio Nacional de Pesca y Acuicultura (Sernapesca) es el organismo público
+de Chile encargado de fiscalizar y regular la actividad de acuicultura en el país,
+incluyendo el cultivo de salmones en las regiones de Los Lagos y Aysén.
+
+REQUISITOS SANITARIOS
+---------------------
+1. Todas las empresas acuicultoras deben inscribir sus centros de cultivo en el
+   Registro de Acuicultura y mantener sus datos actualizados ante Sernapesca.
+
+2. Es obligatorio implementar un programa de bioseguridad que incluya control de
+   acceso al centro, desinfección de embarcaciones, equipos y personal, y manejo
+   de mortalidades.
+
+3. La mortalidad acumulada de un lote debe ser monitoreada y reportada. Cuando
+   supera los umbrales establecidos por la normativa sanitaria, la empresa debe
+   activar planes de contingencia y notificar al organismo.
+
+4. Los centros de cultivo deben cumplir con los protocolos de vacunación contra
+   las enfermedades que afectan a los salmónidos, como la anemia infecciosa del
+   salmón (ISA), la piscirickettsiosis y la caligidosis.
+
+5. Todo movimiento de peces (siembra, traslado, cosecha) debe contar con la
+   autorización sanitaria correspondiente emitida por Sernapesca.
+
+Fuente: Sernapesca - Normativa de acuicultura (https://www.sernapesca.cl/)

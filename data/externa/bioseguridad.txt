@@ -1,0 +1,33 @@
+BUENAS PRÁCTICAS DE BIOSEGURIDAD EN CENTROS DE CULTIVO DE SALMÓN
+=================================================================
+
+La bioseguridad es el conjunto de medidas destinadas a prevenir, controlar y
+mitigar la entrada y diseminación de enfermedades en los centros de cultivo de
+salmónidos. Una bioseguridad deficiente es una de las principales causas de alta
+mortalidad en lotes y de pérdidas económicas.
+
+PRINCIPALES MEDIDAS DE BIOSEGURIDAD
+------------------------------------
+1. CONTROL DE ACCESO: Restringir y registrar el ingreso de personas, vehículos y
+   embarcaciones al centro de cultivo. Todo visitante debe cumplir el protocolo de
+   ingreso del centro.
+
+2. DESINFECCIÓN: Implementar estaciones de desinfección para calzado, manos y
+   equipos. Las embarcaciones y redes deben desinfectarse al entrar y salir del
+   centro.
+
+3. CONTROL DE MORTALIDADES: Retirar a diario las mortalidades del agua para evitar
+   su descomposición y la diseminación de patógenos. Las mortalidades deben
+   manejarse y eliminarse conforme a la normativa de Sernapesca.
+
+4. MONITOREO SANITARIO: Realizar exámenes de salud periódicos al stock y vigilar
+   indicadores como la mortalidad acumulada y la condición de los peces.
+
+5. CUARENTENA: Mantener en cuarentena a los peces recién introducidos o de
+   procedencia desconocida antes de integrarlos a la producción.
+
+UNA MORTALIDAD ACUMULADA ELEVADA en un lote es un indicador de alerta temprana.
+Ante valores fuera de lo normal, se debe activar el plan de contingencia sanitaria
+de la empresa y notificar a Sernapesca si corresponde.
+
+Fuente: Sernapesca - Buenas prácticas en acuicultura (https://www.sernapesca.cl/)

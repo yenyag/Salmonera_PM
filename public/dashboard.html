@@ -70,10 +70,37 @@
         </div>
       </div>
     </div>
+
+    <!-- Asistente IA (RAG) -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+      <h3 class="text-lg font-semibold mb-2">
+        <i class="fas fa-robot text-blue-600 mr-2"></i>Asistente IA
+      </h3>
+      <p class="text-sm text-gray-500 mb-4">
+        Consulta los datos operativos en lenguaje natural. Las respuestas se basan en las fuentes de datos del sistema.
+      </p>
+
+      <div id="chat-messages"
+           class="h-72 overflow-y-auto mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200"></div>
+
+      <div id="chat-sugerencias" class="mb-3"></div>
+
+      <div class="flex gap-2">
+        <input type="text" id="chat-input"
+               placeholder="Escribe tu consulta, ej: ¿Qué lote tiene mayor mortalidad?"
+               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button id="send-btn"
+                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition">
+          <i class="fas fa-paper-plane"></i>
+          <span>Enviar</span>
+        </button>
+      </div>
+    </div>
   </main>
 
   <!-- Scripts -->
   <script type="module" src="./js/charts.js"></script>
+  <script type="module" src="./js/chat.js"></script>
   <script type="module">
     // Cargar nombre de usuario
     const user = JSON.parse(localStorage.getItem('user'));

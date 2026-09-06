@@ -1,0 +1,15 @@
+REPORTE DE VENTAS MENSUALES - SalmoSUR S.A.
+========================================
+La siguiente información resume las ventas mensuales de la empresa en pesos chilenos (CLP).
+
+- En Enero 2025, las ventas totales fueron $125,000,000 CLP.
+- En Febrero 2025, las ventas totales fueron $138,000,000 CLP.
+- En Marzo 2025, las ventas totales fueron $152,000,000 CLP.
+- En Abril 2025, las ventas totales fueron $141,000,000 CLP.
+- En Mayo 2025, las ventas totales fueron $167,000,000 CLP.
+- En Junio 2025, las ventas totales fueron $182,000,000 CLP.
+
+El total acumulado del periodo fue de $905,000,000 CLP.
+El mes con mayor venta fue Junio 2025 con $182,000,000 CLP.
+
+Fuente: tabla ventas / vista v_ventas_por_mes.
