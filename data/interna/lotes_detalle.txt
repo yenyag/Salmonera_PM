@@ -1,0 +1,36 @@
+LOTES DE CULTIVO DETALLADOS - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- El lote con el FCR más bajo (mejor eficiencia alimentaria) es LOTE-K1 de Salmón Atlántico en Quellón, con un FCR de 1.09.
+- El centro con la mayor biomasa es Los Lagos con 6,750,000 kg.
+
+La siguiente información detalla los lotes de cultivo de salmón con su biomasa, peso promedio y FCR.
+
+- El lote LOTE-A1 de Salmón Atlántico en Los Lagos (activo) tiene 950000 unidades sembradas, 1,250,000 kg de biomasa, un peso promedio de 3.45 kg y un FCR de 1.22.
+- El lote LOTE-A2 de Salmón Atlántico en Chiloé (activo) tiene 900000 unidades sembradas, 1,180,000 kg de biomasa, un peso promedio de 3.28 kg y un FCR de 1.25.
+- El lote LOTE-B1 de Salmón Coho en Quellón (activo) tiene 700000 unidades sembradas, 860,000 kg de biomasa, un peso promedio de 2.95 kg y un FCR de 1.18.
+- El lote LOTE-B2 de Salmón Atlántico en Aysén (activo) tiene 880000 unidades sembradas, 1,120,000 kg de biomasa, un peso promedio de 3.31 kg y un FCR de 1.31.
+- El lote LOTE-C1 de Salmón Coho en Los Lagos (activo) tiene 650000 unidades sembradas, 790,000 kg de biomasa, un peso promedio de 2.75 kg y un FCR de 1.15.
+- El lote LOTE-F1 de Salmón Coho en Los Lagos (activo) tiene 680000 unidades sembradas, 720,000 kg de biomasa, un peso promedio de 2.86 kg y un FCR de 1.17.
+- El lote LOTE-F2 de Salmón Atlántico en Chiloé (activo) tiene 920000 unidades sembradas, 1,010,000 kg de biomasa, un peso promedio de 3.12 kg y un FCR de 1.24.
+- El lote LOTE-G1 de Salmón Atlántico en Quellón (activo) tiene 890000 unidades sembradas, 940,000 kg de biomasa, un peso promedio de 2.94 kg y un FCR de 1.23.
+- El lote LOTE-G2 de Salmón Coho en Aysén (activo) tiene 700000 unidades sembradas, 660,000 kg de biomasa, un peso promedio de 2.63 kg y un FCR de 1.16.
+- El lote LOTE-H1 de Salmón Atlántico en Los Lagos (activo) tiene 930000 unidades sembradas, 820,000 kg de biomasa, un peso promedio de 2.58 kg y un FCR de 1.21.
+- El lote LOTE-H2 de Salmón Atlántico en Chiloé (activo) tiene 910000 unidades sembradas, 760,000 kg de biomasa, un peso promedio de 2.42 kg y un FCR de 1.22.
+- El lote LOTE-I1 de Salmón Coho en Quellón (activo) tiene 710000 unidades sembradas, 540,000 kg de biomasa, un peso promedio de 2.31 kg y un FCR de 1.14.
+- El lote LOTE-I2 de Salmón Atlántico en Aysén (activo) tiene 940000 unidades sembradas, 610,000 kg de biomasa, un peso promedio de 2.01 kg y un FCR de 1.20.
+- El lote LOTE-K1 de Salmón Atlántico en Quellón (activo) tiene 900000 unidades sembradas, 430,000 kg de biomasa, un peso promedio de 1.89 kg y un FCR de 1.09.
+- El lote LOTE-D1 de Salmón Atlántico en Los Lagos (cosechado) tiene 920000 unidades sembradas, 1,520,000 kg de biomasa, un peso promedio de 4.85 kg y un FCR de 1.28.
+- El lote LOTE-D2 de Salmón Atlántico en Chiloé (cosechado) tiene 880000 unidades sembradas, 1,380,000 kg de biomasa, un peso promedio de 4.62 kg y un FCR de 1.26.
+- El lote LOTE-E1 de Salmón Coho en Quellón (cosechado) tiene 720000 unidades sembradas, 980,000 kg de biomasa, un peso promedio de 3.89 kg y un FCR de 1.20.
+- El lote LOTE-E2 de Salmón Atlántico en Aysén (cosechado) tiene 900000 unidades sembradas, 1,340,000 kg de biomasa, un peso promedio de 4.35 kg y un FCR de 1.29.
+- El lote LOTE-J1 de Salmón Atlántico en Los Lagos (cosechado) tiene 950000 unidades sembradas, 1,650,000 kg de biomasa, un peso promedio de 5.12 kg y un FCR de 1.27.
+- El lote LOTE-J2 de Salmón Coho en Chiloé (cosechado) tiene 720000 unidades sembradas, 1,110,000 kg de biomasa, un peso promedio de 4.21 kg y un FCR de 1.19.
+
+Biomasa por centro de cultivo:
+- Los Lagos: 6,750,000 kg de biomasa.
+- Chiloé: 5,440,000 kg de biomasa.
+- Quellón: 3,750,000 kg de biomasa.
+- Aysén: 3,730,000 kg de biomasa.
+
+Fuente: tabla lotes_detalle / vistas v_lotes_detalle, v_biomasa_por_centro.

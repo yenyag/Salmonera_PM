@@ -75,6 +75,107 @@ app.get('/api/rentabilidad', async (_req, res) => {
   }
 });
 
+// --- Módulos ampliados (EP1) ------------------------------------------------
+
+app.get('/api/empleados', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_empleados');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/empleados/planilla', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_planilla_por_cargo');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/inventario', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_inventario_resumen');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/inventario/bajo', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_stock_bajo');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/compras', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_gasto_por_proveedor');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/exportaciones', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_exportaciones_por_destino');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/exportaciones/mensual', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_exportaciones_resumen');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/lotes', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_lotes_detalle');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/lotes/biomasa', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_biomasa_por_centro');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/incidentes', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_incidentes_por_tipo');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/incidentes/severidad', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_incidentes_por_severidad');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- Asistente RAG (FASE 4) ------------------------------------------------
 
 const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada/IngenierInteligencia-Artificial/.venv/bin/python';

@@ -1,0 +1,64 @@
+PLANILLA Y DOTACIÓN DE PERSONAL - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- El centro con la mayor planilla mensual es Los Lagos con $18,050,000 CLP.
+- El cargo con la mayor planilla es Jefa de Centro de Cultivo.
+
+La siguiente información detalla la dotación de empleados y la planilla mensual de remuneraciones en CLP.
+
+- María Fernanda Soto Aravena se desempeña como Gerente General y recibe un salario mensual de $4,500,000 CLP.
+- Jorge Eduardo Muñoz Contreras se desempeña como Gerente Comercial y recibe un salario mensual de $3,600,000 CLP.
+- Matías Alejandro Salazar Orellana se desempeña como Jefe de Planta de Proceso y recibe un salario mensual de $2,800,000 CLP.
+- Sebastián Andrés Rojas Paredes se desempeña como Médico Veterinario y recibe un salario mensual de $2,600,000 CLP.
+- Carolina Paz Vega Silva se desempeña como Jefa de Centro de Cultivo y recibe un salario mensual de $2,400,000 CLP.
+- Javiera Antonia Riquelme Palma se desempeña como Jefa de Centro de Cultivo y recibe un salario mensual de $2,300,000 CLP.
+- Cristian Mauricio Díaz Barra se desempeña como Ingeniero en Acuicultura y recibe un salario mensual de $2,100,000 CLP.
+- Catalina Andrea Maldonado Vera se desempeña como Ingeniera en Acuicultura y recibe un salario mensual de $2,000,000 CLP.
+- Francisco Javier Morales Villarroel se desempeña como Supervisor de Bioseguridad y recibe un salario mensual de $1,850,000 CLP.
+- Paula Andrea Herrera Núñez se desempeña como Encargada de Salud Animal y recibe un salario mensual de $1,700,000 CLP.
+- Alejandro Javier Fuenzalida Bravo se desempeña como Jefe de Bodega y recibe un salario mensual de $1,650,000 CLP.
+- Lorena Patricia Cifuentes Rozas se desempeña como Encargada de RRHH y recibe un salario mensual de $1,600,000 CLP.
+- Camila Andrea Fuentes Morales se desempeña como Encargada de Alimentación y recibe un salario mensual de $1,500,000 CLP.
+- Constanza Belén Arriagada Gatica se desempeña como Analista de Exportaciones y recibe un salario mensual de $1,450,000 CLP.
+- Valentina Ignacia Torres García se desempeña como Analista de Calidad y recibe un salario mensual de $1,400,000 CLP.
+- Gonzalo Andrés Sepúlveda Durán se desempeña como Buzo Comercial y recibe un salario mensual de $1,200,000 CLP.
+- Pablo Esteban Carrasco Ríos se desempeña como Buzo Comercial y recibe un salario mensual de $1,100,000 CLP.
+- Ricardo Hernán Espinoza Muñoz se desempeña como Técnico en Mantención y recibe un salario mensual de $1,050,000 CLP.
+- Daniela Constanza Valdés Rojas se desempeña como Técnico Acuícola y recibe un salario mensual de $950,000 CLP.
+- Francisca Belén Navarro Campos se desempeña como Asistente Administrativa y recibe un salario mensual de $850,000 CLP.
+- Felipe Ignacio Martínez Cid se desempeña como Operario de Cosecha y recibe un salario mensual de $780,000 CLP.
+- Rodrigo Antonio Cáceres Leiva se desempeña como Operario de Cultivo y recibe un salario mensual de $720,000 CLP.
+- Andrés Ismael Vergara Campos se desempeña como Operario de Cultivo y recibe un salario mensual de $710,000 CLP.
+- Nicolás Enrique Gutiérrez Faúndez se desempeña como Operario de Cultivo y recibe un salario mensual de $700,000 CLP.
+- Daniela Francisca Lagos Pino se desempeña como Operaria de Planta y recibe un salario mensual de $650,000 CLP.
+
+Dotación por centro de cultivo:
+- Aysén: planilla mensual de $7,380,000 CLP.
+- Chiloé: planilla mensual de $7,960,000 CLP.
+- Los Lagos: planilla mensual de $18,050,000 CLP.
+- Quellón: planilla mensual de $8,770,000 CLP.
+
+Remuneraciones por cargo:
+- Jefa de Centro de Cultivo: 2 personas, planilla total de $4,700,000 CLP.
+- Gerente General: 1 personas, planilla total de $4,500,000 CLP.
+- Gerente Comercial: 1 personas, planilla total de $3,600,000 CLP.
+- Jefe de Planta de Proceso: 1 personas, planilla total de $2,800,000 CLP.
+- Médico Veterinario: 1 personas, planilla total de $2,600,000 CLP.
+- Buzo Comercial: 2 personas, planilla total de $2,300,000 CLP.
+- Operario de Cultivo: 3 personas, planilla total de $2,130,000 CLP.
+- Ingeniero en Acuicultura: 1 personas, planilla total de $2,100,000 CLP.
+- Ingeniera en Acuicultura: 1 personas, planilla total de $2,000,000 CLP.
+- Supervisor de Bioseguridad: 1 personas, planilla total de $1,850,000 CLP.
+- Encargada de Salud Animal: 1 personas, planilla total de $1,700,000 CLP.
+- Jefe de Bodega: 1 personas, planilla total de $1,650,000 CLP.
+- Encargada de RRHH: 1 personas, planilla total de $1,600,000 CLP.
+- Encargada de Alimentación: 1 personas, planilla total de $1,500,000 CLP.
+- Analista de Exportaciones: 1 personas, planilla total de $1,450,000 CLP.
+- Analista de Calidad: 1 personas, planilla total de $1,400,000 CLP.
+- Técnico en Mantención: 1 personas, planilla total de $1,050,000 CLP.
+- Técnico Acuícola: 1 personas, planilla total de $950,000 CLP.
+- Asistente Administrativa: 1 personas, planilla total de $850,000 CLP.
+- Operario de Cosecha: 1 personas, planilla total de $780,000 CLP.
+- Operaria de Planta: 1 personas, planilla total de $650,000 CLP.
+
+Fuente: tabla empleados / vistas v_empleados, v_planilla_por_centro, v_planilla_por_cargo.

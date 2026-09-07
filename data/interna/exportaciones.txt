@@ -1,0 +1,24 @@
+REPORTE DE EXPORTACIONES - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- El principal destino por valor FOB es Estados Unidos con $4,940,000,000 CLP.
+- El valor FOB acumulado del periodo fue de $14,670,000,000 CLP.
+
+La siguiente información detalla las exportaciones de salmón entre enero y junio de 2025, en toneladas y valor FOB en CLP.
+
+- Hacia Estados Unidos se realizaron 6 envíos por 573,000 kg y un valor FOB de $4,940,000,000 CLP.
+- Hacia Japón se realizaron 6 envíos por 378,000 kg y un valor FOB de $3,300,000,000 CLP.
+- Hacia Unión Europea se realizaron 6 envíos por 264,000 kg y un valor FOB de $2,925,000,000 CLP.
+- Hacia Brasil se realizaron 6 envíos por 291,000 kg y un valor FOB de $2,035,000,000 CLP.
+- Hacia China se realizaron 4 envíos por 200,000 kg y un valor FOB de $1,470,000,000 CLP.
+
+- En Enero 2025: 4 envíos, 230,000 kg y $1,990,000,000 CLP FOB.
+- En Febrero 2025: 5 envíos, 279,000 kg y $2,375,000,000 CLP FOB.
+- En Marzo 2025: 5 envíos, 311,000 kg y $2,685,000,000 CLP FOB.
+- En Abril 2025: 5 envíos, 284,000 kg y $2,400,000,000 CLP FOB.
+- En Mayo 2025: 5 envíos, 318,000 kg y $2,720,000,000 CLP FOB.
+- En Junio 2025: 4 envíos, 284,000 kg y $2,500,000,000 CLP FOB.
+
+El valor FOB acumulado del periodo fue de $14,670,000,000 CLP.
+
+Fuente: tabla exportaciones / vistas v_exportaciones_por_destino, v_exportaciones_resumen.

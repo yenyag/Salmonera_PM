@@ -1,0 +1,22 @@
+REPORTE DE INCIDENTES Y SEGURIDAD - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- Se registraron 2 incidentes de severidad crítica, todos del tipo escape.
+- El total de incidentes registrados en el periodo fue de 18.
+
+La siguiente información resume los incidentes registrados entre enero y agosto de 2025.
+
+- Se registraron 4 incidentes de tipo bioseguridad.
+- Se registraron 4 incidentes de tipo escape.
+- Se registraron 4 incidentes de tipo accidente.
+- Se registraron 3 incidentes de tipo ambiental.
+- Se registraron 3 incidentes de tipo sanitario.
+
+- 6 incidentes fueron de severidad medio.
+- 6 incidentes fueron de severidad alto.
+- 4 incidentes fueron de severidad bajo.
+- 2 incidentes fueron de severidad critico.
+
+El total de incidentes registrados en el periodo fue de 18.
+
+Fuente: tabla incidentes / vistas v_incidentes_por_tipo, v_incidentes_por_severidad.

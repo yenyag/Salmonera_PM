@@ -1,0 +1,19 @@
+INVENTARIO DE INSUMOS (ALIMENTO, MEDICAMENTOS, HERRAMIENTAS, EQUIPOS) - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- La categoría de mayor valor es equipos con $116,150,000 CLP.
+- Ítems bajo su stock mínimo: Alimento Extruido 9mm, Vacuna ISA, Red de cultivo 30mm.
+
+La siguiente información resume el valor del inventario de insumos por categoría.
+
+- En la categoría equipos existen 6 ítems con un valor total de $116,150,000 CLP.
+- En la categoría herramientas existen 6 ítems con un valor total de $95,347,000 CLP.
+- En la categoría alimento existen 4 ítems con un valor total de $55,750,000 CLP.
+- En la categoría medicamentos existen 6 ítems con un valor total de $29,905,000 CLP.
+
+ALERTAS DE STOCK BAJO (ítems bajo su stock mínimo):
+- Alimento Extruido 9mm (alimento) tiene 8,500 unidades y su stock mínimo es 16,000.
+- Vacuna ISA (medicamentos) tiene 600 unidades y su stock mínimo es 800.
+- Red de cultivo 30mm (herramientas) tiene 15 unidades y su stock mínimo es 18.
+
+Fuente: tabla inventario / vistas v_inventario_resumen, v_stock_bajo.

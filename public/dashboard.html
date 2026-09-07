@@ -71,32 +71,219 @@
       </div>
     </div>
 
-    <!-- Asistente IA (RAG) -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-      <h3 class="text-lg font-semibold mb-2">
-        <i class="fas fa-robot text-blue-600 mr-2"></i>Asistente IA
-      </h3>
-      <p class="text-sm text-gray-500 mb-4">
-        Consulta los datos operativos en lenguaje natural. Las respuestas se basan en las fuentes de datos del sistema.
-      </p>
-
-      <div id="chat-messages"
-           class="h-72 overflow-y-auto mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200"></div>
-
-      <div id="chat-sugerencias" class="mb-3"></div>
-
-      <div class="flex gap-2">
-        <input type="text" id="chat-input"
-               placeholder="Escribe tu consulta, ej: ¿Qué lote tiene mayor mortalidad?"
-               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button id="send-btn"
-                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition">
-          <i class="fas fa-paper-plane"></i>
-          <span>Enviar</span>
-        </button>
+    <!-- ============ RRHH: Dotación y Planilla ============ -->
+    <div class="mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">Recursos Humanos</h2>
+      <p class="text-gray-600 text-sm mb-4">Dotación, remuneraciones por cargo y planilla</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Planilla Mensual por Cargo (CLP)</h3>
+          <div class="chart-container">
+            <canvas id="empleadosChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Top Remuneraciones</h3>
+          <div class="overflow-x-auto max-h-72 overflow-y-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                  <th class="px-4 py-2">Nombre</th>
+                  <th class="px-4 py-2">Cargo</th>
+                  <th class="px-4 py-2">Centro</th>
+                  <th class="px-4 py-2">Salario</th>
+                </tr>
+              </thead>
+              <tbody id="tablaEmpleadosBody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-  </main>
+
+    <!-- ============ Lotes detallados ============ -->
+    <div class="mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">Lotes de Cultivo</h2>
+      <p class="text-gray-600 text-sm mb-4">Biomasa por centro y detalle de lotes activos</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Biomasa por Centro (kg)</h3>
+          <div class="chart-container">
+            <canvas id="biomasaChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Lotes Activos</h3>
+          <div class="overflow-x-auto max-h-72 overflow-y-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                  <th class="px-4 py-2">Lote</th>
+                  <th class="px-4 py-2">Especie</th>
+                  <th class="px-4 py-2">Centro</th>
+                  <th class="px-4 py-2">Biomasa</th>
+                  <th class="px-4 py-2">Peso Prom.</th>
+                  <th class="px-4 py-2">FCR</th>
+                </tr>
+              </thead>
+              <tbody id="tablaLotesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Suministros: Inventario y Compras ============ -->
+    <div class="mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">Suministros</h2>
+      <p class="text-gray-600 text-sm mb-4">Inventario de insumos, alertas de stock y compras por proveedor</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Valor de Inventario por Categoría</h3>
+          <div class="chart-container">
+            <canvas id="inventarioChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Alertas de Stock Bajo</h3>
+          <div class="overflow-x-auto max-h-72 overflow-y-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                  <th class="px-4 py-2">Ítem</th>
+                  <th class="px-4 py-2">Categoría</th>
+                  <th class="px-4 py-2">Stock</th>
+                  <th class="px-4 py-2">Mínimo</th>
+                </tr>
+              </thead>
+              <tbody id="tablaStockBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Gasto por Proveedor (CLP)</h3>
+          <div class="chart-container">
+            <canvas id="comprasChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Compras por Proveedor</h3>
+          <div class="overflow-x-auto max-h-72 overflow-y-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                  <th class="px-4 py-2">Proveedor</th>
+                  <th class="px-4 py-2">Rubro</th>
+                  <th class="px-4 py-2">N° Compras</th>
+                  <th class="px-4 py-2">Total (CLP)</th>
+                </tr>
+              </thead>
+              <tbody id="tablaComprasBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Comercial: Exportaciones ============ -->
+    <div class="mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">Comercial</h2>
+      <p class="text-gray-600 text-sm mb-4">Exportaciones de salmón por destino (enero a junio 2025)</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Valor FOB por Destino (CLP)</h3>
+          <div class="chart-container">
+            <canvas id="exportacionesChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Exportaciones por Destino</h3>
+          <div class="overflow-x-auto max-h-72 overflow-y-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                  <th class="px-4 py-2">Destino</th>
+                  <th class="px-4 py-2">Envíos</th>
+                  <th class="px-4 py-2">Kilos</th>
+                  <th class="px-4 py-2">Valor FOB</th>
+                </tr>
+              </thead>
+              <tbody id="tablaExportacionesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Seguridad: Incidentes ============ -->
+    <div class="mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">Incidentes y Seguridad</h2>
+      <p class="text-gray-600 text-sm mb-4">Incidentes registrados por tipo y severidad</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Incidentes por Tipo</h3>
+          <div class="chart-container">
+            <canvas id="incidentesChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-semibold mb-4">Incidentes por Severidad</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                  <th class="px-4 py-2">Severidad</th>
+                  <th class="px-4 py-2">N° Incidentes</th>
+                </tr>
+              </thead>
+              <tbody id="tablaIncidentesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </main>
+
+  <!-- Botón flotante del Asistente IA (fijo abajo a la derecha) -->
+  <button id="fab-chat" title="Abrir asistente IA"
+          class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:scale-105 transition flex items-center justify-center">
+    <i class="fas fa-robot text-2xl"></i>
+  </button>
+
+  <!-- Panel flotante del chat -->
+  <div id="chat-panel"
+       class="hidden fixed bottom-24 right-6 z-50 w-[22rem] sm:w-96 max-h-[70vh] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
+    <div class="bg-blue-600 text-white px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-robot"></i>
+        <span class="font-semibold">Asistente IA</span>
+      </div>
+      <button id="cerrar-chat" title="Cerrar" class="text-white/80 hover:text-white">
+        <i class="fas fa-times text-lg"></i>
+      </button>
+    </div>
+
+    <div id="chat-messages"
+         class="flex-1 overflow-y-auto p-4 bg-gray-50"></div>
+
+    <div id="chat-sugerencias" class="px-3 pt-2 border-t border-gray-100"></div>
+
+    <div class="p-3 flex gap-2">
+      <input type="text" id="chat-input"
+             placeholder="Escribe tu consulta..."
+             class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+      <button id="send-btn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script type="module" src="./js/charts.js"></script>

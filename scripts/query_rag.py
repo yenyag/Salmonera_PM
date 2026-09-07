@@ -48,6 +48,8 @@ REGLAS OBLIGATORIAS:
 4. Usa cifras y fechas exactas de los datos. No inventes ni redondees a tu gusto.
 5. Responde en español, de forma clara y concisa.
 6. Si te preguntan por recomendaciones, basalas únicamente en los datos del contexto.
+7. Si la pregunta pide enumerar (lista, ítems, productos, requisitos...), respóndela
+   COMPLETA con todos los elementos del contexto, sin omitir ninguno.
 
 CONTEXTO RECUPERADO:
 {contexto}
@@ -104,7 +106,7 @@ def consultar(pregunta: str, k: int = 5) -> dict:
     contexto = "\n\n---\n\n".join(d.page_content for d in documentos)
 
     # 3. Generación con el LLM
-    llm = ChatGroq(model=GROQ_MODEL, temperature=0.1)
+    llm = ChatGroq(model=GROQ_MODEL, temperature=0.1, max_tokens=1500)
     cadena = PROMPT_TEMPLATE | llm
     respuesta = cadena.invoke({"contexto": contexto, "pregunta": pregunta})
 
