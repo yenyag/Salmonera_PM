@@ -15,7 +15,7 @@ const fs = require('fs');
 const { Pool } = require('pg');
 
 const BASE = 'http://localhost:4000';
-const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada/IngenierInteligencia-Artificial/.venv/bin/python';
+const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada⁄IngenierInteligencia-Artificial/.venv/bin/python';
 const BASE_DIR = path.resolve(__dirname, '..');
 
 const out = [];

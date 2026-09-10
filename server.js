@@ -178,7 +178,7 @@ app.get('/api/incidentes/severidad', async (_req, res) => {
 
 // --- Asistente RAG (FASE 4) ------------------------------------------------
 
-const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada/IngenierInteligencia-Artificial/.venv/bin/python';
+const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada⁄IngenierInteligencia-Artificial/.venv/bin/python';
 const RAG_SCRIPT = join(__dirname, 'scripts', 'query_rag.py');
 const RAG_MAX_CONCURRENT = 2;
 let ragActive = 0;
