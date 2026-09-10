@@ -131,7 +131,7 @@ flowchart TD
 |------------|------------|---------------|
 | **Frontend** | HTML + Tailwind + Chart.js | Se integra al dashboard existente (mismo estilo y stack); cero fricción para el usuario final |
 | **Backend** | Node.js + Express | Reutiliza la infraestructura actual del sistema de gestión (mismo patrón de endpoints) |
-| **Vector Store** | FAISS (local) | Gratuito, sin API key, rápido para corpus pequeño (22-35 chunks); se guarda en `data/faiss_index/` |
+| **Vector Store** | FAISS (local) | Gratuito, sin API key, rápido para corpus pequeño (65 chunks); se guarda en `data/faiss_index/` |
 | **Embeddings** | `paraphrase-multilingual-MiniLM-L12-v2` (local) | Groq no ofrece embeddings; modelo multilingüe apto para español; 384 dims = poco espacio y búsquedas rápidas; los datos no salen de la máquina (privacidad) |
 | **LLM** | Groq `openai/gpt-oss-120b` | Capa gratuita, baja latencia, sin tarjeta de crédito; permite consultas de bajo volumen dentro del límite diario de 100K tokens |
 | **Chunking** | `RecursiveCharacterTextSplitter` (size=600, overlap=80) | Preserva contexto semántico por chunk; el ajuste de tamaño 600 mejoró la recuperación (7/7 pruebas vs 3/7 inicial) |

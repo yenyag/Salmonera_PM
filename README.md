@@ -19,8 +19,8 @@ Salmonera_PM/
 │   └── setup-postgres.sh     # Script de instalación de la BD
 ├── data/
 │   ├── interna/              # Reportes generados desde la BD (10 dimensiones operativas)
-│   ├── externa/              # Documentos normativos (Sernapesca, exportación, bioseguridad, mercado, accidentes laborales)
-│   └── faiss_index/          # Índice vectorial FAISS (generado)
+│   ├── externa/              # Documentos normativos (6 documentos: Sernapesca, exportación, bioseguridad, mercado, ley laboral/accidentes, contingencias)
+│   └── faiss_index/          # Índice vectorial FAISS (generado con 16 docs → 65 chunks)
 ├── scripts/
 │   ├── generate_internal_docs.py   # FASE 2: BD -> documentos de texto
 │   ├── build_index.py              # FASE 2: construye el índice FAISS
@@ -53,6 +53,17 @@ Salmonera_PM/
 
 > Los embeddings se ejecutan **en local** (Groq no ofrece embeddings). El modelo
 > `paraphrase-multilingual-MiniLM-L12-v2` descarga ~470 MB la primera vez.
+
+---
+
+## Modelos de IA Utilizados
+
+| Componente | Modelo / Tecnología | Proveedor | Descripción |
+|------------|---------------------|-----------|-------------|
+| **LLM Principal (Razonamiento / RAG)** | `openai/gpt-oss-120b` | Groq Cloud API | Modelo de lenguaje de alta capacidad para la síntesis de respuestas operativas (`temperature=0.1`, `max_tokens=1500`). |
+| **LLM Rápido (Alternativo)** | `openai/gpt-oss-20b` | Groq Cloud API | Modelo secundario de alta velocidad (`GROQ_MODEL_FAST`). |
+| **Embeddings Vectoriales** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Local (Hugging Face / PyTorch) | Generación de embeddings multilingües (384 dimensiones) optimizados para español. |
+| **Búsqueda Vectorial (Vector Store)** | FAISS (`faiss-cpu`) | Local | Motor de búsqueda semántica ($k=5$), indexando 16 documentos (10 internos + 6 externos) → 65 chunks. |
 
 ---
 
@@ -127,6 +138,11 @@ python scripts/prueba_accidente.py       # escenario de accidente laboral (9/9) 
 node pruebas/sanitarias.cjs              # salud del sistema (HTTP + BD + FAISS) → pruebas/resultados_sanitarias.txt
 node pruebas/estres.cjs                  # estrés REST + RAG (medir SVR_PID=$$ para memoria) → pruebas/resultados_estres.txt
 ```
+
+- **Índice FAISS reconstruido:** 16 documentos (10 reportes internos BD + 6 normativos externos) → **65 chunks** (antes 57/15).
+- **Pruebas sanitarias (`sanitarias.cjs`):** Validado a 65 chunks → **100% OK** (HTTP, BD y FAISS).
+- **Escenario Accidente (`preguntas_accidente.json` / `prueba_accidente.py`):** **9/9 preguntas coherentes** (10 281 tokens). A4/A5 pasaron de `sin_dato` a `dato_externo` (al integrarse la normativa); se agregó A9 como nuevo caso `sin_dato` (accidentes fatales 2024) para conservar la prueba anti-alucinación.
+- **Resultados:** Accidente 9/9 (10 281 tokens), preguntas base 14/14 sin regresión, pregunta compleja resuelta (2 153 tokens), API verificado en vivo.
 
 > **Hallazgo del estrés (corregido):** con consultas RAG simultáneas, cada subproceso Python carga el modelo de
 > embeddings en la GPU (RTX 3050, 4 GiB) y la VRAM se agotaba → HTTP 500. Se implementó un **semáforo
