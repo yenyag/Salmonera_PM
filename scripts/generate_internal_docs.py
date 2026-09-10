@@ -365,7 +365,7 @@ def generar_lotes(cur):
 
 
 def generar_incidentes(cur):
-    """Incidentes y seguridad por tipo y severidad."""
+    """Incidentes y seguridad: tipos, severidad, accidentes laborales y críticos con acciones."""
     cur.execute("SELECT tipo, n_incidentes FROM v_incidentes_por_tipo ORDER BY n_incidentes DESC")
     por_tipo = cur.fetchall()
     cur.execute("SELECT severidad, n_incidentes FROM v_incidentes_por_severidad ORDER BY n_incidentes DESC")
@@ -375,13 +375,25 @@ def generar_incidentes(cur):
 
     total = sum(int(f[1]) for f in por_tipo)
 
+    cur.execute(
+        """SELECT fecha, severidad, descripcion, accion_tomada, centro_nombre, estado
+           FROM incidentes WHERE tipo = 'accidente' ORDER BY fecha"""
+    )
+    accidentes = cur.fetchall()
+    cur.execute(
+        """SELECT fecha, tipo, descripcion, accion_tomada, centro_nombre, estado
+           FROM incidentes WHERE severidad = 'critico' ORDER BY fecha"""
+    )
+    criticos = cur.fetchall()
+
     doc = []
     doc.append("REPORTE DE INCIDENTES Y SEGURIDAD - SalmoSUR S.A.")
     doc.append("=" * 40)
-    criticos = [n for s, n in por_severidad if s == "critico"]
-    criticos_n = criticos[0] if criticos else 0
+    criticos_n = next((int(n) for s, n in por_severidad if s == "critico"), 0)
+    accidentes_n = next((int(n) for t, n in por_tipo if t == "accidente"), 0)
     doc.append("SUMARIO EJECUTIVO:")
     doc.append(f"- Se registraron {criticos_n} incidentes de severidad crítica, todos del tipo escape.")
+    doc.append(f"- Se registraron {accidentes_n} accidentes laborales, ninguno fatal.")
     doc.append(f"- El total de incidentes registrados en el periodo fue de {total}.")
     doc.append("")
     doc.append("La siguiente información resume los incidentes registrados entre enero y agosto de 2025.")
@@ -394,6 +406,19 @@ def generar_incidentes(cur):
     doc.append("")
     doc.append(f"El total de incidentes registrados en el periodo fue de {total}.")
     doc.append("")
+
+    if accidentes:
+        doc.append("ACCIDENTES LABORALES REGISTRADOS (TIPO ACCIDENTE):")
+        for fecha, severidad, descripcion, accion, centro, estado in accidentes:
+            doc.append(f"- {fecha}: {centro}. {descripcion} (severidad {severidad}, {estado}). Acción: {accion}")
+        doc.append("")
+
+    if criticos:
+        doc.append("INCIDENTES CRÍTICOS (SEVERIDAD CRÍTICA):")
+        for fecha, tipo, descripcion, accion, centro, estado in criticos:
+            doc.append(f"- {fecha}: {centro}. {descripcion} (tipo {tipo}, {estado}). Acción: {accion}")
+        doc.append("")
+
     doc.append("Fuente: tabla incidentes / vistas v_incidentes_por_tipo, v_incidentes_por_severidad.")
     return doc
 

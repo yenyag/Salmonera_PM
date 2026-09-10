@@ -19,7 +19,7 @@ Salmonera_PM/
 │   └── setup-postgres.sh     # Script de instalación de la BD
 ├── data/
 │   ├── interna/              # Reportes generados desde la BD (10 dimensiones operativas)
-│   ├── externa/              # Documentos normativos (Sernapesca, exportación, bioseguridad, mercado)
+│   ├── externa/              # Documentos normativos (Sernapesca, exportación, bioseguridad, mercado, accidentes laborales)
 │   └── faiss_index/          # Índice vectorial FAISS (generado)
 ├── scripts/
 │   ├── generate_internal_docs.py   # FASE 2: BD -> documentos de texto
@@ -119,14 +119,39 @@ python scripts/query_rag.py "¿Qué lote tiene mayor mortalidad y qué recomiend
 python scripts/run_pruebas.py    # genera pruebas/resultados.md
 ```
 
+### 4b. Medición de chunks y tokens, y pruebas operativas
+
+```bash
+python scripts/medir_chunks_tokens.py    # 65 chunks + tokens por consulta → pruebas/medicion_chunks_tokens.txt
+python scripts/prueba_accidente.py       # escenario de accidente laboral (9/9) → pruebas/resultados_accidente.md
+node pruebas/sanitarias.cjs              # salud del sistema (HTTP + BD + FAISS) → pruebas/resultados_sanitarias.txt
+node pruebas/estres.cjs                  # estrés REST + RAG (medir SVR_PID=$$ para memoria) → pruebas/resultados_estres.txt
+```
+
+> **Hallazgo del estrés (corregido):** con consultas RAG simultáneas, cada subproceso Python carga el modelo de
+> embeddings en la GPU (RTX 3050, 4 GiB) y la VRAM se agotaba → HTTP 500. Se implementó un **semáforo
+> de concurrencia** (máx. 2 subprocesos simultáneos) en `/api/consultar` (`server.js`): ahora 10
+> consultas paralelas completan 8/10 OK sin errores 500 (2 timeout de cola, no fallo del servidor).
+
 ### 5. Usar el sistema web
 
-1. `npm start`
-2. Abrir http://localhost:4000
-3. Ingresar con `admin@salmonera.com` / `admin123`
-4. En el dashboard, usar el **Asistente IA** (botón flotante) para consultar en
-   lenguaje natural sobre ventas, mortalidad, planilla, inventario, compras,
-   exportaciones, lotes e incidentes.
+```bash
+# 1. Verificar que PostgreSQL esté corriendo
+sudo systemctl status postgresql
+
+# 2. Iniciar el servidor backend (Express + Node.js)
+npm start
+# El servidor arranca en http://localhost:4000 (semáforo RAG: máx. 2 consultas simultáneas)
+
+# 3. Abrir en el navegador
+# http://localhost:4000
+
+# 4. Credenciales de acceso
+#    Correo:    admin@salmonera.com
+#    Password:  admin123
+```
+
+Una vez dentro del dashboard, usar el botón flotante **"Consultar al Asistente IA"** para preguntar en lenguaje natural sobre ventas, mortalidad, planilla, inventario, compras, exportaciones, lotes e incidentes.
 
 ---
 
@@ -159,6 +184,8 @@ python scripts/run_pruebas.py    # genera pruebas/resultados.md
 | Índice vectorial FAISS | `scripts/build_index.py` | IE3 |
 | Pipeline RAG + citación | `scripts/query_rag.py` | IE3, IE4 |
 | Pruebas de coherencia | `scripts/run_pruebas.py` + `pruebas/` | IE4 |
+| Medición de chunks/tokens | `scripts/medir_chunks_tokens.py` + `pruebas/medicion_chunks_tokens.txt` | IE3, IE7 |
+| Pruebas operativas (sanidad, estrés, accidente) | `pruebas/sanitarias.cjs`, `pruebas/estres.cjs`, `scripts/prueba_accidente.py` | IE3, IE4, IE9 |
 | Arquitectura y diagramas | `docs/arquitectura.md` | IE5, IE6 |
 | Integración backend/frontend | `server.js`, `public/` | IE5, IE6 |
 

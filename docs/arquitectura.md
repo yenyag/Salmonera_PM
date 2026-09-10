@@ -29,7 +29,7 @@ flowchart TD
     subgraph Fuentes["Fuentes de datos"]
         PG[(PostgreSQL<br/>salmonera_pm)]
         DOCS["data/interna<br/>(10 reportes de BD)"]
-        EXT["data/externa<br/>(5 documentos normativos)"]
+        EXT["data/externa<br/>(6 documentos normativos)"]
     end
 
     subgraph Pipeline_RAG["Pipeline RAG (Python)"]

@@ -78,7 +78,7 @@ def evaluar(pregunta, esperado, respuesta, fuentes, tipo) -> dict:
 
     # Las pistas del dato esperado se separan por espacios (cada token relevante)
     resp_norm = normalizar(respuesta)
-    pistas = [p for p in esperado.split() if len(p.strip()) >= 2]
+    pistas = [p for p in esperado.split() if len(p.strip()) >= 2 or p.strip().isdigit()]
     aciertos = sum(1 for p in pistas if normalizar(p) in resp_norm)
     ratio = aciertos / len(pistas) if pistas else 0
 

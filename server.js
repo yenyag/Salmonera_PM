@@ -180,6 +180,27 @@ app.get('/api/incidentes/severidad', async (_req, res) => {
 
 const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada/IngenierInteligencia-Artificial/.venv/bin/python';
 const RAG_SCRIPT = join(__dirname, 'scripts', 'query_rag.py');
+const RAG_MAX_CONCURRENT = 2;
+let ragActive = 0;
+const ragQueue = [];
+
+function enqueueRag(callback) {
+  if (ragActive < RAG_MAX_CONCURRENT) {
+    ragActive++;
+    callback();
+  } else {
+    ragQueue.push(callback);
+  }
+}
+
+function releaseRag() {
+  if (ragQueue.length > 0) {
+    const next = ragQueue.shift();
+    next();
+  } else {
+    ragActive--;
+  }
+}
 
 app.post('/api/consultar', (req, res) => {
   const { pregunta } = req.body || {};
@@ -191,25 +212,28 @@ app.post('/api/consultar', (req, res) => {
   const maxLen = 300;
   const texto = String(pregunta).trim().slice(0, maxLen);
 
-  execFile(
-    PYTHON,
-    [RAG_SCRIPT, texto, '--json'],
-    { timeout: 60000, maxBuffer: 1024 * 1024 },
-    (err, stdout, stderr) => {
-      if (err) {
-        console.error('Error ejecutando RAG:', stderr || err.message);
-        return res.status(500).json({ error: 'Error al consultar el asistente IA' });
-      }
+  enqueueRag(() => {
+    execFile(
+      PYTHON,
+      [RAG_SCRIPT, texto, '--json'],
+      { timeout: 60000, maxBuffer: 1024 * 1024 },
+      (err, stdout, stderr) => {
+        releaseRag();
+        if (err) {
+          console.error('Error ejecutando RAG:', stderr || err.message);
+          return res.status(500).json({ error: 'Error al consultar el asistente IA' });
+        }
 
-      try {
-        const resultado = JSON.parse(stdout.trim());
-        res.json({ respuesta: resultado.respuesta, fuentes: resultado.fuentes });
-      } catch (e) {
-        console.error('Respuesta RAG no parseable:', stdout);
-        res.status(500).json({ error: 'Respuesta inválida del asistente IA' });
+        try {
+          const resultado = JSON.parse(stdout.trim());
+          res.json({ respuesta: resultado.respuesta, fuentes: resultado.fuentes });
+        } catch (e) {
+          console.error('Respuesta RAG no parseable:', stdout);
+          res.status(500).json({ error: 'Respuesta inválida del asistente IA' });
+        }
       }
-    }
-  );
+    );
+  });
 });
 
 app.use(express.static(join(__dirname, 'public')));

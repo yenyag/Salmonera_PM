@@ -2,6 +2,7 @@ REPORTE DE INCIDENTES Y SEGURIDAD - SalmoSUR S.A.
 ========================================
 SUMARIO EJECUTIVO:
 - Se registraron 2 incidentes de severidad crítica, todos del tipo escape.
+- Se registraron 4 accidentes laborales, ninguno fatal.
 - El total de incidentes registrados en el periodo fue de 18.
 
 La siguiente información resume los incidentes registrados entre enero y agosto de 2025.
@@ -18,5 +19,15 @@ La siguiente información resume los incidentes registrados entre enero y agosto
 - 2 incidentes fueron de severidad critico.
 
 El total de incidentes registrados en el periodo fue de 18.
+
+ACCIDENTES LABORALES REGISTRADOS (TIPO ACCIDENTE):
+- 2025-03-02: Quellón. Resbalamiento de operario en cubierta, contusión leve (severidad bajo, resuelto). Acción: Atención en enfermería y entrega de EPP antideslizante.
+- 2025-04-09: Quellón. Operario de planta con corte en mano al manipular fileteadora (severidad alto, resuelto). Acción: Primeros auxilios y derivación a centro médico.
+- 2025-05-23: Chiloé. Buzo con otitis por presión durante faena (severidad medio, resuelto). Acción: Suspensión de faena y derivación al médico laboral.
+- 2025-07-05: Chiloé. Operario con fractura de muñeca al caer desde escala de balsa (severidad alto, abierto). Acción: Traslado a urgencia, investigación de accidente y revisión de escala.
+
+INCIDENTES CRÍTICOS (SEVERIDAD CRÍTICA):
+- 2025-03-15: Los Lagos. Falla en traba de jaula generó apertura parcial y fuga de ~5.000 unidades (tipo escape, en_seguimiento). Acción: Inmovilización de jaula, reparación por buzo y censo.
+- 2025-06-28: Quellón. Apertura de puerta de muestreo dejó salida de ~3.200 unidades (tipo escape, abierto). Acción: Censo al día siguiente y cambio de procedimiento de muestreo.
 
 Fuente: tabla incidentes / vistas v_incidentes_por_tipo, v_incidentes_por_severidad.

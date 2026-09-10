@@ -1,0 +1,46 @@
+{
+  "fecha": "2026-09-10T17:08:43.532Z",
+  "rondas": [
+    {
+      "ronda": 1,
+      "ok": 15,
+      "total": 15,
+      "durMs": 226,
+      "p50": 108,
+      "p95": 213,
+      "max": 213
+    },
+    {
+      "ronda": 2,
+      "ok": 15,
+      "total": 15,
+      "durMs": 26,
+      "p50": 14,
+      "p95": 23,
+      "max": 23
+    },
+    {
+      "ronda": 3,
+      "ok": 15,
+      "total": 15,
+      "durMs": 25,
+      "p50": 22,
+      "p95": 24,
+      "max": 24
+    }
+  ],
+  "rag": {
+    "total": 10,
+    "ok": 8,
+    "duraMs": 90012,
+    "p50": 64496,
+    "p95": 90002,
+    "max": 90002,
+    "tokens_estimados": 8920,
+    "pregunta_avg_tokens": 1115
+  },
+  "memoria": {
+    "antes_kb": 68692,
+    "despues_kb": 74152
+  }
+}

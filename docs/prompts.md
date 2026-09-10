@@ -64,5 +64,9 @@ En ejecución, la plantilla se rellena con:
 - **Ventana de contexto / límites Groq:** `openai/gpt-oss-120b` dentro de la capa
   gratuita (100K tokens/día). El prompt es compacto y el contexto se limita a k=5
   chunks (~600 chars c/u) para no gastar cuota y mantener latencia baja.
-- **Validación:** las 7 preguntas de `pruebas/` (ver `pruebas/resultados.md`)
-  confirman que el prompt produce respuestas coherentes con los datos y fuentes.
+- **Validación:** las 14 preguntas de `pruebas/preguntas.json` y la batería de accidente
+  (`pruebas/preguntas_accidente.json`) confirman que el prompt produce respuestas coherentes
+  con los datos y fuentes (ver `pruebas/resultados.md` y `pruebas/resultados_accidente.md`).
+- **Consumo medido:** promedio ≈1 063–1 115 tokens por consulta (dato 900–1 500); con la cuota
+  diaria de 100K tokens caben del orden de 90 consultas. En `pruebas/medicion_chunks_tokens.txt`
+  y `pruebas/analisis_preguntas_estres_accidente.md`.

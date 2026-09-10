@@ -1,0 +1,68 @@
+{
+  "descripcion": "Pruebas de escenario de accidente laboral - SalmoSUR S.A. (con medición de tokens)",
+  "preguntas": [
+    {
+      "id": "A1",
+      "pregunta": "¿Cuántos incidentes de tipo accidente se registraron en SalmoSUR durante el periodo?",
+      "dato_esperado": "4",
+      "fuente_esperada": "incidentes.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "A2",
+      "pregunta": "Durante la faena de cosecha se registró un accidente laboral en el centro Quellón. ¿Qué medidas de bioseguridad recomiendas aplicar por riesgo sanitario?",
+      "dato_esperado": "desinfeccion control de acceso contingencia Sernapesca mortalidades",
+      "fuente_esperada": "bioseguridad.txt y/o sernapesca_normativa.txt (externa)",
+      "tipo": "interna_mas_externa"
+    },
+    {
+      "id": "A3",
+      "pregunta": "¿Cuántos incidentes de severidad crítica se registraron y de qué tipo fueron?",
+      "dato_esperado": "2 escape",
+      "fuente_esperada": "incidentes.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "A4",
+      "pregunta": "Un trabajador sufrió un accidente laboral en el centro Quellón. ¿A qué número de emergencia debe llamar y qué debe hacer la empresa según la normativa chilena?",
+      "dato_esperado": "131 132 133 primeros auxilios denuncia DIAT Ley 16.744",
+      "fuente_esperada": "protocolo_accidentes_laborales.txt (externa)",
+      "tipo": "dato_externo"
+    },
+    {
+      "id": "A5",
+      "pregunta": "¿Con qué seguro de accidentes del trabajo cuenta un operario de SalmoSUR según la legislación chilena y quién lo administra?",
+      "dato_esperado": "Ley 16.744 mutual ISL",
+      "fuente_esperada": "protocolo_accidentes_laborales.txt (externa)",
+      "tipo": "dato_externo"
+    },
+    {
+      "id": "A9",
+      "pregunta": "¿Cuántos accidentes laborales fatales registró SalmoSUR durante 2024?",
+      "dato_esperado": "No tengo información suficiente para responder eso (no hay registro de accidentes fatales en las fuentes)",
+      "fuente_esperada": "ninguna (debe decir NO)",
+      "tipo": "sin_dato"
+    },
+    {
+      "id": "A6",
+      "pregunta": "Ante una mortalidad acumulada elevada tras un incidente en un lote, ¿qué debe hacer la empresa según Sernapesca?",
+      "dato_esperado": "contingencia notificar Sernapesca",
+      "fuente_esperada": "sernapesca_normativa.txt y/o bioseguridad.txt (externa)",
+      "tipo": "dato_externo"
+    },
+    {
+      "id": "A7",
+      "pregunta": "Del total de incidentes registrados, ¿cuántos fueron de tipo accidente y cuántos de tipo escape?",
+      "dato_esperado": "accidente 4 escape 4",
+      "fuente_esperada": "incidentes.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "A8",
+      "pregunta": "¿Cuántos incidentes registró SalmoSUR por severidad (bajo, medio, alto y crítico)?",
+      "dato_esperado": "bajo 4 medio 6 alto 6 critico 2",
+      "fuente_esperada": "incidentes.txt (interna)",
+      "tipo": "dato_interno"
+    }
+  ]
+}

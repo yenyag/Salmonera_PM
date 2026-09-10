@@ -102,6 +102,23 @@ def consultar(pregunta: str, k: int = 5) -> dict:
     # 1. Recuperación
     documentos = retriever.invoke(pregunta)
 
+    # 1b. Recuperación ampliada por palabras clave de dominio:
+    # cuando la pregunta alude a módulos específicos (inventario, incidentes,
+    # proveedores, planilla, exportaciones, FCR), se refuerza el contexto con
+    # los chunks que contienen esos términos aunque la similitud los baje del
+    # top-k. No se amplía con términos de contacto/seguridad (accidente,
+    # emergencia) para no anular la respuesta "no tengo información suficiente".
+    keywords = [
+        "incidentes", "inventario", "stock", "proveedor",
+        "exportaciones", "planilla", "lote", "fcr",
+    ]
+    p_min = pregunta.lower()
+    presentes = [kw for kw in keywords if kw in p_min]
+    if presentes:
+        candidatos = vector_db.as_retriever(search_kwargs={"k": k + 6}).invoke(pregunta)
+        extra = [d for d in candidatos[k:] if any(kw in d.page_content.lower() for kw in presentes)]
+        documentos.extend(extra[:3])
+
     # 2. Construcción del contexto
     contexto = "\n\n---\n\n".join(d.page_content for d in documentos)
 
