@@ -15,6 +15,7 @@ REGLAS OBLIGATORIAS:
 4. Usa cifras y fechas exactas de los datos. No inventes ni redondees a tu gusto.
 5. Responde en español, de forma clara y concisa.
 6. Si te preguntan por recomendaciones, basalas únicamente en los datos del contexto.
+7. Si la pregunta pide enumerar, respóndela COMPLETA con todos los elementos.
 
 CONTEXTO RECUPERADO:
 {contexto}
@@ -31,6 +32,7 @@ CONTEXTO RECUPERADO:
 | **Regla 4: cifras exactas** | Precisión numérica | Evita redondeos o errores típicos de los LLM al "adivinar" valores; se pide usar el dato tal cual aparece |
 | **Regla 5: español claro y conciso** | Usabilidad | El usuario es técnico-operativo; respuestas breves y legibles mejoran la adopción |
 | **Regla 6: recomendaciones basadas en datos** | Coherencia con fuentes externas | Permite combinar dato interno (mortalidad) + normativo (bioseguridad) sin salirse del contexto |
+| **Regla 7: enumerar completo** | Exhaustividad | Evita respuestas truncadas en listas (requisitos, productos, lotes) — validada con P6 (requisitos de exportación) |
 | **Sección {contexto}** | Inyección del contexto recuperado | Es el corazón del RAG: el contexto viene del retriever (top-k chunks FAISS), no es fijo |
 | **Sección {pregunta}** | Entrada del usuario | La pregunta del usuario se inserta al final, tras el contexto y el sistema |
 
@@ -64,9 +66,10 @@ En ejecución, la plantilla se rellena con:
 - **Ventana de contexto / límites Groq:** `openai/gpt-oss-120b` dentro de la capa
   gratuita (100K tokens/día). El prompt es compacto y el contexto se limita a k=5
   chunks (~600 chars c/u) para no gastar cuota y mantener latencia baja.
-- **Validación:** las 14 preguntas de `pruebas/preguntas.json` y la batería de accidente
+- **Validación:** las 14 preguntas de `pruebas/preguntas.json` y la batería de 9 preguntas de accidente
   (`pruebas/preguntas_accidente.json`) confirman que el prompt produce respuestas coherentes
   con los datos y fuentes (ver `pruebas/resultados.md` y `pruebas/resultados_accidente.md`).
-- **Consumo medido:** promedio ≈1 063–1 115 tokens por consulta (dato 900–1 500); con la cuota
-  diaria de 100K tokens caben del orden de 90 consultas. En `pruebas/medicion_chunks_tokens.txt`
+  Total: 23 preguntas validadas, 100% coherencia.
+- **Consumo medido:** promedio ≈1 063–1 142 tokens por consulta (dato 900–1 500); con la cuota
+  diaria de 100K tokens caben del orden de 88–90 consultas. En `pruebas/medicion_chunks_tokens.txt`
   y `pruebas/analisis_preguntas_estres_accidente.md`.

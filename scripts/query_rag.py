@@ -28,6 +28,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Carga de credenciales desde .env del proyecto
 load_dotenv(BASE_DIR / ".env")
 
+# Habilitar tracing de LangSmith (observabilidad)
+os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
+os.environ.setdefault("LANGSMITH_ENDPOINT", "https://api.smith.langchain.com")
+# La API key y project se cargan desde .env vía load_dotenv
+
 INDEX_DIR = BASE_DIR / "data" / "faiss_index"
 
 EMBEDDING_MODEL = os.getenv(

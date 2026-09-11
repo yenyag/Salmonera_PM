@@ -171,6 +171,38 @@ Una vez dentro del dashboard, usar el botón flotante **"Consultar al Asistente 
 
 ---
 
+## Observabilidad con LangSmith
+
+El proyecto está integrado con [LangSmith](https://smith.langchain.com/) para monitorear y analizar las trazas del pipeline RAG. Cada consulta al asistente genera una traza completa que incluye:
+
+- **Retrieval:** qué chunks recuperó FAISS y su score de similitud.
+- **Generación:** tokens de entrada/salida, latencia y la respuesta completa.
+- **Cadena completa:** desde la pregunta del usuario hasta la respuesta final.
+
+### Configuración
+
+1. Crear una API key en https://smith.langchain.com/settings (tipo Personal Access Token).
+2. Copiar las variables de LangSmith a `.env`:
+   ```
+   LANGCHAIN_TRACING_V2="true"
+   LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
+   LANGSMITH_API_KEY="lsv2_pt_tu_api_key"
+   LANGSMITH_PROJECT="SalmoSUR-EP1"
+   ```
+3. Verificar la conexión:
+   ```bash
+   python -c "from langsmith import Client; c=Client(); print('OK:', c.read_project(project_name='SalmoSUR-EP1').name)"
+   ```
+
+### Visualizar trazas
+
+Abrir https://smith.langchain.com/ → proyecto **SalmoSUR-EP1** para ver:
+- Historial de consultas con timestamps.
+- Detalle de cada traza (chunks recuperados, tokens, latencia).
+- Comparación entre consultas para optimizar el pipeline.
+
+---
+
 ## Endpoints de la API
 
 | Método | Ruta | Descripción |
