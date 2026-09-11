@@ -45,10 +45,59 @@
     },
     {
       "id": "P7",
-      "pregunta": "¿Quién es el gerente comercial y cuántos empleados tiene la planta de proceso?",
+      "pregunta": "¿Cuánto pagó la empresa en impuestos a la renta durante 2024?",
       "dato_esperado": "No tengo información suficiente para responder eso (dato no existe en las fuentes)",
       "fuente_esperada": "ninguna (debe decir NO)",
       "tipo": "sin_dato"
+    },
+    {
+      "id": "P8",
+      "pregunta": "¿Cuál es la planilla mensual del centro de cultivo Los Lagos?",
+      "dato_esperado": "Los Lagos 18050000",
+      "fuente_esperada": "empleados.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P9",
+      "pregunta": "¿Qué productos del inventario están bajo su stock mínimo?",
+      "dato_esperado": "Alimento Extruido 9mm Vacuna ISA Red de cultivo 30mm",
+      "fuente_esperada": "inventario.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P10",
+      "pregunta": "¿Qué proveedor facturó más durante el periodo y en qué rubro?",
+      "dato_esperado": "Transportes Austral logistica y transporte 60500000",
+      "fuente_esperada": "compras.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P11",
+      "pregunta": "¿Cuál es el principal destino de las exportaciones por valor FOB?",
+      "dato_esperado": "Estados Unidos",
+      "fuente_esperada": "exportaciones.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P12",
+      "pregunta": "¿Qué centro de cultivo concentra la mayor biomasa y cuántos kilos tiene?",
+      "dato_esperado": "Los Lagos 6750000",
+      "fuente_esperada": "lotes_detalle.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P13",
+      "pregunta": "¿Cuántos incidentes de severidad crítica se registraron y de qué tipo son?",
+      "dato_esperado": "2 escape",
+      "fuente_esperada": "incidentes.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P14",
+      "pregunta": "¿Qué lote tiene el FCR más bajo y en qué centro se encuentra?",
+      "dato_esperado": "LOTE-K1 109 Quellón",
+      "fuente_esperada": "lotes_detalle.txt (interna)",
+      "tipo": "dato_interno"
     }
   ]
 }

@@ -1,0 +1,30 @@
+PRUEBA DE ESTRÉS - SalmoSUR S.A.
+Fecha: 2026-09-10 14:07:13
+Servidor: http://localhost:4000 · PID 23234
+Memoria servidor antes del estrés: 67.1 MB
+
+[1] RÁFAGAS ENDPOINTS REST (3 rondas x 15 endpoints en paralelo)
+  Ronda 1: 15/15 OK · dur 226 ms · p50 108 ms · p95 213 ms · max 213 ms · timeouts/errores 0
+  Ronda 2: 15/15 OK · dur 26 ms · p50 14 ms · p95 23 ms · max 23 ms · timeouts/errores 0
+  Ronda 3: 15/15 OK · dur 25 ms · p50 22 ms · p95 24 ms · max 24 ms · timeouts/errores 0
+
+[2] 10 CONSULTAS RAG EN PARALELO (/api/consultar)
+  (cada consulta lanza un subproceso Python: embeddings + Groq)
+  Resultado: 8/10 OK · duración total del lote 90012 ms · p50 64496 ms · p95 90002 ms · max 90002 ms
+  [OK] ¿Qué lote tiene mayor mortalidad acumulada?        HTTP 200 · 22453 ms · fuentes=4
+  [OK] ¿Cuál es la planilla mensual del centro Los Lago   HTTP 200 · 22574 ms · fuentes=3
+  [OK] ¿Cuáles fueron las ventas de enero de 2025?        HTTP 200 · 42697 ms · fuentes=3
+  [OK] ¿Qué productos del inventario están bajo su stoc   HTTP 200 · 43977 ms · fuentes=2
+  [OK] ¿Qué proveedor facturó más en el periodo?          HTTP 200 · 62671 ms · fuentes=3
+  [OK] ¿Cuántos incidentes de severidad crítica hay y d   HTTP 200 · 64496 ms · fuentes=2
+  [OK] ¿Cuánto pagó la empresa en impuestos a la renta    HTTP 200 · 83674 ms · fuentes=3
+  [OK] ¿Qué centro concentra la mayor biomasa?            HTTP 200 · 84743 ms · fuentes=2
+  [✘] ¿Cuál es el principal destino de exportaciones p   HTTP -1 · 90002 ms · fuentes=undefined · 23
+  [✘] ¿Qué lote tiene el FCR más bajo?                   HTTP -1 · 90002 ms · fuentes=undefined · 23
+
+[3] TOKENS DEL ESTRÉS RAG
+  Consultas OK: 8 × promedio real 1 115 tokens = ≈ 8.920 tokens
+  Nota: /api/consultar no expone el usage; el promedio 1 115 proviene de `medir_chunks_tokens.py` (usage real de Groq).
+
+Memoria servidor después del estrés: 72.4 MB
+RESULTADO GENERAL: 2 ERROR(ES) DETECTADO(S) ✘

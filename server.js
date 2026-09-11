@@ -75,10 +75,132 @@ app.get('/api/rentabilidad', async (_req, res) => {
   }
 });
 
+// --- Módulos ampliados (EP1) ------------------------------------------------
+
+app.get('/api/empleados', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_empleados');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/empleados/planilla', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_planilla_por_cargo');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/inventario', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_inventario_resumen');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/inventario/bajo', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_stock_bajo');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/compras', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_gasto_por_proveedor');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/exportaciones', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_exportaciones_por_destino');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/exportaciones/mensual', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_exportaciones_resumen');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/lotes', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_lotes_detalle');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/lotes/biomasa', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_biomasa_por_centro');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/incidentes', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_incidentes_por_tipo');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/incidentes/severidad', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_incidentes_por_severidad');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- Asistente RAG (FASE 4) ------------------------------------------------
 
-const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada/IngenierInteligencia-Artificial/.venv/bin/python';
+const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada⁄IngenierInteligencia-Artificial/.venv/bin/python';
 const RAG_SCRIPT = join(__dirname, 'scripts', 'query_rag.py');
+const RAG_MAX_CONCURRENT = 2;
+let ragActive = 0;
+const ragQueue = [];
+
+function enqueueRag(callback) {
+  if (ragActive < RAG_MAX_CONCURRENT) {
+    ragActive++;
+    callback();
+  } else {
+    ragQueue.push(callback);
+  }
+}
+
+function releaseRag() {
+  if (ragQueue.length > 0) {
+    const next = ragQueue.shift();
+    next();
+  } else {
+    ragActive--;
+  }
+}
 
 app.post('/api/consultar', (req, res) => {
   const { pregunta } = req.body || {};
@@ -90,25 +212,28 @@ app.post('/api/consultar', (req, res) => {
   const maxLen = 300;
   const texto = String(pregunta).trim().slice(0, maxLen);
 
-  execFile(
-    PYTHON,
-    [RAG_SCRIPT, texto, '--json'],
-    { timeout: 60000, maxBuffer: 1024 * 1024 },
-    (err, stdout, stderr) => {
-      if (err) {
-        console.error('Error ejecutando RAG:', stderr || err.message);
-        return res.status(500).json({ error: 'Error al consultar el asistente IA' });
-      }
+  enqueueRag(() => {
+    execFile(
+      PYTHON,
+      [RAG_SCRIPT, texto, '--json'],
+      { timeout: 60000, maxBuffer: 1024 * 1024 },
+      (err, stdout, stderr) => {
+        releaseRag();
+        if (err) {
+          console.error('Error ejecutando RAG:', stderr || err.message);
+          return res.status(500).json({ error: 'Error al consultar el asistente IA' });
+        }
 
-      try {
-        const resultado = JSON.parse(stdout.trim());
-        res.json({ respuesta: resultado.respuesta, fuentes: resultado.fuentes });
-      } catch (e) {
-        console.error('Respuesta RAG no parseable:', stdout);
-        res.status(500).json({ error: 'Respuesta inválida del asistente IA' });
+        try {
+          const resultado = JSON.parse(stdout.trim());
+          res.json({ respuesta: resultado.respuesta, fuentes: resultado.fuentes });
+        } catch (e) {
+          console.error('Respuesta RAG no parseable:', stdout);
+          res.status(500).json({ error: 'Respuesta inválida del asistente IA' });
+        }
       }
-    }
-  );
+    );
+  });
 });
 
 app.use(express.static(join(__dirname, 'public')));

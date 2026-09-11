@@ -14,28 +14,29 @@ en los datos de la base de datos y documentos normativos del sector.
 Salmonera_PM/
 ├── caso/README.md            # Documento de caso organizacional (propuesta)
 ├── db/
-│   ├── schema.sql            # Esquema + datos de prueba PostgreSQL
+│   ├── schema.sql            # Esquema base + datos de prueba PostgreSQL
+│   ├── schema_modulos.sql    # Módulos ampliados (RRHH, inventario, compras, exportaciones, lotes, incidentes)
 │   └── setup-postgres.sh     # Script de instalación de la BD
 ├── data/
-│   ├── interna/              # Reportes generados desde la BD (ventas, calidad, mortalidad, rentabilidad)
-│   ├── externa/              # Documentos normativos (Sernapesca, exportación, bioseguridad, mercado)
-│   └── faiss_index/          # Índice vectorial FAISS (generado)
+│   ├── interna/              # Reportes generados desde la BD (10 dimensiones operativas)
+│   ├── externa/              # Documentos normativos (6 documentos: Sernapesca, exportación, bioseguridad, mercado, ley laboral/accidentes, contingencias)
+│   └── faiss_index/          # Índice vectorial FAISS (generado con 16 docs → 65 chunks)
 ├── scripts/
 │   ├── generate_internal_docs.py   # FASE 2: BD -> documentos de texto
 │   ├── build_index.py              # FASE 2: construye el índice FAISS
 │   ├── query_rag.py                # FASE 3: pipeline RAG (consulta + fuentes)
 │   └── run_pruebas.py              # FASE 6: pruebas de coherencia (IE4)
 ├── pruebas/
-│   ├── preguntas.json        # 7 preguntas de prueba
-│   └── resultados.md         # Evidencias de coherencia (7/7)
+│   ├── preguntas.json        # 14 preguntas de prueba
+│   └── resultados.md         # Evidencias de coherencia (14/14)
 ├── docs/
 │   ├── arquitectura.md       # Diagramas y justificación de componentes
 │   └── prompts.md            # Justificación de prompts (IE2)
 ├── public/
 │   ├── index.html            # Login
-│   ├── dashboard.html        # Panel + Asistente IA
+│   ├── dashboard.html        # Panel (gráficos + tablas) + Asistente IA
 │   └── js/                   # api.js, charts.js, chat.js
-├── server.js                 # Backend Express + endpoint /api/consultar
+├── server.js                 # Backend Express (19 endpoints REST + /api/consultar)
 └── .env.example              # Variables de entorno (copiar a .env)
 ```
 
@@ -55,6 +56,17 @@ Salmonera_PM/
 
 ---
 
+## Modelos de IA Utilizados
+
+| Componente | Modelo / Tecnología | Proveedor | Descripción |
+|------------|---------------------|-----------|-------------|
+| **LLM Principal (Razonamiento / RAG)** | `openai/gpt-oss-120b` | Groq Cloud API | Modelo de lenguaje de alta capacidad para la síntesis de respuestas operativas (`temperature=0.1`, `max_tokens=1500`). |
+| **LLM Rápido (Alternativo)** | `openai/gpt-oss-20b` | Groq Cloud API | Modelo secundario de alta velocidad (`GROQ_MODEL_FAST`). |
+| **Embeddings Vectoriales** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Local (Hugging Face / PyTorch) | Generación de embeddings multilingües (384 dimensiones) optimizados para español. |
+| **Búsqueda Vectorial (Vector Store)** | FAISS (`faiss-cpu`) | Local | Motor de búsqueda semántica ($k=5$), indexando 16 documentos (10 internos + 6 externos) → 65 chunks. |
+
+---
+
 ## Instalación
 
 ### 1. Base de datos PostgreSQL
@@ -65,6 +77,9 @@ sudo -u postgres createuser -P salmonera        # contraseña: salmonera123
 sudo -u postgres createdb -O salmonera salmonera_pm
 cp db/schema.sql /tmp/schema.sql
 sudo -u postgres psql -d salmonera_pm -f /tmp/schema.sql
+
+# Módulos ampliados (RRHH, inventario, compras, exportaciones, lotes, incidentes)
+PGPASSWORD=salmonera123 psql -h localhost -U salmonera -d salmonera_pm -f db/schema_modulos.sql
 ```
 
 ### 2. Backend Node.js
@@ -115,12 +130,63 @@ python scripts/query_rag.py "¿Qué lote tiene mayor mortalidad y qué recomiend
 python scripts/run_pruebas.py    # genera pruebas/resultados.md
 ```
 
+### 4b. Medición de chunks y tokens, y pruebas operativas
+
+```bash
+python scripts/medir_chunks_tokens.py    # 65 chunks + tokens por consulta → pruebas/medicion_chunks_tokens.txt
+python scripts/prueba_accidente.py       # escenario de accidente laboral (9/9) → pruebas/resultados_accidente.md
+node pruebas/sanitarias.cjs              # salud del sistema (HTTP + BD + FAISS) → pruebas/resultados_sanitarias.txt
+node pruebas/estres.cjs                  # estrés REST + RAG (medir SVR_PID=$$ para memoria) → pruebas/resultados_estres.txt
+```
+
+- **Índice FAISS reconstruido:** 16 documentos (10 reportes internos BD + 6 normativos externos) → **65 chunks** (antes 57/15).
+- **Pruebas sanitarias (`sanitarias.cjs`):** Validado a 65 chunks → **100% OK** (HTTP, BD y FAISS).
+- **Escenario Accidente (`preguntas_accidente.json` / `prueba_accidente.py`):** **9/9 preguntas coherentes** (10 281 tokens). A4/A5 pasaron de `sin_dato` a `dato_externo` (al integrarse la normativa); se agregó A9 como nuevo caso `sin_dato` (accidentes fatales 2024) para conservar la prueba anti-alucinación.
+- **Resultados:** Accidente 9/9 (10 281 tokens), preguntas base 14/14 sin regresión, pregunta compleja resuelta (2 153 tokens), API verificado en vivo.
+
+> **Hallazgo del estrés (corregido):** con consultas RAG simultáneas, cada subproceso Python carga el modelo de
+> embeddings en la GPU (RTX 3050, 4 GiB) y la VRAM se agotaba → HTTP 500. Se implementó un **semáforo
+> de concurrencia** (máx. 2 subprocesos simultáneos) en `/api/consultar` (`server.js`): ahora 10
+> consultas paralelas completan 8/10 OK sin errores 500 (2 timeout de cola, no fallo del servidor).
+
 ### 5. Usar el sistema web
 
-1. `npm start`
-2. Abrir http://localhost:4000
-3. Ingresar con `admin@salmonera.com` / `admin123`
-4. En el dashboard, usar el **Asistente IA** para consultar en lenguaje natural.
+```bash
+# 1. Verificar que PostgreSQL esté corriendo
+sudo systemctl status postgresql
+
+# 2. Iniciar el servidor backend (Express + Node.js)
+npm start
+# El servidor arranca en http://localhost:4000 (semáforo RAG: máx. 2 consultas simultáneas)
+
+# 3. Abrir en el navegador
+# http://localhost:4000
+
+# 4. Credenciales de acceso
+#    Correo:    admin@salmonera.com
+#    Password:  admin123
+```
+
+Una vez dentro del dashboard, usar el botón flotante **"Consultar al Asistente IA"** para preguntar en lenguaje natural sobre ventas, mortalidad, planilla, inventario, compras, exportaciones, lotes e incidentes.
+
+---
+
+## Endpoints de la API
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/login` | Autenticación de usuario |
+| GET | `/api/ventas` | Ventas mensuales (CLP) |
+| GET | `/api/calidad` | Distribución de cosechas por calidad |
+| GET | `/api/mortalidad` | Mortalidad acumulada por lote |
+| GET | `/api/rentabilidad` | Ingresos por centro |
+| GET | `/api/empleados` · `/api/empleados/planilla` | Dotación y planilla (RRHH) |
+| GET | `/api/inventario` · `/api/inventario/bajo` | Valor por categoría y alertas de stock |
+| GET | `/api/compras` | Gasto por proveedor |
+| GET | `/api/exportaciones` · `/api/exportaciones/mensual` | Destino FOB y resumen mensual |
+| GET | `/api/lotes` · `/api/lotes/biomasa` | Lotes detallados y biomasa por centro |
+| GET | `/api/incidentes` · `/api/incidentes/severidad` | Incidentes por tipo y severidad |
+| POST | `/api/consultar` | Asistente RAG `{ pregunta }` |
 
 ---
 
@@ -134,6 +200,8 @@ python scripts/run_pruebas.py    # genera pruebas/resultados.md
 | Índice vectorial FAISS | `scripts/build_index.py` | IE3 |
 | Pipeline RAG + citación | `scripts/query_rag.py` | IE3, IE4 |
 | Pruebas de coherencia | `scripts/run_pruebas.py` + `pruebas/` | IE4 |
+| Medición de chunks/tokens | `scripts/medir_chunks_tokens.py` + `pruebas/medicion_chunks_tokens.txt` | IE3, IE7 |
+| Pruebas operativas (sanidad, estrés, accidente) | `pruebas/sanitarias.cjs`, `pruebas/estres.cjs`, `scripts/prueba_accidente.py` | IE3, IE4, IE9 |
 | Arquitectura y diagramas | `docs/arquitectura.md` | IE5, IE6 |
 | Integración backend/frontend | `server.js`, `public/` | IE5, IE6 |
 

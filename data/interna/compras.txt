@@ -1,0 +1,30 @@
+REPORTE DE COMPRAS Y PROVEEDORES - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- El proveedor que MAYOR monto facturó fue Transportes Austral con $60,500,000 CLP (rubro Logística y transporte).
+- El gasto total en compras del periodo fue de $203,180,000 CLP.
+
+La siguiente información detalla el gasto en compras por proveedor durante el periodo.
+
+- Transportes Austral (rubro Logística y transporte) facturó un total de $60,500,000 CLP.
+- Salmon Feed S.A. (rubro Alimento balanceado) facturó un total de $52,120,000 CLP.
+- Redes del Sur (rubro Redes y jaulas de cultivo) facturó un total de $32,560,000 CLP.
+- Oxígeno Patagonia (rubro Gases y oxigenación) facturó un total de $18,900,000 CLP.
+- Marina Supply (rubro Motores y equipos náuticos) facturó un total de $14,850,000 CLP.
+- VetAqua Chile (rubro Medicamentos veterinarios) facturó un total de $11,940,000 CLP.
+- Nutreco Instrumental (rubro Instrumental y EPP) facturó un total de $7,750,000 CLP.
+- BioLab Química (rubro Reactivos e insumos de laboratorio) facturó un total de $4,560,000 CLP.
+
+Compras recientes:
+- El 2025-06-12 se compraron 40 unidades de Instrumental de muestreo a Nutreco Instrumental por $2,400,000 CLP.
+- El 2025-06-09 se compraron 1 unidades de Hidrolavadora a presión a Marina Supply por $1,650,000 CLP.
+- El 2025-06-01 se compraron 15 unidades de Kit de análisis de agua a BioLab Química por $2,250,000 CLP.
+- El 2025-05-28 se compraron 700 unidades de Oxígeno líquido a Oxígeno Patagonia por $6,300,000 CLP.
+- El 2025-05-20 se compraron 200 unidades de Lentes de seguridad y EPP a Nutreco Instrumental por $1,600,000 CLP.
+- El 2025-05-14 se compraron 40 unidades de Anestésico MS-222 a VetAqua Chile por $1,800,000 CLP.
+- El 2025-05-06 se compraron 1 unidades de Compresor de aire industrial a Marina Supply por $2,800,000 CLP.
+- El 2025-04-30 se compraron 8 unidades de Flete refrigerado Aysén-Puerto Montt a Transportes Austral por $12,800,000 CLP.
+- El 2025-04-22 se compraron 20 unidades de Material de muestreo biológico a BioLab Química por $960,000 CLP.
+- El 2025-04-15 se compraron 120 unidades de Boya HDPE 50L a Redes del Sur por $4,560,000 CLP.
+
+Fuente: tablas proveedores y compras / vistas v_gasto_por_proveedor, v_compras_recientes.
