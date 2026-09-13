@@ -1,10 +1,164 @@
-# Salmonera SalmoSUR S.A. - Sistema de Gestión + Asistente RAG
+# SalmoSUR S.A. — Sistema de Gestión + Asistente RAG
 
-Sistema de gestión (dashboard) de una empresa salmonera chilena integrado con un
-**asistente RAG** que responde consultas operativas en lenguaje natural, con base
-en los datos de la base de datos y documentos normativos del sector.
+**Salmonera SalmoSUR S.A.** es un caso de empresa simulada (acuicultura / producción de salmón chileno) que combina un **sistema de gestión web (dashboard)** con un **asistente RAG** capaz de responder consultas operativas en lenguaje natural, apoyándose en los datos de la base de datos y en normativa real del sector.
 
-**Evaluación Parcial 1 - ISY0101 Ingeniería de Soluciones con IA**
+> Evaluación Parcial 1 — ISY0101 Ingeniería de Soluciones con IA
+
+---
+
+## Índice
+
+1. [¿Qué es este proyecto?](#qué-es-este-proyecto)
+2. [¿A quién va dirigido?](#a-quién-va-dirigido)
+3. [Problemas que resuelve en la industria](#problemas-que-resuelve-en-la-industria)
+4. [¿Qué tan realista es?](#qué-tan-realista-es)
+5. [Herramientas y stack](#herramientas-y-stack)
+6. [Arquitectura](#arquitectura)
+7. [Modelos de IA utilizados](#modelos-de-ia-utilizados)
+8. [Estructura del repositorio](#estructura-del-repositorio)
+9. [Instalación](#instalación)
+10. [Uso](#uso)
+11. [Endpoints de la API](#endpoints-de-la-api)
+12. [Pruebas y evidencias](#pruebas-y-evidencias)
+13. [Seguridad](#seguridad)
+14. [Lo que está pensado (roadmap)](#lo-que-está-pensado-roadmap)
+15. [Contexto de evaluación y ética de IA](#contexto-de-evaluación-y-ética-de-ia)
+
+---
+
+## ¿Qué es este proyecto?
+
+Un sistema web de gestión para una salmonicultora que integra **nueve dimensiones operativas** (ventas, calidad, mortalidad, rentabilidad, RRHH, inventario, compras, exportaciones, lotes) más **incidentes de seguridad y sanidad**, extrayendo además nuevas dimensiones para el asistente (concesiones acuícolas, monitoreo sanitario/ambiental, alimentación de raciones y cartera de clientes).
+
+Sobre esos datos se construye un **asistente RAG** (Retrieval-Augmented Generation) que permite a un usuario no técnico hacer preguntas de negocio en lenguaje natural, como:
+
+- *"¿Qué lote tiene mayor mortalidad?"*
+- *"¿Cuál fue la planilla mensual del centro Los Lagos?"*
+- *"¿Qué requisitos debe cumplir el salmón para exportarlo a Japón?"*
+- *"¿Qué lote tiene el mayor promedio de caligus según el monitoreo?"*
+
+Cada respuesta cita su **fuente** (tabla de la BD o documento normativo), lo que da trazabilidad y evita que el modelo "invente" datos.
+
+---
+
+## ¿A quién va dirigido?
+
+| Perfil | Beneficio |
+|--------|-----------|
+| **Administradores y jefatura de operaciones** | Consultar indicadores operativos (ventas, mortalidad, biomasa, planilla) sin mover planillas ni esperar al equipo TI. |
+| **Analistas de datos** | Punto único de consulta consolidada (BD + normativa) con citación de fuente. |
+| **Equipos de sanidad y bioseguridad** | Monitoreo de caligus, temperatura y oxígeno por lote (con alertas visuales) y acceso a normativa Sernapesca. |
+| **Área comercial** | Vista de exportaciones FOB por destino y cartera de clientes. |
+| **Diseñadores/desarrolladores de soluciones IA** | Referencia didáctica de una implementación RAG completa, con pruebas de coherencia y limitaciones documentadas. |
+
+---
+
+## Problemas que resuelve en la industria
+
+El caso de negocio (documentado en `caso/README.md`) parte de un problema real del sector de acuicultura chilena:
+
+1. **Acceso lento a la información operativa.** Repetir consultas del tipo *"¿qué centro es más rentable?"* requiere navegar el dashboard, cruzar información de varias pantallas o escuchar al equipo de TI. Tiempo estimado por consulta: **15–30 min**. Con el asistente: **respuesta en < 1 minuto**.
+
+2. **Insuficiente aprovechamiento de los datos.** La información existente (BD) no se explota porque el usuario no sabe dónde está ni cómo cruzar indicadores.
+
+3. **Riesgo de decisiones sin sustento normativo.** Todo cultivo de salmónidos en Chile está regulado (Sernapesca): sanitario, bioseguridad, requisitos de exportación y seguridad laboral. Las respuestas del asistente integran esa normativa **real** como fuente externa.
+
+4. **Poco control sanitario proactivo.** El monitoreo de **caligus (piojo de mar)** y **oxígeno disuelto** es crítico; el sistema lo vuelve visible en el dashboard (con umbrales de alerta: caligus > 3-4 exige tratamiento; O₂ < 6 mg/L es riesgo) además de responderlo por consulta.
+
+5. **Dependencia del equipo técnico.** El RAG descentraliza la extracción de información hacia el usuario final, reduciendo el cuello de botella con TI/analista.
+
+---
+
+## ¿Qué tan realista es?
+
+`docs/informe.md` y `docs/arquitectura.md` documentan el detalle. Resumen honesto:
+
+### ✅ Lo que SÍ es realista
+
+| Dimensión | Qué se hizo | Nivel de realismo |
+|-----------|-------------|-------------------|
+| **Modelo de negocio** | Empresa mediana (~150 empleados), 4 centros (Los Lagos, Quellón, Chiloé, Aysén), producción y exportación de salmón Atlántico/Coho. | Alto — estructuras típicas de la industria |
+| **Mercado / precios** | Precios FOB chilenos plausibles por formato: Atlántico HG ~5.800–6.200 CLP/kg, Coho ~4.800–5.200 CLP/kg, filete ~9.700–10.200 CLP/kg. | Alto |
+| **Señales contables** | Ventas = exportaciones FOB + ventas locales; total semestral **CLP 11.234.000.000**; exportaciones FOB total **CLP 10.548.900.000**. | Alto — cuadra la aritmética |
+| **Producción** | Biomasa = unidades × peso promedio (consistencia al 1.000); FCR 1.20–1.35; mortalidad acumulada 5–14% (rango típico de industria). | Alto |
+| **Sanidad** | Caligus 0–9 (umbrales Sernapesca), temperatura 10–14 °C, O₂ 5.5–9.5 mg/L; monitoreo mensual sur-verano (diciembre–marzo). | Alto |
+| **Operaciones** | Concesiones acuícolas (superficie, jaulas, especies autorizadas, vigencia), alimentación por raciones, compras por rubro y proveedor. | Alto |
+| **Normativa externa** | Documentos públicos reales: Sernapesca, bioseguridad, requisitos de exportación, mercado del salmón, protocolo de accidentes laborales. | Alto (fuentes reales) |
+| **Proceso RAG** | Recuperación semántica (FAISS) + refuerzo por keywords de dominio + LLM con temperatura baja + citación de fuente + prueba anti-alucinación. | Alto — técnica de la industria |
+
+### ⚙️ Validaciones automáticas de coherencia (18/18)
+
+El pipeline (`scripts/run_pruebas.py`) comprueba que las respuestas coincidan con los datos esperados **al 100%** y que **citen la fuente**; también que el asistente **reconozca cuándo no tiene un dato** (p. ej. *"¿impuestos a la renta 2024?"* → responde que no tiene información, en vez de inventar). Resultado: **18/18 coherentes** (`pruebas/resultados.md`).
+
+### 🚧 Límites actuales (lo que NO es realista todavía)
+
+- **Los datos son simulados** (generados para demo), no cifras auditadas de una empresa real.
+- **Autenticación simplificada**: login fijo (`admin@salmonera.com` / `admin123`) con sesión en `localStorage`; no hay roles ni JWT, ni integración con directorio corporativo.
+- **Sin datos en tiempo real**: no hay sensores oceanográficos, telemetría de jaulas ni integración con ERP/SCM o APIs de Sernapesca.
+- **El índice RAG se construye manualmente** (`build_index.py`); no hay refrescamiento automático al cambiar la BD.
+- **Concurrencia limitada**: embeddings en local (GPU/CPU) con semáforo de máx. 2 consultas RAG simultáneas.
+- **Sin serie histórica larga**: solo 6 meses (enero–junio 2025) con granularidad mensual.
+
+Veredicto: **un "8/10"**: creíble como piloto para demostración y didáctica, con coherencia interna verificada; para producción real faltaría conectar datos auténticos y los ítems del [roadmap](#lo-que-está-pensado-roadmap).
+
+---
+
+## Herramientas y stack
+
+| Capa | Tecnología | Rol |
+|------|------------|-----|
+| **Backend** | Node.js + Express | API REST (`server.js`) y semáforo de concurrencia RAG |
+| **Base de datos** | PostgreSQL | 11 tablas + vistas, datos simulados coherentes |
+| **Frontend** | HTML + Tailwind CSS + Chart.js | Dashboard con 6 vistas (pestañas) + chat flotante |
+| **Embeddings** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Vectores multilingües (384 dims), 100% local |
+| **Índice vectorial** | FAISS (`faiss-cpu`) | Búsqueda semántica `k=7` (+ refuerzo de keywords) |
+| **LLM** | Groq API (`openai/gpt-oss-120b`, alternativo `gpt-oss-20b`) | Síntesis de respuestas, `temperature=0.1` |
+| **RAG** | LangChain (splitters, HuggingFace, Groq, FAISS) | Pipeline recuperación → generación → citación |
+| **Pruebas** | Python + Node (CLI) | Coherencia, estrés, sanitarias y métricas de tokens |
+
+> Los embeddings corren **en local** (Groq no ofrece embeddings), de modo que los datos no salen de la máquina para la vectorización.
+
+---
+
+## Arquitectura
+
+```
+        ┌────────────────────────────────────────────────────────────┐
+        │                         Navegador                         │
+        │    Login → Dashboard (6 pestañas) + Asistente IA (chat)    │
+        └───────────────┬───────────────────────────────┬────────────┘
+                        │ REST /api/…                  │ POST /api/consultar
+                ┌───────▼────────┐             ┌───────▼────────┐
+                │   Express      │             │   Express      │
+                │  (server.js)   │             │  (semáforo ≤2) │
+                └───────┬────────┘             └───────┬────────┘
+                        │ SQL (pg)                    │ Python (query_rag.py)
+                ┌───────▼────────┐             ┌───────▼────────┐
+                │  PostgreSQL    │             │    FAISS       │ → Groq API (LLM)
+                │  salmonera_pm  │             │  (k=7 + keywords)│ ← documentos
+                └────────────────┘             │  data/interna  │    data/externa
+                                              └────────┬───────┘
+                                                       │ (script)
+                                              scripts/generate_internal_docs.py (BD→txt)
+```
+
+Flujo de una consulta RAG:
+1. El usuario pregunta en lenguaje natural.
+2. Se recuperan los **top-k=7 chunks** por similitud semántica (+ refuerzo por keywords de dominio si la pregunta menciona un módulo).
+3. Se construye el contexto y se le entrega al LLM con un **prompt estricto** (solo responder con el contexto, citar fuente, no alucinar).
+4. La respuesta se muestra con las **fuentes citadas** al final.
+
+---
+
+## Modelos de IA utilizados
+
+| Componente | Modelo / Tecnología | Proveedor | Notas |
+|------------|---------------------|-----------|-------|
+| LLM principal | `openai/gpt-oss-120b` | Groq | `temperature=0.1`, `max_tokens=1500` |
+| LLM rápido | `openai/gpt-oss-20b` | Groq | `GROQ_MODEL_FAST` alternativo |
+| Embeddings | `paraphrase-multilingual-MiniLM-L12-v2` | Local (Hugging Face) | 384 dims, optimizado español |
+| Vector store | FAISS | Local | Corpus: **21 documentos (14 internos + 7 externos) → ~101 chunks** |
+| RAG | LangChain | — | Splitters + retriever + prompt |
 
 ---
 
@@ -12,58 +166,33 @@ en los datos de la base de datos y documentos normativos del sector.
 
 ```
 Salmonera_PM/
-├── caso/README.md            # Documento de caso organizacional (propuesta)
+├── caso/README.md            # Caso organizacional (propuesta, objetivos)
 ├── db/
-│   ├── schema.sql            # Esquema base + datos de prueba PostgreSQL
-│   ├── schema_modulos.sql    # Módulos ampliados (RRHH, inventario, compras, exportaciones, lotes, incidentes)
-│   └── setup-postgres.sh     # Script de instalación de la BD
+│   ├── schema.sql            # Esquema base + datos (ventas, calidad, mortalidad, rentabilidad)
+│   ├── schema_modulos.sql    # Módulos: RRHH, inventario, compras, exportaciones, lotes,
+│   │                         #   incidentes, concesiones, monitoreo sanitario, alimentación, clientes
+│   └── setup-postgres.sh
 ├── data/
-│   ├── interna/              # Reportes generados desde la BD (10 dimensiones operativas)
-│   ├── externa/              # Documentos normativos (6 documentos: Sernapesca, exportación, bioseguridad, mercado, ley laboral/accidentes, contingencias)
-│   └── faiss_index/          # Índice vectorial FAISS (generado con 16 docs → 65 chunks)
+│   ├── interna/              # 14 reportes generados desde la BD (una dimensión por archivo)
+│   ├── externa/              # 7 documentos normativos reales (Sernapesca, exportación, bioseguridad, mercado, accidentes)
+│   └── faiss_index/          # Índice vectorial (generado, gitignored)
 ├── scripts/
-│   ├── generate_internal_docs.py   # FASE 2: BD -> documentos de texto
-│   ├── build_index.py              # FASE 2: construye el índice FAISS
-│   ├── query_rag.py                # FASE 3: pipeline RAG (consulta + fuentes)
-│   └── run_pruebas.py              # FASE 6: pruebas de coherencia (IE4)
-├── pruebas/
-│   ├── preguntas.json        # 14 preguntas de prueba
-│   └── resultados.md         # Evidencias de coherencia (14/14)
-├── docs/
-│   ├── arquitectura.md       # Diagramas y justificación de componentes
-│   └── prompts.md            # Justificación de prompts (IE2)
+│   ├── generate_internal_docs.py   # BD → documentos .txt internos
+│   ├── build_index.py              # Construcción del índice FAISS
+│   ├── query_rag.py                # Pipeline RAG (consulta + fuentes)
+│   ├── run_pruebas.py              # Pruebas de coherencia (18/18)
+│   ├── prueba_accidente.py         # Escenario accidente laboral
+│   └── medir_chunks_tokens.py      # Métricas de chunks/tokens
+├── pruebas/                   # preguntas.json, resultados.md y demás evidencias
+├── docs/                      # arquitectura.md, informe.md, prompts.md
 ├── public/
-│   ├── index.html            # Login
-│   ├── dashboard.html        # Panel (gráficos + tablas) + Asistente IA
-│   └── js/                   # api.js, charts.js, chat.js
-├── server.js                 # Backend Express (19 endpoints REST + /api/consultar)
-└── .env.example              # Variables de entorno (copiar a .env)
+│   ├── index.html             # Login
+│   ├── dashboard.html         # Panel con 6 pestañas + asistente IA
+│   └── js/                    # api.js, charts.js, chat.js
+├── server.js                  # Backend Express (22 endpoints REST + /api/consultar)
+├── package.json               # npm start / npm run dev
+└── .env.example               # Copiar a .env (GROQ_API_KEY, BD, PYTHON_BIN)
 ```
-
----
-
-## Requisitos
-
-| Componente | Versión | Nota |
-|------------|---------|------|
-| Node.js | >= 20 | Para el backend Express |
-| PostgreSQL | >= 14 | BD `salmonera_pm` |
-| Python | 3.13 | Entorno con dependencias RAG (`langchain`, `faiss`, `sentence-transformers`) |
-| API key Groq | gratuita | https://console.groq.com |
-
-> Los embeddings se ejecutan **en local** (Groq no ofrece embeddings). El modelo
-> `paraphrase-multilingual-MiniLM-L12-v2` descarga ~470 MB la primera vez.
-
----
-
-## Modelos de IA Utilizados
-
-| Componente | Modelo / Tecnología | Proveedor | Descripción |
-|------------|---------------------|-----------|-------------|
-| **LLM Principal (Razonamiento / RAG)** | `openai/gpt-oss-120b` | Groq Cloud API | Modelo de lenguaje de alta capacidad para la síntesis de respuestas operativas (`temperature=0.1`, `max_tokens=1500`). |
-| **LLM Rápido (Alternativo)** | `openai/gpt-oss-20b` | Groq Cloud API | Modelo secundario de alta velocidad (`GROQ_MODEL_FAST`). |
-| **Embeddings Vectoriales** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Local (Hugging Face / PyTorch) | Generación de embeddings multilingües (384 dimensiones) optimizados para español. |
-| **Búsqueda Vectorial (Vector Store)** | FAISS (`faiss-cpu`) | Local | Motor de búsqueda semántica ($k=5$), indexando 16 documentos (10 internos + 6 externos) → 65 chunks. |
 
 ---
 
@@ -72,13 +201,10 @@ Salmonera_PM/
 ### 1. Base de datos PostgreSQL
 
 ```bash
-# Crear usuario, BD y cargar esquema (detalles en db/setup-postgres.sh)
+# Crear usuario, BD y cargar esquemas (ver db/setup-postgres.sh)
 sudo -u postgres createuser -P salmonera        # contraseña: salmonera123
 sudo -u postgres createdb -O salmonera salmonera_pm
-cp db/schema.sql /tmp/schema.sql
-sudo -u postgres psql -d salmonera_pm -f /tmp/schema.sql
-
-# Módulos ampliados (RRHH, inventario, compras, exportaciones, lotes, incidentes)
+PGPASSWORD=salmonera123 psql -h localhost -U salmonera -d salmonera_pm -f db/schema.sql
 PGPASSWORD=salmonera123 psql -h localhost -U salmonera -d salmonera_pm -f db/schema_modulos.sql
 ```
 
@@ -93,81 +219,34 @@ npm start               # servidor en http://localhost:4000
 ### 3. Entorno Python (RAG)
 
 ```bash
-# Con uv (gestor del curso) o clonando el entorno:
-uv pip install psycopg2-binary
-uv pip install langchain-text-splitters langchain-community langchain-huggingface \
-             langchain-groq langchain-classic faiss-cpu sentence-transformers python-dotenv
+uv pip install psycopg2-binary langchain-text-splitters langchain-community \
+  langchain-huggingface langchain-groq langchain-classic faiss-cpu \
+  sentence-transformers python-dotenv
 ```
 
-La variable `PYTHON_BIN` en `.env` debe apuntar al intérprete con estas dependencias.
+La variable `PYTHON_BIN` de `.env` debe apuntar a este intérprete.
 
 ---
 
 ## Uso
 
-### 1. Generar documentos internos desde la BD (opcional, ya existen en data/interna/)
-
 ```bash
+# Regenerar documentos internos desde la BD (opcional)
 python scripts/generate_internal_docs.py
-```
 
-### 2. Construir el índice FAISS (tras cambiar o añadir documentos)
-
-```bash
+# Reconstruir el índice FAISS tras cambiar/añadir documentos
 python scripts/build_index.py
-```
 
-### 3. Probar el RAG por consola
-
-```bash
+# Consulta RAG por consola
 python scripts/query_rag.py "¿Qué lote tiene mayor mortalidad?"
-python scripts/query_rag.py "¿Qué lote tiene mayor mortalidad y qué recomiendas?"  --json
+python scripts/query_rag.py "¿Qué recomiendas para el lote con más mortalidad?" --json
+
+# Pruebas de coherencia y operativas
+python scripts/run_pruebas.py
+node  pruebas/sanitarias.cjs
 ```
 
-### 4. Ejecutar pruebas de coherencia (IE4)
-
-```bash
-python scripts/run_pruebas.py    # genera pruebas/resultados.md
-```
-
-### 4b. Medición de chunks y tokens, y pruebas operativas
-
-```bash
-python scripts/medir_chunks_tokens.py    # 65 chunks + tokens por consulta → pruebas/medicion_chunks_tokens.txt
-python scripts/prueba_accidente.py       # escenario de accidente laboral (9/9) → pruebas/resultados_accidente.md
-node pruebas/sanitarias.cjs              # salud del sistema (HTTP + BD + FAISS) → pruebas/resultados_sanitarias.txt
-node pruebas/estres.cjs                  # estrés REST + RAG (medir SVR_PID=$$ para memoria) → pruebas/resultados_estres.txt
-```
-
-- **Índice FAISS reconstruido:** 16 documentos (10 reportes internos BD + 6 normativos externos) → **65 chunks** (antes 57/15).
-- **Pruebas sanitarias (`sanitarias.cjs`):** Validado a 65 chunks → **100% OK** (HTTP, BD y FAISS).
-- **Escenario Accidente (`preguntas_accidente.json` / `prueba_accidente.py`):** **9/9 preguntas coherentes** (10 281 tokens). A4/A5 pasaron de `sin_dato` a `dato_externo` (al integrarse la normativa); se agregó A9 como nuevo caso `sin_dato` (accidentes fatales 2024) para conservar la prueba anti-alucinación.
-- **Resultados:** Accidente 9/9 (10 281 tokens), preguntas base 14/14 sin regresión, pregunta compleja resuelta (2 153 tokens), API verificado en vivo.
-
-> **Hallazgo del estrés (corregido):** con consultas RAG simultáneas, cada subproceso Python carga el modelo de
-> embeddings en la GPU (RTX 3050, 4 GiB) y la VRAM se agotaba → HTTP 500. Se implementó un **semáforo
-> de concurrencia** (máx. 2 subprocesos simultáneos) en `/api/consultar` (`server.js`): ahora 10
-> consultas paralelas completan 8/10 OK sin errores 500 (2 timeout de cola, no fallo del servidor).
-
-### 5. Usar el sistema web
-
-```bash
-# 1. Verificar que PostgreSQL esté corriendo
-sudo systemctl status postgresql
-
-# 2. Iniciar el servidor backend (Express + Node.js)
-npm start
-# El servidor arranca en http://localhost:4000 (semáforo RAG: máx. 2 consultas simultáneas)
-
-# 3. Abrir en el navegador
-# http://localhost:4000
-
-# 4. Credenciales de acceso
-#    Correo:    admin@salmonera.com
-#    Password:  admin123
-```
-
-Una vez dentro del dashboard, usar el botón flotante **"Consultar al Asistente IA"** para preguntar en lenguaje natural sobre ventas, mortalidad, planilla, inventario, compras, exportaciones, lotes e incidentes.
+**Sistema web**: abrir `http://localhost:4000` → credenciales `admin@salmonera.com` / `admin123`. En el dashboard usar las 6 pestañas (Estado de la Empresa, Producción y Lotes, RRHH, Suministros, Comercial y Clientes, Seguridad y Sanidad) y el botón flotante para consultar al asistente.
 
 ---
 
@@ -175,40 +254,65 @@ Una vez dentro del dashboard, usar el botón flotante **"Consultar al Asistente 
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| POST | `/api/login` | Autenticación de usuario |
+| POST | `/api/login` | Autenticación |
 | GET | `/api/ventas` | Ventas mensuales (CLP) |
-| GET | `/api/calidad` | Distribución de cosechas por calidad |
+| GET | `/api/calidad` | Cosechas por calidad |
 | GET | `/api/mortalidad` | Mortalidad acumulada por lote |
 | GET | `/api/rentabilidad` | Ingresos por centro |
-| GET | `/api/empleados` · `/api/empleados/planilla` | Dotación y planilla (RRHH) |
-| GET | `/api/inventario` · `/api/inventario/bajo` | Valor por categoría y alertas de stock |
+| GET | `/api/empleados` · `/api/empleados/planilla` | Dotación y planilla |
+| GET | `/api/inventario` · `/api/inventario/bajo` | Inventario por categoría y stock bajo |
 | GET | `/api/compras` | Gasto por proveedor |
 | GET | `/api/exportaciones` · `/api/exportaciones/mensual` | Destino FOB y resumen mensual |
-| GET | `/api/lotes` · `/api/lotes/biomasa` | Lotes detallados y biomasa por centro |
+| GET | `/api/lotes` · `/api/lotes/biomasa` | Lotes y biomasa por centro |
 | GET | `/api/incidentes` · `/api/incidentes/severidad` | Incidentes por tipo y severidad |
+| GET | `/api/concesiones` | Concesiones acuícolas |
+| GET | `/api/monitoreo` · `/api/monitoreo/promedio` | Monitoreo sanitario mensual / promedio |
+| GET | `/api/alimentacion` | Alimentación (raciones) por lote |
+| GET | `/api/clientes` | Cartera de clientes |
 | POST | `/api/consultar` | Asistente RAG `{ pregunta }` |
 
 ---
 
-## Descripción de los módulos (indicadores de logro)
+## Pruebas y evidencias
 
-| Módulo | Archivo | Indicador |
-|--------|---------|-----------|
-| Caso organizacional | `caso/README.md` | IE1 |
-| Justificación de prompts | `docs/prompts.md` | IE2 |
-| Generación de documentos (BD→texto) | `scripts/generate_internal_docs.py` | IE3 |
-| Índice vectorial FAISS | `scripts/build_index.py` | IE3 |
-| Pipeline RAG + citación | `scripts/query_rag.py` | IE3, IE4 |
-| Pruebas de coherencia | `scripts/run_pruebas.py` + `pruebas/` | IE4 |
-| Medición de chunks/tokens | `scripts/medir_chunks_tokens.py` + `pruebas/medicion_chunks_tokens.txt` | IE3, IE7 |
-| Pruebas operativas (sanidad, estrés, accidente) | `pruebas/sanitarias.cjs`, `pruebas/estres.cjs`, `scripts/prueba_accidente.py` | IE3, IE4, IE9 |
-| Arquitectura y diagramas | `docs/arquitectura.md` | IE5, IE6 |
-| Integración backend/frontend | `server.js`, `public/` | IE5, IE6 |
+| Evidencia | Archivo | Resultado |
+|-----------|---------|-----------|
+| Coherencia de respuestas | `pruebas/resultados.md` | **18/18** coherentes, citando fuentes |
+| Escenario accidente laboral | `pruebas/resultados_accidente.md` | **9/9** coherentes (incluye anti-alucinación) |
+| Salud del sistema (HTTP+BD+FAISS) | `pruebas/resultados_sanitarias.txt` | **100% OK** |
+| Estrés REST + RAG (concurrencia) | `pruebas/resultados_estres.txt` | Sin HTTP 500 (semáforo ≤2 subprocesos) |
+| Métricas de chunks y tokens | `pruebas/medicion_chunks_tokens.txt` | Corpus 21 docs / ~101 chunks |
+
+> **Hallazgo corregido:** con consultas RAG simultáneas, la VRAM (RTX 3050) se agotaba → HTTP 500. Se agregó un **semáforo de concurrencia** en `/api/consultar`; ahora 10 consultas paralelas completan sin errores 500.
 
 ---
 
 ## Seguridad
 
-- La API key de Groq vive **solo** en `.env` (ignorado por `.gitignore`). Nunca se sube al repositorio.
-- `node_modules/` y `data/faiss_index/` están en `.gitignore`.
+- La API key de Groq vive **solo** en `.env` (gitignored). Nunca se sube al repositorio.
+- `node_modules/` y `data/faiss_index/` ignorados.
 - Los datos de la BD son **simulados** (demostración), no cifras reales de empresa.
+- La vectorización se hace en local: los datos no salen de la máquina hacia el proveedor de embeddings.
+
+---
+
+## Lo que está pensado (roadmap)
+
+Priorizado según valor para el caso:
+
+1. **Integración de datos reales**: conectar la BD con un ERP/SCM y datos de sensores (oceanografía, telemetría de jaulas) para alimentar el dashboard en tiempo real.
+2. **Autenticación robusta**: roles (admin, sanidad, comercial, RRHH), sesiones seguras (JWT/SSO) y auditoría de accesos.
+3. **Refrescamiento automático del índice RAG** al modificar la BD (trigger/CRON) y limpieza incremental de documentos.
+4. **Alertas proactivas**: notificaciones cuando caligus supere el umbral, O₂ < 6 mg/L, stock bajo o incidentes críticos (pendiente en dashboard).
+5. **Historial persistente del chat** y exportación de respuestas a PDF/Excel.
+6. **Más dimensiones**: presupuestos, costos de cosecha desglosados, clima/estacionalidad, huella de carbono (exigencia creciente de sostenibilidad en la acuicultura chilena).
+7. **Escalamiento**: embeddings en servicio manejado y caché, evitar re-cargar el modelo por consulta.
+8. **Cumplimiento legal**: ley 19.628 (datos personales), cifrado en reposo y HTTPS.
+
+---
+
+## Contexto de evaluación y ética de IA
+
+- Proyecto académico (EP1 — ISY0101) sobre un caso de empresa **simulada**.
+- El uso de herramientas de IA está declarado en el repositorio; las justificaciones técnicas se sustentan en `docs/prompts.md` y `docs/arquitectura.md`.
+- El diseño RAG prioriza **no alucinar**: respuestas solo desde el contexto recuperado, con citación de fuente y prueba explícita anti-alucinación.
