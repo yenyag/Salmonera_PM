@@ -2,6 +2,8 @@
 -- MÓDULOS AMPLIADOS (EP1) - SalmoSUR S.A.
 -- empleados (RRHH), inventario, compras/proveedores, exportaciones,
 -- lotes detallados e incidentes/seguridad.
+-- + NUEVAS DIMENSIONES OPERATIVAS: concesiones, monitoreo sanitario/ambiental,
+--   alimentación y clientes (conocimiento adicional para el asistente RAG).
 -- Datos simulados para demostración. Ejecutar EN la BD salmonera_pm.
 -- Uso: PGPASSWORD=salmonera123 psql -h localhost -U salmonera -d salmonera_pm -f db/schema_modulos.sql
 -- ============================================================================
@@ -53,7 +55,9 @@ CREATE TABLE IF NOT EXISTS compras (
   centro_nombre TEXT NOT NULL
 );
 
--- EXPORTACIONES
+-- EXPORTACIONES (valor FOB calibrado a precios reales de mercado 2025:
+-- Atlántico HG ~5.800-6.200 CLP/kg, Coho entero ~4.700-5.200 CLP/kg,
+-- Filete premium ~9.700-10.200 CLP/kg)
 CREATE TABLE IF NOT EXISTS exportaciones (
   id SERIAL PRIMARY KEY,
   mes DATE NOT NULL,
@@ -64,7 +68,8 @@ CREATE TABLE IF NOT EXISTS exportaciones (
   cert_sanitario TEXT NOT NULL
 );
 
--- LOTES DETALLADOS (cultivo)
+-- LOTES DETALLADOS (cultivo). Tamaño realista para empresa mediana:
+-- 40-80k smolts por lote, biomasa = unidades x peso promedio.
 CREATE TABLE IF NOT EXISTS lotes_detalle (
   id SERIAL PRIMARY KEY,
   lote_codigo TEXT NOT NULL,
@@ -89,6 +94,60 @@ CREATE TABLE IF NOT EXISTS incidentes (
   accion_tomada TEXT NOT NULL,
   centro_nombre TEXT NOT NULL,
   estado TEXT NOT NULL
+);
+
+-- ---------------------------------------------------------------------------
+-- NUEVAS DIMENSIONES PARA EL ASISTENTE IA
+-- ---------------------------------------------------------------------------
+
+-- CONCESIONES ACUÍCOLAS: ubicación geográfica, especies y capacidad autorizadas
+-- (las concesiones son el "terreno" de cultivo regulado por SERNAPESCA)
+CREATE TABLE IF NOT EXISTS concesiones (
+  id SERIAL PRIMARY KEY,
+  centro_nombre TEXT UNIQUE NOT NULL,
+  sector TEXT NOT NULL,
+  region TEXT NOT NULL,
+  latitude NUMERIC(9,6) NOT NULL,
+  longitude NUMERIC(9,6) NOT NULL,
+  superficie_ha NUMERIC(6,2) NOT NULL,
+  n_jaulas INT NOT NULL,
+  especies_autorizadas TEXT NOT NULL,
+  vigencia TEXT NOT NULL
+);
+
+-- MONITOREO SANITARIO / AMBIENTAL: caligus, temperatura, oxígeno y mortalidad
+-- mensual por lote (base del alertamiento sanitario del sector)
+CREATE TABLE IF NOT EXISTS monitoreo_sanitario (
+  id SERIAL PRIMARY KEY,
+  lote_codigo TEXT NOT NULL REFERENCES lotes_detalle(lote_codigo),
+  mes DATE NOT NULL,
+  caligus_hembras_ovigeras_prom NUMERIC(5,2) NOT NULL,
+  temperatura_c NUMERIC(4,1) NOT NULL,
+  oxigeno_mg_l NUMERIC(4,1) NOT NULL,
+  mortalidad_mes INT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_monitoreo_lote_mes ON monitoreo_sanitario(lote_codigo, mes);
+
+-- ALIMENTACIÓN: raciones entregadas (kg y costo) por lote y mes. Permite
+-- contrastar el FCR de cada lote con el alimento realmente entregado.
+CREATE TABLE IF NOT EXISTS alimentacion (
+  id SERIAL PRIMARY KEY,
+  lote_codigo TEXT NOT NULL REFERENCES lotes_detalle(lote_codigo),
+  mes DATE NOT NULL,
+  tipo_alimento TEXT NOT NULL,
+  kg_entregados NUMERIC(12,2) NOT NULL,
+  costo_clp NUMERIC(14,2) NOT NULL
+);
+
+-- CLIENTES: compradores vigentes, producto principal y condiciones comerciales
+CREATE TABLE IF NOT EXISTS clientes (
+  id SERIAL PRIMARY KEY,
+  nombre TEXT NOT NULL,
+  pais TEXT NOT NULL,
+  contacto TEXT NOT NULL,
+  producto_principal TEXT NOT NULL,
+  condiciones_pago TEXT NOT NULL,
+  contrato_tipo TEXT NOT NULL
 );
 
 -- ---------------------------------------------------------------------------
@@ -150,6 +209,24 @@ CREATE OR REPLACE VIEW v_incidentes_por_severidad AS
   SELECT severidad, COUNT(*) AS n_incidentes
   FROM incidentes GROUP BY severidad ORDER BY n_incidentes DESC;
 
+-- Vistas de las nuevas dimensiones
+CREATE OR REPLACE VIEW v_concesiones AS
+  SELECT centro_nombre, sector, region, latitude, longitude, superficie_ha, n_jaulas,
+         especies_autorizadas, vigencia
+  FROM concesiones ORDER BY centro_nombre;
+
+CREATE OR REPLACE VIEW v_monitoreo_promedio AS
+  SELECT lote_codigo,
+         ROUND(AVG(caligus_hembras_ovigeras_prom), 2) AS caligus_promedio,
+         ROUND(AVG(temperatura_c), 1) AS temperatura_promedio_c,
+         ROUND(MIN(oxigeno_mg_l), 1) AS oxigeno_minimo_mg_l,
+         SUM(mortalidad_mes) AS mortalidad_total_periodo
+  FROM monitoreo_sanitario GROUP BY lote_codigo ORDER BY caligus_promedio DESC;
+
+CREATE OR REPLACE VIEW v_alimentacion_resumen AS
+  SELECT lote_codigo, SUM(kg_entregados) AS total_kg, SUM(costo_clp) AS total_costo_clp
+  FROM alimentacion GROUP BY lote_codigo ORDER BY total_costo_clp DESC;
+
 -- ---------------------------------------------------------------------------
 -- DATOS DE PRUEBA
 -- ---------------------------------------------------------------------------
@@ -185,10 +262,10 @@ ON CONFLICT (rut) DO NOTHING;
 
 -- Inventario (22)
 INSERT INTO inventario (categoria, nombre, unidad, stock, stock_minimo, costo_unitario_clp) VALUES
-  ('alimento',     'Alimento Extruido 3mm',          'unidades', 24000, 12000,   950),
-  ('alimento',     'Alimento Extruido 6mm',          'unidades', 18000, 15000,   920),
-  ('alimento',     'Alimento Extruido 9mm',          'unidades',  8500, 16000,   880),
-  ('alimento',     'Alimento Premolido 2mm',         'unidades',  9000,  8000,   990),
+  ('alimento',     'Alimento Extruido 3mm',          'kg', 24000, 12000,   950),
+  ('alimento',     'Alimento Extruido 6mm',          'kg', 18000, 15000,   920),
+  ('alimento',     'Alimento Extruido 9mm',          'kg',  8500, 16000,   880),
+  ('alimento',     'Alimento Premolido 2mm',         'kg',  9000,  8000,   990),
   ('medicamentos', 'Vacuna Furu-IB',                 'unidades',  3500,  2000,  2100),
   ('medicamentos', 'Vacuna ISA',                     'unidades',   600,   800,  3400),
   ('medicamentos', 'Antibiótico Oxitetraciclina',    'unidades',   140,    60, 52000),
@@ -255,80 +332,163 @@ INSERT INTO compras (proveedor_id, producto, cantidad, unidad, valor_clp, fecha,
   (8, 'Instrumental de muestreo',    40, 'unidades', 2400000, '2025-06-12', 'Chiloé')
 ON CONFLICT (id) DO NOTHING;
 
--- Exportaciones (28)
+-- Exportaciones (28) - precios FOB de mercado (CLP/kg)
 INSERT INTO exportaciones (mes, pais_destino, producto, kilos, valor_fob_clp, cert_sanitario) VALUES
-  ('2025-01-01', 'Estados Unidos', 'Salmón Atlántico HG',  85000, 720000000, 'CS-2025-001'),
-  ('2025-01-01', 'Japón',          'Salmón Coho entero',   62000, 540000000, 'CS-2025-002'),
-  ('2025-01-01', 'Brasil',         'Salmón Atlántico HG',  45000, 310000000, 'CS-2025-003'),
-  ('2025-01-01', 'Unión Europea',  'Filete de Salmón',     38000, 420000000, 'CS-2025-004'),
-  ('2025-02-01', 'Estados Unidos', 'Salmón Atlántico HG',  91000, 780000000, 'CS-2025-005'),
-  ('2025-02-01', 'China',          'Salmón Coho entero',   48000, 350000000, 'CS-2025-006'),
-  ('2025-02-01', 'Japón',          'Salmón Coho entero',   58000, 505000000, 'CS-2025-007'),
-  ('2025-02-01', 'Unión Europea',  'Filete de Salmón',     42000, 465000000, 'CS-2025-008'),
-  ('2025-02-01', 'Brasil',         'Salmón Atlántico HG',  40000, 275000000, 'CS-2025-009'),
-  ('2025-03-01', 'Estados Unidos', 'Salmón Atlántico HG',  97000, 845000000, 'CS-2025-010'),
-  ('2025-03-01', 'Japón',          'Salmón Coho entero',   66000, 590000000, 'CS-2025-011'),
-  ('2025-03-01', 'Brasil',         'Salmón Atlántico HG',  50000, 355000000, 'CS-2025-012'),
-  ('2025-03-01', 'China',          'Salmón Coho entero',   52000, 385000000, 'CS-2025-013'),
-  ('2025-03-01', 'Unión Europea',  'Filete de Salmón',     46000, 510000000, 'CS-2025-014'),
-  ('2025-04-01', 'Estados Unidos', 'Salmón Atlántico HG',  88000, 750000000, 'CS-2025-015'),
-  ('2025-04-01', 'Japón',          'Salmón Coho entero',   60000, 520000000, 'CS-2025-016'),
-  ('2025-04-01', 'Brasil',         'Salmón Atlántico HG',  47000, 325000000, 'CS-2025-017'),
-  ('2025-04-01', 'Unión Europea',  'Filete de Salmón',     40000, 445000000, 'CS-2025-018'),
-  ('2025-04-01', 'China',          'Salmón Coho entero',   49000, 360000000, 'CS-2025-019'),
-  ('2025-05-01', 'Estados Unidos', 'Salmón Atlántico HG', 102000, 885000000, 'CS-2025-020'),
-  ('2025-05-01', 'Japón',          'Salmón Coho entero',   64000, 555000000, 'CS-2025-021'),
-  ('2025-05-01', 'Brasil',         'Salmón Atlántico HG',  53000, 375000000, 'CS-2025-022'),
-  ('2025-05-01', 'Unión Europea',  'Filete de Salmón',     48000, 530000000, 'CS-2025-023'),
-  ('2025-05-01', 'China',          'Salmón Coho entero',   51000, 375000000, 'CS-2025-024'),
-  ('2025-06-01', 'Estados Unidos', 'Salmón Atlántico HG', 110000, 960000000, 'CS-2025-025'),
-  ('2025-06-01', 'Japón',          'Salmón Coho entero',   68000, 590000000, 'CS-2025-026'),
-  ('2025-06-01', 'Brasil',         'Salmón Atlántico HG',  56000, 395000000, 'CS-2025-027'),
-  ('2025-06-01', 'Unión Europea',  'Filete de Salmón',     50000, 555000000, 'CS-2025-028')
+  ('2025-01-01', 'Estados Unidos', 'Salmón Atlántico HG',  85000,  493000000, 'CS-2025-001'),
+  ('2025-01-01', 'Japón',          'Salmón Coho entero',   62000,  297600000, 'CS-2025-002'),
+  ('2025-01-01', 'Brasil',         'Salmón Atlántico HG',  45000,  252000000, 'CS-2025-003'),
+  ('2025-01-01', 'Unión Europea',  'Filete de Salmón',     38000,  372400000, 'CS-2025-004'),
+  ('2025-02-01', 'Estados Unidos', 'Salmón Atlántico HG',  91000,  536900000, 'CS-2025-005'),
+  ('2025-02-01', 'China',          'Salmón Coho entero',   48000,  225600000, 'CS-2025-006'),
+  ('2025-02-01', 'Japón',          'Salmón Coho entero',   58000,  284200000, 'CS-2025-007'),
+  ('2025-02-01', 'Unión Europea',  'Filete de Salmón',     42000,  415800000, 'CS-2025-008'),
+  ('2025-02-01', 'Brasil',         'Salmón Atlántico HG',  40000,  226000000, 'CS-2025-009'),
+  ('2025-03-01', 'Estados Unidos', 'Salmón Atlántico HG',  97000,  582000000, 'CS-2025-010'),
+  ('2025-03-01', 'Japón',          'Salmón Coho entero',   66000,  330000000, 'CS-2025-011'),
+  ('2025-03-01', 'Brasil',         'Salmón Atlántico HG',  50000,  285000000, 'CS-2025-012'),
+  ('2025-03-01', 'China',          'Salmón Coho entero',   52000,  249600000, 'CS-2025-013'),
+  ('2025-03-01', 'Unión Europea',  'Filete de Salmón',     46000,  460000000, 'CS-2025-014'),
+  ('2025-04-01', 'Estados Unidos', 'Salmón Atlántico HG',  88000,  519200000, 'CS-2025-015'),
+  ('2025-04-01', 'Japón',          'Salmón Coho entero',   60000,  294000000, 'CS-2025-016'),
+  ('2025-04-01', 'Brasil',         'Salmón Atlántico HG',  47000,  263200000, 'CS-2025-017'),
+  ('2025-04-01', 'Unión Europea',  'Filete de Salmón',     40000,  388000000, 'CS-2025-018'),
+  ('2025-04-01', 'China',          'Salmón Coho entero',   49000,  230300000, 'CS-2025-019'),
+  ('2025-05-01', 'Estados Unidos', 'Salmón Atlántico HG', 102000,  622200000, 'CS-2025-020'),
+  ('2025-05-01', 'Japón',          'Salmón Coho entero',   64000,  326400000, 'CS-2025-021'),
+  ('2025-05-01', 'Brasil',         'Salmón Atlántico HG',  53000,  304800000, 'CS-2025-022'),
+  ('2025-05-01', 'Unión Europea',  'Filete de Salmón',     48000,  470400000, 'CS-2025-023'),
+  ('2025-05-01', 'China',          'Salmón Coho entero',   51000,  249900000, 'CS-2025-024'),
+  ('2025-06-01', 'Estados Unidos', 'Salmón Atlántico HG', 110000,  682000000, 'CS-2025-025'),
+  ('2025-06-01', 'Japón',          'Salmón Coho entero',   68000,  353600000, 'CS-2025-026'),
+  ('2025-06-01', 'Brasil',         'Salmón Atlántico HG',  56000,  324800000, 'CS-2025-027'),
+  ('2025-06-01', 'Unión Europea',  'Filete de Salmón',     50000,  510000000, 'CS-2025-028')
 ON CONFLICT (id) DO NOTHING;
 
--- Lotes detallados (20)
+-- Lotes detallados (16). Tamaño realista (empresa mediana), biomasa = unidades x peso.
+-- Cosechados (ene-jun 2025) alimentan las exportaciones del periodo.
 INSERT INTO lotes_detalle (lote_codigo, especie, centro_nombre, fecha_siembra, unidades_sembradas, biomasa_kg, peso_promedio_kg, fcr, estado) VALUES
-  ('LOTE-A1', 'Salmón Atlántico', 'Los Lagos', '2024-03-15',  950000, 1250000, 3.450, 1.22, 'activo'),
-  ('LOTE-A2', 'Salmón Atlántico', 'Chiloé',   '2024-04-20',  900000, 1180000, 3.280, 1.25, 'activo'),
-  ('LOTE-B1', 'Salmón Coho',      'Quellón',  '2024-05-10',  700000,  860000, 2.950, 1.18, 'activo'),
-  ('LOTE-B2', 'Salmón Atlántico', 'Aysén',    '2024-02-28',  880000, 1120000, 3.310, 1.31, 'activo'),
-  ('LOTE-C1', 'Salmón Coho',      'Los Lagos', '2024-06-01',  650000,  790000, 2.750, 1.15, 'activo'),
-  ('LOTE-D1', 'Salmón Atlántico', 'Los Lagos', '2023-11-12',  920000, 1520000, 4.850, 1.28, 'cosechado'),
-  ('LOTE-D2', 'Salmón Atlántico', 'Chiloé',   '2023-12-05',  880000, 1380000, 4.620, 1.26, 'cosechado'),
-  ('LOTE-E1', 'Salmón Coho',      'Quellón',  '2024-01-18',  720000,  980000, 3.890, 1.20, 'cosechado'),
-  ('LOTE-E2', 'Salmón Atlántico', 'Aysén',    '2024-02-01',  900000, 1340000, 4.350, 1.29, 'cosechado'),
-  ('LOTE-F1', 'Salmón Coho',      'Los Lagos', '2024-07-15',  680000,  720000, 2.860, 1.17, 'activo'),
-  ('LOTE-F2', 'Salmón Atlántico', 'Chiloé',   '2024-08-20',  920000, 1010000, 3.120, 1.24, 'activo'),
-  ('LOTE-G1', 'Salmón Atlántico', 'Quellón',  '2024-09-10',  890000,  940000, 2.940, 1.23, 'activo'),
-  ('LOTE-G2', 'Salmón Coho',      'Aysén',    '2024-10-01',  700000,  660000, 2.630, 1.16, 'activo'),
-  ('LOTE-H1', 'Salmón Atlántico', 'Los Lagos', '2024-11-15',  930000,  820000, 2.580, 1.21, 'activo'),
-  ('LOTE-H2', 'Salmón Atlántico', 'Chiloé',   '2024-12-01',  910000,  760000, 2.420, 1.22, 'activo'),
-  ('LOTE-I1', 'Salmón Coho',      'Quellón',  '2025-01-10',  710000,  540000, 2.310, 1.14, 'activo'),
-  ('LOTE-I2', 'Salmón Atlántico', 'Aysén',    '2025-02-01',  940000,  610000, 2.010, 1.20, 'activo'),
-  ('LOTE-J1', 'Salmón Atlántico', 'Los Lagos', '2023-08-01',  950000, 1650000, 5.120, 1.27, 'cosechado'),
-  ('LOTE-J2', 'Salmón Coho',      'Chiloé',   '2023-09-15',  720000, 1110000, 4.210, 1.19, 'cosechado'),
-  ('LOTE-K1', 'Salmón Atlántico', 'Quellón',  '2025-01-25',  900000,  430000, 1.890, 1.09, 'activo')
+  ('LOTE-J1', 'Salmón Atlántico', 'Los Lagos', '2023-11-06',  55000, 275000.00, 5.000, 1.31, 'cosechado'),
+  ('LOTE-J2', 'Salmón Atlántico', 'Chiloé',   '2023-12-12',  52000, 249600.00, 4.800, 1.30, 'cosechado'),
+  ('LOTE-D1', 'Salmón Atlántico', 'Aysén',    '2024-01-15',  60000, 273000.00, 4.550, 1.33, 'cosechado'),
+  ('LOTE-D2', 'Salmón Coho',      'Quellón',  '2024-02-05',  70000, 252000.00, 3.600, 1.18, 'cosechado'),
+  ('LOTE-E1', 'Salmón Coho',      'Los Lagos', '2024-03-01', 75000, 255000.00, 3.400, 1.16, 'cosechado'),
+  ('LOTE-E2', 'Salmón Atlántico', 'Chiloé',   '2023-10-20',  58000, 295800.00, 5.100, 1.34, 'cosechado'),
+  ('LOTE-A1', 'Salmón Atlántico', 'Los Lagos', '2024-11-05', 62000, 158100.00, 2.550, 1.24, 'activo'),
+  ('LOTE-A2', 'Salmón Atlántico', 'Chiloé',   '2024-12-10', 60000, 126000.00, 2.100, 1.23, 'activo'),
+  ('LOTE-B1', 'Salmón Coho',      'Quellón',  '2025-01-15', 68000, 163200.00, 2.400, 1.15, 'activo'),
+  ('LOTE-B2', 'Salmón Atlántico', 'Aysén',    '2025-01-20', 58000, 130500.00, 2.250, 1.26, 'activo'),
+  ('LOTE-C1', 'Salmón Atlántico', 'Los Lagos', '2025-02-10', 64000, 115200.00, 1.800, 1.21, 'activo'),
+  ('LOTE-C2', 'Salmón Coho',      'Chiloé',   '2025-02-25', 70000, 143500.00, 2.050, 1.14, 'activo'),
+  ('LOTE-F1', 'Salmón Atlántico', 'Quellón',  '2025-04-08', 60000,  69000.00, 1.150, 1.18, 'activo'),
+  ('LOTE-F2', 'Salmón Atlántico', 'Aysén',    '2025-05-19', 55000,  46750.00, 0.850, 1.16, 'activo'),
+  ('LOTE-G1', 'Salmón Atlántico', 'Los Lagos', '2025-06-15', 58000,  31900.00, 0.550, 1.12, 'activo'),
+  ('LOTE-H1', 'Salmón Coho',      'Quellón',  '2025-07-02', 66000,  27720.00, 0.420, 1.10, 'activo')
 ON CONFLICT (lote_codigo) DO NOTHING;
 
--- Incidentes (18)
+-- Incidentes (18) - referencian lotes reales del esquema
 INSERT INTO incidentes (fecha, tipo, severidad, descripcion, accion_tomada, centro_nombre, estado) VALUES
-  ('2025-01-08', 'bioseguridad', 'medio', 'Ingreso de embarcación sin desinfección al área de jaulas', 'Capacitación a tripulación y refuerzo del control de acceso.', 'Quellón', 'resuelto'),
-  ('2025-01-19', 'escape',       'alto',  'Rotura de paño de red por ancla movida, escape parcial de peces', 'Retiro de red dañada, conteo de pérdida y reporte a Sernapesca.', 'Los Lagos', 'resuelto'),
-  ('2025-02-03', 'sanitario',    'medio', 'Detección de focos aislados de caligus sobre umbral de control', 'Tratamiento con antiparasitario autorizado.', 'Chiloé', 'resuelto'),
-  ('2025-02-17', 'ambiental',    'bajo',  'Nivel de oxígeno disuelto bajo durante 4 horas por floración algal', 'Activación de oxigenación de emergencia.', 'Aysén', 'resuelto'),
-  ('2025-03-02', 'accidente',    'bajo',  'Resbalamiento de operario en cubierta, contusión leve', 'Atención en enfermería y entrega de EPP antideslizante.', 'Quellón', 'resuelto'),
-  ('2025-03-15', 'escape',       'critico', 'Falla en traba de jaula generó apertura parcial y fuga de ~5.000 unidades', 'Inmovilización de jaula, reparación por buzo y censo.', 'Los Lagos', 'en_seguimiento'),
-  ('2025-03-26', 'bioseguridad', 'medio', 'Mortalidad superior a lo normal en 48 horas sin causa clara', 'Activación de protocolo de contingencia y reporte a Sernapesca.', 'Aysén', 'resuelto'),
-  ('2025-04-09', 'accidente',    'alto',  'Operario de planta con corte en mano al manipular fileteadora', 'Primeros auxilios y derivación a centro médico.', 'Quellón', 'resuelto'),
-  ('2025-04-20', 'sanitario',    'alto',  'Brote de piscirickettsiosis (SRS) en lote con mortalidad 2.300', 'Tratamiento antibiótico y cuarentena del lote.', 'Aysén', 'en_seguimiento'),
-  ('2025-05-02', 'escape',       'alto',  'Buceo de revisión detectó enmallado de red con riesgo de fuga', 'Refuerzo de red con paño de repuesto.', 'Chiloé', 'resuelto'),
-  ('2025-05-11', 'bioseguridad', 'bajo',  'Visita externa sin registro de ingreso en bitácora', 'Regularización del registro y recordatorio de protocolo.', 'Los Lagos', 'resuelto'),
-  ('2025-05-23', 'accidente',    'medio', 'Buzo con otitis por presión durante faena', 'Suspensión de faena y derivación al médico laboral.', 'Chiloé', 'resuelto'),
-  ('2025-06-01', 'ambiental',    'medio', 'Floración algal en bahía colindante con riesgo de desoxigenación', 'Incremento del monitoreo y oxigenación preventiva.', 'Los Lagos', 'resuelto'),
-  ('2025-06-14', 'sanitario',    'bajo',  'Detección de caligus en lote C1 bajo umbral', 'Monitoreo reforzado, sin tratamiento requerido.', 'Los Lagos', 'resuelto'),
-  ('2025-06-28', 'escape',       'critico', 'Apertura de puerta de muestreo dejó salida de ~3.200 unidades', 'Censo al día siguiente y cambio de procedimiento de muestreo.', 'Quellón', 'abierto'),
-  ('2025-07-05', 'accidente',    'alto',  'Operario con fractura de muñeca al caer desde escala de balsa', 'Traslado a urgencia, investigación de accidente y revisión de escala.', 'Chiloé', 'abierto'),
-  ('2025-07-18', 'bioseguridad', 'medio', 'Detección de mortalidad anormal en borde de red del lote I2', 'Extracción de mortalidad, revisión de red y control veterinario.', 'Aysén', 'resuelto'),
-  ('2025-08-01', 'ambiental',    'alto',  'Floración algal con mortalidad asociada en jaula 4 del Centro Quellón', 'Cosecha de emergencia parcial y oxigenación intensiva.', 'Quellón', 'en_seguimiento')
+  ('2025-01-08', 'bioseguridad', 'medio', 'Arribo de embarcación de servicio sin completar desinfección del paño antes de entrar a zona de jaulas', 'Capacitación a la tripulación y refuerzo del protocolo de acceso.', 'Quellón', 'resuelto'),
+  ('2025-01-19', 'escape',       'alto',  'Rotura parcial de paño de red por fondeo del buque en la jaula del lote J1; escape estimado de 1.400 peces', 'Retiro de la red dañada, recuento de pérdida y reporte a Sernapesca.', 'Los Lagos', 'resuelto'),
+  ('2025-02-03', 'sanitario',    'medio', 'Detección de caligus sobre umbral de control en el lote J2 con promedio de 4,2 hembras ovígeras', 'Tratamiento antiparasitario autorizado según Resolución de caligus vigente.', 'Chiloé', 'resuelto'),
+  ('2025-02-17', 'ambiental',    'bajo',  'Oxígeno disuelto bajo 5,8 mg/L durante 6 horas en el lote D1 por floración algal incipiente', 'Activación de oxigenación de emergencia y monitoreo horario.', 'Aysén', 'resuelto'),
+  ('2025-03-02', 'accidente',    'bajo',  'Operario resbaló en cubierta mojada y sufrió contusión leve en rodilla', 'Atención en enfermería y entrega de calzado con mayor agarre.', 'Quellón', 'resuelto'),
+  ('2025-03-15', 'escape',       'critico', 'Falla de traba de jaula en el lote A1 dejó la puerta parcialmente abierta; fuga estimada de 3.200 unidades', 'Reparación por buzo, censo de stock y reporte oficial a Sernapesca.', 'Los Lagos', 'en_seguimiento'),
+  ('2025-03-26', 'bioseguridad', 'medio', 'Mortalidad anormal (0,4% en 48 horas) en el lote B2 sin causa clara', 'Activación del protocolo de contingencia sanitaria y notificación a Sernapesca.', 'Aysén', 'resuelto'),
+  ('2025-04-09', 'accidente',    'alto',  'Operario de planta sufrió corte en antebrazo al manipular fileteadora', 'Primeros auxilios y derivación a centro asistencial.', 'Quellón', 'resuelto'),
+  ('2025-04-20', 'sanitario',    'alto',  'Brote de piscirickettsiosis (SRS) en el lote B2 que elevó la mortalidad acumulada a 12,9%', 'Tratamiento con florfenicol autorizado por Sernapesca y cuarentena del lote.', 'Aysén', 'en_seguimiento'),
+  ('2025-05-02', 'escape',       'alto',  'El buzo de revisión detectó enmallado de red con riesgo de fuga en el lote C2', 'Refuerzo de la red con paño de repuesto y verificación por buceo.', 'Chiloé', 'resuelto'),
+  ('2025-05-11', 'bioseguridad', 'bajo',  'Visita de la empresa vacunadora llegó al centro sin registrar su ingreso en la bitácora', 'Regularización del registro y recordatorio del protocolo de acceso.', 'Los Lagos', 'resuelto'),
+  ('2025-05-23', 'accidente',    'medio', 'Buzo presentó otitis por presión durante mantención de red del lote A2', 'Suspensión de la faena y derivación al médico laboral.', 'Chiloé', 'resuelto'),
+  ('2025-06-01', 'ambiental',    'medio', 'Floración algal en el seno colindante al centro con riesgo de desoxigenación del lote G1', 'Incremento del monitoreo y oxigenación preventiva.', 'Los Lagos', 'resuelto'),
+  ('2025-06-14', 'sanitario',    'bajo',  'Detección de caligus bajo umbral de control en el lote C1', 'Monitoreo reforzado; no requirió tratamiento.', 'Los Lagos', 'resuelto'),
+  ('2025-06-28', 'escape',       'critico', 'La puerta de muestreo quedó abierta y se estima una fuga de 2.100 peces del lote F1', 'Censo al día siguiente y cambio del procedimiento de muestreo.', 'Quellón', 'abierto'),
+  ('2025-07-05', 'accidente',    'alto',  'Operario sufrió fractura de muñeca al caer desde la escala de la balsa-metralla', 'Traslado a urgencia, investigación del accidente y revisión de la escala.', 'Chiloé', 'abierto'),
+  ('2025-07-18', 'bioseguridad', 'medio', 'Mortalidad anormal en el borde de red del lote F2', 'Extracción de mortalidades, revisión de red y control veterinario.', 'Aysén', 'resuelto'),
+  ('2025-08-01', 'ambiental',    'alto',  'Floración algal con desoxigenación en la jaula del lote B1 del Centro Quellón', 'Oxigenación intensiva y programación de cosecha parcial de emergencia.', 'Quellón', 'en_seguimiento')
+ON CONFLICT (id) DO NOTHING;
+
+-- Concesiones acuícolas (4 centros)
+INSERT INTO concesiones (centro_nombre, sector, region, latitude, longitude, superficie_ha, n_jaulas, especies_autorizadas, vigencia) VALUES
+  ('Centro Los Lagos', 'Seno Reloncaví',        'Los Lagos (X)', -41.583333, -72.816667, 16.50, 12, 'Salmón Atlántico, Salmón Coho', 'Vigente hasta 2032'),
+  ('Centro Chiloé',    'Sector Queullín',       'Los Lagos (X)', -42.116667, -73.466667, 14.20, 10, 'Salmón Atlántico, Salmón Coho', 'Vigente hasta 2031'),
+  ('Centro Quellón',   'Canal Apiao',           'Los Lagos (X)', -43.250000, -73.616667, 12.80, 10, 'Salmón Atlántico, Salmón Coho', 'Vigente hasta 2033'),
+  ('Centro Aysén',     'Canal Puyuhuapi',       'Aysén (XI)',    -44.300000, -72.500000, 18.00, 14, 'Salmón Atlántico, Salmón Coho, Trucha', 'Vigente hasta 2030')
+ON CONFLICT (centro_nombre) DO NOTHING;
+
+-- Monitoreo sanitario/ambiental mensual por lote activo (abril a julio 2025).
+-- Caligus en hembras ovígeras promedio (indicador de control normativo),
+-- temperatura del agua, oxígeno disuelto y mortalidad del mes.
+INSERT INTO monitoreo_sanitario (lote_codigo, mes, caligus_hembras_ovigeras_prom, temperatura_c, oxigeno_mg_l, mortalidad_mes) VALUES
+  ('LOTE-A1', '2025-04-01', 1.20, 11.8, 7.9, 420),
+  ('LOTE-A1', '2025-05-01', 2.10, 11.2, 7.6, 510),
+  ('LOTE-A1', '2025-06-01', 3.40, 10.4, 7.0, 640),
+  ('LOTE-A1', '2025-07-01', 4.10,  9.6, 6.8, 590),
+  ('LOTE-A2', '2025-04-01', 0.80, 12.0, 8.1, 380),
+  ('LOTE-A2', '2025-05-01', 1.90, 11.4, 7.8, 440),
+  ('LOTE-A2', '2025-06-01', 2.60, 10.6, 7.2, 490),
+  ('LOTE-A2', '2025-07-01', 3.10,  9.8, 6.9, 460),
+  ('LOTE-B1', '2025-04-01', 2.40, 11.5, 7.5, 510),
+  ('LOTE-B1', '2025-05-01', 3.80, 10.9, 7.1, 580),
+  ('LOTE-B1', '2025-06-01', 5.20, 10.2, 6.4, 720),
+  ('LOTE-B1', '2025-07-01', 6.50,  9.5, 6.1, 860),
+  ('LOTE-B2', '2025-04-01', 1.50, 11.0, 6.3, 1800),
+  ('LOTE-B2', '2025-05-01', 2.20, 10.5, 6.1, 1420),
+  ('LOTE-B2', '2025-06-01', 2.80,  9.9, 6.5, 980),
+  ('LOTE-B2', '2025-07-01', 3.30,  9.2, 6.8, 760),
+  ('LOTE-C1', '2025-04-01', 0.60, 11.6, 7.9, 320),
+  ('LOTE-C1', '2025-05-01', 1.10, 11.1, 7.7, 370),
+  ('LOTE-C1', '2025-06-01', 2.00, 10.3, 7.3, 410),
+  ('LOTE-C1', '2025-07-01', 2.60,  9.7, 7.0, 390),
+  ('LOTE-C2', '2025-04-01', 1.90, 11.7, 7.8, 450),
+  ('LOTE-C2', '2025-05-01', 3.10, 11.0, 7.4, 520),
+  ('LOTE-C2', '2025-06-01', 4.40, 10.3, 6.9, 610),
+  ('LOTE-C2', '2025-07-01', 5.00,  9.6, 6.6, 580),
+  ('LOTE-F1', '2025-05-01', 0.70, 11.3, 7.6, 300),
+  ('LOTE-F1', '2025-06-01', 1.30, 10.5, 7.2, 350),
+  ('LOTE-F1', '2025-07-01', 1.90,  9.8, 6.9, 330),
+  ('LOTE-F2', '2025-06-01', 0.50, 10.4, 7.4, 240),
+  ('LOTE-F2', '2025-07-01', 0.90,  9.6, 7.1, 270)
+ON CONFLICT (lote_codigo, mes) DO NOTHING;
+
+-- Alimentación: raciones mensuales (kg y costo) por lote activo
+INSERT INTO alimentacion (lote_codigo, mes, tipo_alimento, kg_entregados, costo_clp) VALUES
+  ('LOTE-A1', '2025-04-01', 'Extruido 9mm',  92000,  80960000),
+  ('LOTE-A1', '2025-05-01', 'Extruido 9mm', 105000,  92400000),
+  ('LOTE-A1', '2025-06-01', 'Extruido 9mm', 117000, 102960000),
+  ('LOTE-A1', '2025-07-01', 'Extruido 9mm', 124000, 109120000),
+  ('LOTE-A2', '2025-04-01', 'Extruido 6mm',  81000,  74520000),
+  ('LOTE-A2', '2025-05-01', 'Extruido 6mm',  93000,  85560000),
+  ('LOTE-A2', '2025-06-01', 'Extruido 9mm', 104000,  91520000),
+  ('LOTE-A2', '2025-07-01', 'Extruido 9mm', 112000,  98560000),
+  ('LOTE-B1', '2025-04-01', 'Extruido 6mm',  88000,  80960000),
+  ('LOTE-B1', '2025-05-01', 'Extruido 6mm', 98000,  90160000),
+  ('LOTE-B1', '2025-06-01', 'Extruido 6mm', 109000, 100280000),
+  ('LOTE-B1', '2025-07-01', 'Extruido 6mm', 118000, 108560000),
+  ('LOTE-B2', '2025-04-01', 'Extruido 6mm',  76000,  69920000),
+  ('LOTE-B2', '2025-05-01', 'Extruido 6mm',  86000,  79120000),
+  ('LOTE-B2', '2025-06-01', 'Extruido 6mm',  95000,  87400000),
+  ('LOTE-B2', '2025-07-01', 'Extruido 6mm', 102000,  93840000),
+  ('LOTE-C1', '2025-04-01', 'Extruido 3mm',  58000,  55100000),
+  ('LOTE-C1', '2025-05-01', 'Extruido 3mm',  69000,  65550000),
+  ('LOTE-C1', '2025-06-01', 'Extruido 6mm',  79000,  72680000),
+  ('LOTE-C1', '2025-07-01', 'Extruido 6mm',  87000,  80040000),
+  ('LOTE-C2', '2025-04-01', 'Extruido 3mm',  62000,  58900000),
+  ('LOTE-C2', '2025-05-01', 'Extruido 3mm',  72000,  68400000),
+  ('LOTE-C2', '2025-06-01', 'Extruido 6mm',  82000,  75440000),
+  ('LOTE-C2', '2025-07-01', 'Extruido 6mm',  89000,  81880000),
+  ('LOTE-F1', '2025-05-01', 'Extruido 3mm',  31000,  29450000),
+  ('LOTE-F1', '2025-06-01', 'Extruido 3mm',  40000,  38000000),
+  ('LOTE-F1', '2025-07-01', 'Extruido 3mm',  48000,  45600000),
+  ('LOTE-F2', '2025-06-01', 'Premolido 2mm', 18000,  17820000),
+  ('LOTE-F2', '2025-07-01', 'Premolido 2mm', 24000,  23760000)
+ON CONFLICT (id) DO NOTHING;
+
+-- Clientes vigentes
+INSERT INTO clientes (nombre, pais, contacto, producto_principal, condiciones_pago, contrato_tipo) VALUES
+  ('Seafood Partners LLC',   'Estados Unidos', 'Emily Carter, compradora senior', 'Salmón Atlántico HG congelado', 'Crédito 45 días', 'Contrato anual 2025-2026'),
+  ('Nippon Marine Trading',  'Japón',          'Kenji Tanaka, gerente de importación', 'Salmón Coho entero fresco', 'Crédito 60 días', 'Contrato anual 2025'),
+  ('NordInter Food',         'Unión Europea',  'Lars Jørgensen, director comercial', 'Filete de Salmón Atlántico', 'Crédito 30 días', 'Contrato semestral 2025-S2'),
+  ('Brasil Mar S.A.',        'Brasil',         'Carla Mendes, compradora', 'Salmón Atlántico HG congelado', 'Crédito 30 días', 'Contrato spot con volumen mínimo'),
+  ('Shanghai Aquatic Group', 'China',          'Wei Zhang, account manager', 'Salmón Coho entero congelado', 'Crédito 45 días', 'Acuerdo marco 2025-2026'),
+  ('Supermercados del Sur',  'Chile',          'Rodrigo Salinas, jefe de compras', 'Salmón fresco nacional (pieza y HG)', 'Crédito 15 días', 'Contrato de distribución nacional')
 ON CONFLICT (id) DO NOTHING;

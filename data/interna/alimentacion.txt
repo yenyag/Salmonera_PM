@@ -1,0 +1,51 @@
+ALIMENTACIÓN POR LOTE (RACIONES ENTREGADAS) - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- El lote con mayor gasto en alimento es LOTE-A1 con $385,440,000 CLP.
+- El total de alimento entregado en el periodo fue de 2,359,000 kg por $2,158,460,000 CLP.
+
+Detalle mensual de raciones entregadas (abril a julio de 2025):
+
+- LOTE-A1 en Abril 2025: 92,000 kg de Extruido 9mm por $80,960,000 CLP.
+- LOTE-A1 en Mayo 2025: 105,000 kg de Extruido 9mm por $92,400,000 CLP.
+- LOTE-A1 en Junio 2025: 117,000 kg de Extruido 9mm por $102,960,000 CLP.
+- LOTE-A1 en Julio 2025: 124,000 kg de Extruido 9mm por $109,120,000 CLP.
+- LOTE-A2 en Abril 2025: 81,000 kg de Extruido 6mm por $74,520,000 CLP.
+- LOTE-A2 en Mayo 2025: 93,000 kg de Extruido 6mm por $85,560,000 CLP.
+- LOTE-A2 en Junio 2025: 104,000 kg de Extruido 9mm por $91,520,000 CLP.
+- LOTE-A2 en Julio 2025: 112,000 kg de Extruido 9mm por $98,560,000 CLP.
+- LOTE-B1 en Abril 2025: 88,000 kg de Extruido 6mm por $80,960,000 CLP.
+- LOTE-B1 en Mayo 2025: 98,000 kg de Extruido 6mm por $90,160,000 CLP.
+- LOTE-B1 en Junio 2025: 109,000 kg de Extruido 6mm por $100,280,000 CLP.
+- LOTE-B1 en Julio 2025: 118,000 kg de Extruido 6mm por $108,560,000 CLP.
+- LOTE-B2 en Abril 2025: 76,000 kg de Extruido 6mm por $69,920,000 CLP.
+- LOTE-B2 en Mayo 2025: 86,000 kg de Extruido 6mm por $79,120,000 CLP.
+- LOTE-B2 en Junio 2025: 95,000 kg de Extruido 6mm por $87,400,000 CLP.
+- LOTE-B2 en Julio 2025: 102,000 kg de Extruido 6mm por $93,840,000 CLP.
+- LOTE-C1 en Abril 2025: 58,000 kg de Extruido 3mm por $55,100,000 CLP.
+- LOTE-C1 en Mayo 2025: 69,000 kg de Extruido 3mm por $65,550,000 CLP.
+- LOTE-C1 en Junio 2025: 79,000 kg de Extruido 6mm por $72,680,000 CLP.
+- LOTE-C1 en Julio 2025: 87,000 kg de Extruido 6mm por $80,040,000 CLP.
+- LOTE-C2 en Abril 2025: 62,000 kg de Extruido 3mm por $58,900,000 CLP.
+- LOTE-C2 en Mayo 2025: 72,000 kg de Extruido 3mm por $68,400,000 CLP.
+- LOTE-C2 en Junio 2025: 82,000 kg de Extruido 6mm por $75,440,000 CLP.
+- LOTE-C2 en Julio 2025: 89,000 kg de Extruido 6mm por $81,880,000 CLP.
+- LOTE-F1 en Mayo 2025: 31,000 kg de Extruido 3mm por $29,450,000 CLP.
+- LOTE-F1 en Junio 2025: 40,000 kg de Extruido 3mm por $38,000,000 CLP.
+- LOTE-F1 en Julio 2025: 48,000 kg de Extruido 3mm por $45,600,000 CLP.
+- LOTE-F2 en Junio 2025: 18,000 kg de Premolido 2mm por $17,820,000 CLP.
+- LOTE-F2 en Julio 2025: 24,000 kg de Premolido 2mm por $23,760,000 CLP.
+
+Resumen por lote:
+- LOTE-A1: 438,000 kg entregados por $385,440,000 CLP.
+- LOTE-B1: 413,000 kg entregados por $379,960,000 CLP.
+- LOTE-A2: 390,000 kg entregados por $350,160,000 CLP.
+- LOTE-B2: 359,000 kg entregados por $330,280,000 CLP.
+- LOTE-C2: 305,000 kg entregados por $284,620,000 CLP.
+- LOTE-C1: 293,000 kg entregados por $273,370,000 CLP.
+- LOTE-F1: 119,000 kg entregados por $113,050,000 CLP.
+- LOTE-F2: 42,000 kg entregados por $41,580,000 CLP.
+
+Estas raciones deben contrastarse con el FCR de cada lote para evaluar la eficiencia alimentaria.
+
+Fuente: tabla alimentacion / vista v_alimentacion_resumen.

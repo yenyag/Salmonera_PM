@@ -21,13 +21,13 @@ La siguiente información resume los incidentes registrados entre enero y agosto
 El total de incidentes registrados en el periodo fue de 18.
 
 ACCIDENTES LABORALES REGISTRADOS (TIPO ACCIDENTE):
-- 2025-03-02: Quellón. Resbalamiento de operario en cubierta, contusión leve (severidad bajo, resuelto). Acción: Atención en enfermería y entrega de EPP antideslizante.
-- 2025-04-09: Quellón. Operario de planta con corte en mano al manipular fileteadora (severidad alto, resuelto). Acción: Primeros auxilios y derivación a centro médico.
-- 2025-05-23: Chiloé. Buzo con otitis por presión durante faena (severidad medio, resuelto). Acción: Suspensión de faena y derivación al médico laboral.
-- 2025-07-05: Chiloé. Operario con fractura de muñeca al caer desde escala de balsa (severidad alto, abierto). Acción: Traslado a urgencia, investigación de accidente y revisión de escala.
+- 2025-03-02: Quellón. Operario resbaló en cubierta mojada y sufrió contusión leve en rodilla (severidad bajo, resuelto). Acción: Atención en enfermería y entrega de calzado con mayor agarre.
+- 2025-04-09: Quellón. Operario de planta sufrió corte en antebrazo al manipular fileteadora (severidad alto, resuelto). Acción: Primeros auxilios y derivación a centro asistencial.
+- 2025-05-23: Chiloé. Buzo presentó otitis por presión durante mantención de red del lote A2 (severidad medio, resuelto). Acción: Suspensión de la faena y derivación al médico laboral.
+- 2025-07-05: Chiloé. Operario sufrió fractura de muñeca al caer desde la escala de la balsa-metralla (severidad alto, abierto). Acción: Traslado a urgencia, investigación del accidente y revisión de la escala.
 
 INCIDENTES CRÍTICOS (SEVERIDAD CRÍTICA):
-- 2025-03-15: Los Lagos. Falla en traba de jaula generó apertura parcial y fuga de ~5.000 unidades (tipo escape, en_seguimiento). Acción: Inmovilización de jaula, reparación por buzo y censo.
-- 2025-06-28: Quellón. Apertura de puerta de muestreo dejó salida de ~3.200 unidades (tipo escape, abierto). Acción: Censo al día siguiente y cambio de procedimiento de muestreo.
+- 2025-03-15: Los Lagos. Falla de traba de jaula en el lote A1 dejó la puerta parcialmente abierta; fuga estimada de 3.200 unidades (tipo escape, en_seguimiento). Acción: Reparación por buzo, censo de stock y reporte oficial a Sernapesca.
+- 2025-06-28: Quellón. La puerta de muestreo quedó abierta y se estima una fuga de 2.100 peces del lote F1 (tipo escape, abierto). Acción: Censo al día siguiente y cambio del procedimiento de muestreo.
 
 Fuente: tabla incidentes / vistas v_incidentes_por_tipo, v_incidentes_por_severidad.

@@ -176,6 +176,55 @@ app.get('/api/incidentes/severidad', async (_req, res) => {
   }
 });
 
+// --- Nuevas dimensiones (concesiones, monitoreo, alimentación, clientes) ----
+
+app.get('/api/concesiones', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_concesiones');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/monitoreo', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT lote_codigo, mes, caligus_hembras_ovigeras_prom, temperatura_c, oxigeno_mg_l, mortalidad_mes FROM monitoreo_sanitario ORDER BY mes, lote_codigo'
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/monitoreo/promedio', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_monitoreo_promedio');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/alimentacion', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM v_alimentacion_resumen');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/clientes', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM clientes ORDER BY pais');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- Asistente RAG (FASE 4) ------------------------------------------------
 
 const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada⁄IngenierInteligencia-Artificial/.venv/bin/python';

@@ -85,7 +85,7 @@ def formatear_fuentes(documentos):
     return fuentes
 
 
-def consultar(pregunta: str, k: int = 5) -> dict:
+def consultar(pregunta: str, k: int = 7) -> dict:
     """
     Ejecuta el pipeline RAG completo.
 
@@ -111,12 +111,26 @@ def consultar(pregunta: str, k: int = 5) -> dict:
     keywords = [
         "incidentes", "inventario", "stock", "proveedor",
         "exportaciones", "planilla", "lote", "fcr",
+        "caligus", "temperatura", "oxigeno", "monitoreo", "concesion", "cliente",
+        "alimentacion", "raciones", "calidad", "cosecha", "tonelada", "siembra",
+        "superficie", "hectarea", "jaula", "ubicacion", "geografic",
     ]
-    p_min = pregunta.lower()
+    # Normaliza acentos para que las keywords coincidan con el español escrito
+    def sin_acentos(texto: str) -> str:
+        trans = {
+            "á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u",
+            "ñ": "n", "ü": "u",
+        }
+        return "".join(trans.get(c, c) for c in texto)
+
+    p_min = sin_acentos(pregunta.lower())
     presentes = [kw for kw in keywords if kw in p_min]
     if presentes:
-        candidatos = vector_db.as_retriever(search_kwargs={"k": k + 6}).invoke(pregunta)
-        extra = [d for d in candidatos[k:] if any(kw in d.page_content.lower() for kw in presentes)]
+        candidatos = vector_db.as_retriever(search_kwargs={"k": k + 8}).invoke(pregunta)
+        extra = [
+            d for d in candidatos[k:]
+            if any(kw in sin_acentos(d.page_content.lower()) for kw in presentes)
+        ]
         documentos.extend(extra[:3])
 
     # 2. Construcción del contexto

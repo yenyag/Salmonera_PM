@@ -4,35 +4,35 @@
     {
       "id": "P1",
       "pregunta": "¿Qué lote tiene mayor mortalidad acumulada?",
-      "dato_esperado": "LOTE-B2 2300",
+      "dato_esperado": "LOTE-E2 8100",
       "fuente_esperada": "mortalidad.txt (interna)",
       "tipo": "dato_interno"
     },
     {
       "id": "P2",
       "pregunta": "¿Cuáles fueron las ventas de enero de 2025 y cuál fue el total semestral?",
-      "dato_esperado": "125 000 000 905 000 000",
+      "dato_esperado": "1510000000 11234000000",
       "fuente_esperada": "ventas.txt (interna)",
       "tipo": "dato_interno"
     },
     {
       "id": "P3",
       "pregunta": "¿Qué centro es el más rentable y cuánto generó?",
-      "dato_esperado": "Los Lagos 510 000 000",
+      "dato_esperado": "Los Lagos 3550000000",
       "fuente_esperada": "rentabilidad.txt (interna)",
       "tipo": "dato_interno"
     },
     {
       "id": "P4",
-      "pregunta": "¿Cuántas unidades se cosecharon de calidad premium y de descarte?",
-      "dato_esperado": "premium 320 descarte 95",
+      "pregunta": "¿Cuántas toneladas se cosecharon de calidad premium y de descarte?",
+      "dato_esperado": "premium 480 descarte 50",
       "fuente_esperada": "calidad.txt (interna)",
       "tipo": "dato_interno"
     },
     {
       "id": "P5",
       "pregunta": "¿Qué lote tiene mayor mortalidad y qué recomiendas según la normativa de bioseguridad?",
-      "dato_esperado": "LOTE-B2 2300 contingencia Sernapesca",
+      "dato_esperado": "LOTE-E2 8100 contingencia Sernapesca",
       "fuente_esperada": "mortalidad.txt (interna) + bioseguridad.txt y/o sernapesca_normativa.txt (externa)",
       "tipo": "interna_mas_externa"
     },
@@ -81,7 +81,7 @@
     {
       "id": "P12",
       "pregunta": "¿Qué centro de cultivo concentra la mayor biomasa y cuántos kilos tiene?",
-      "dato_esperado": "Los Lagos 6750000",
+      "dato_esperado": "Los Lagos 835200",
       "fuente_esperada": "lotes_detalle.txt (interna)",
       "tipo": "dato_interno"
     },
@@ -95,8 +95,36 @@
     {
       "id": "P14",
       "pregunta": "¿Qué lote tiene el FCR más bajo y en qué centro se encuentra?",
-      "dato_esperado": "LOTE-K1 109 Quellón",
+      "dato_esperado": "LOTE-H1 110 Quellón",
       "fuente_esperada": "lotes_detalle.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P15",
+      "pregunta": "¿Qué lote tiene el mayor promedio de caligus según el monitoreo sanitario?",
+      "dato_esperado": "LOTE-B1",
+      "fuente_esperada": "monitoreo_sanitario.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P16",
+      "pregunta": "¿Qué concesión de la empresa tiene la mayor superficie autorizada y cuántas hectáreas son?",
+      "dato_esperado": "Centro Aysén 18",
+      "fuente_esperada": "concesiones.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P17",
+      "pregunta": "¿Cuánto alimento se entregó al lote A1 en mayo de 2025?",
+      "dato_esperado": "105000",
+      "fuente_esperada": "alimentacion.txt (interna)",
+      "tipo": "dato_interno"
+    },
+    {
+      "id": "P18",
+      "pregunta": "¿Qué cliente de Japón compra salmón a la empresa y qué producto principal adquiere?",
+      "dato_esperado": "Nippon Marine Trading Coho",
+      "fuente_esperada": "clientes.txt (interna)",
       "tipo": "dato_interno"
     }
   ]

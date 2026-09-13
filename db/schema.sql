@@ -1,5 +1,14 @@
 -- Esquema y datos de prueba para Salmonera_PM (reemplaza Supabase localmente)
 -- Ejecutar dentro de la base de datos salmonera_pm
+-- ============================================================================
+-- Datos calibrados para representar una empresa salmonera mediana chilena:
+-- 4 centros de cultivo, ~3.400 t cosechadas/año, ventas ~CLP 22.000 millones/año.
+-- Todos los paneles son coherentes entre sí:
+--   ventas = exportaciones FOB + ventas de mercado local
+--   rentabilidad por centro = distribución de las ventas totales
+--   biomasa lote = unidades_sembradas x peso_promedio
+--   mortalidad por lote = % realista acumulado del lote
+-- ============================================================================
 
 -- Usuarios (login)
 CREATE TABLE IF NOT EXISTS usuarios (
@@ -19,13 +28,13 @@ CREATE TABLE IF NOT EXISTS ventas (
 CREATE TABLE IF NOT EXISTS cosechas (
   id SERIAL PRIMARY KEY,
   calidad TEXT NOT NULL,
-  cantidad INT NOT NULL
+  cantidad INT NOT NULL        -- toneladas cosechadas en el periodo
 );
 
 CREATE TABLE IF NOT EXISTS lotes (
   id SERIAL PRIMARY KEY,
   lote_codigo TEXT NOT NULL,
-  mortalidad_total NUMERIC(12,2) NOT NULL
+  mortalidad_total NUMERIC(12,2) NOT NULL   -- mortalidad acumulada en unidades
 );
 
 CREATE TABLE IF NOT EXISTS centros (
@@ -71,39 +80,43 @@ INSERT INTO usuarios (nombre, email, password) VALUES
   ('Juan Pérez', 'juan@salmonera.com', 'juan123')
 ON CONFLICT (email) DO NOTHING;
 
--- Ventas mensuales (CLP)
+-- Ventas mensuales (CLP). Coherentes con exportaciones (FOB) + mercado local.
+-- Jan: 1.415.000.000 FOB + 95.000.000 local; Feb: 1.688,5M + 105M; etc.
 INSERT INTO ventas (mes, total_mensual) VALUES
-  ('2025-01-01', 125000000),
-  ('2025-02-01', 138000000),
-  ('2025-03-01', 152000000),
-  ('2025-04-01', 141000000),
-  ('2025-05-01', 167000000),
-  ('2025-06-01', 182000000)
+  ('2025-01-01', 1510000000),
+  ('2025-02-01', 1794000000),
+  ('2025-03-01', 2030000000),
+  ('2025-04-01', 1800000000),
+  ('2025-05-01', 2115000000),
+  ('2025-06-01', 1985000000)
 ON CONFLICT (mes) DO NOTHING;
 
--- Distribución por calidad
+-- Distribución de cosecha por calidad (toneladas, enero-junio 2025).
+-- Total ~1.610 t, consistente con el volumen de los lotes cosechados.
 INSERT INTO cosechas (calidad, cantidad) VALUES
-  ('premium', 320),
-  ('exportacion', 540),
-  ('mercado_local', 210),
-  ('descarte', 95)
+  ('premium', 480),
+  ('exportacion', 880),
+  ('mercado_local', 200),
+  ('descarte', 50)
 ON CONFLICT (calidad) DO NOTHING;
 
--- Mortalidad acumulada por lote
+-- Mortalidad acumulada por lote (unidades, 5-14% del stock sembrado)
 INSERT INTO lotes (lote_codigo, mortalidad_total) VALUES
-  ('LOTE-A1', 1200),
-  ('LOTE-A2', 1850),
-  ('LOTE-B1', 980),
-  ('LOTE-B2', 2300),
-  ('LOTE-C1', 1450)
+  ('LOTE-A1', 6200), ('LOTE-A2', 6600), ('LOTE-B1', 4800),
+  ('LOTE-B2', 7500), ('LOTE-C1', 5100), ('LOTE-C2', 4900),
+  ('LOTE-D1', 7800), ('LOTE-D2', 6300), ('LOTE-E1', 5300),
+  ('LOTE-E2', 8100), ('LOTE-F1', 4200), ('LOTE-F2', 3300),
+  ('LOTE-G1', 3400), ('LOTE-H1', 3900), ('LOTE-J1', 6600),
+  ('LOTE-J2', 5700)
 ON CONFLICT (lote_codigo) DO NOTHING;
 
--- Rentabilidad por centro
+-- Rentabilidad por centro (CLP). La suma = ventas totales del periodo
+-- (Los Lagos 3.550M + Chiloé 3.250M + Quellón 2.400M + Aysén 2.034M = 11.234M CLP)
 INSERT INTO centros (centro_nombre, total_ingresos_clp) VALUES
-  ('Centro Quellón', 420000000),
-  ('Centro Chiloé', 380000000),
-  ('Centro Aysén', 295000000),
-  ('Centro Los Lagos', 510000000)
+  ('Centro Quellón', 2400000000),
+  ('Centro Chiloé', 3250000000),
+  ('Centro Aysén', 2034000000),
+  ('Centro Los Lagos', 3550000000)
 ON CONFLICT (centro_nombre) DO NOTHING;
 
 -- Permisos para el usuario de la aplicación
@@ -113,5 +126,3 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT ALL ON TABLES TO salmonera;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT ALL ON SEQUENCES TO salmonera;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public
-  GRANT ALL ON TABLES TO salmonera;

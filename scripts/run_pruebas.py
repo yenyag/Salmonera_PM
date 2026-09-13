@@ -102,7 +102,7 @@ def main():
     resultados = []
     for p in preguntas:
         print(f"  • [{p['id']}] {p['pregunta'][:60]}...")
-        resultado = consultar(p["pregunta"], k=3)
+        resultado = consultar(p["pregunta"], k=7)
         caso = evaluar(
             p, p["dato_esperado"], resultado["respuesta"], resultado["fuentes"], p["tipo"]
         )

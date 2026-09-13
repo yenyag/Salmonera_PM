@@ -1,0 +1,15 @@
+CONCESIONES ACUÍCOLAS - SalmoSUR S.A.
+========================================
+Las concesiones son los títulos de cultivo otorgados por la autoridad (Sernapesca).
+SUMARIO EJECUTIVO:
+- La concesión con la MAYOR superficie autorizada es Centro Aysén con 18.00 hectáreas.
+- La concesión con la mayor cantidad de jaulas es Centro Aysén con 14 jaulas.
+
+Detalle de cada concesión de la empresa:
+
+- Centro Aysén: sector Canal Puyuhuapi, región Aysén (XI), coordenadas -44.30000, -72.50000. Superficie autorizada de 18.00 ha con 14 jaulas. Especies autorizadas: Salmón Atlántico, Salmón Coho, Trucha. Estado: Vigente hasta 2030.
+- Centro Chiloé: sector Sector Queullín, región Los Lagos (X), coordenadas -42.11667, -73.46667. Superficie autorizada de 14.20 ha con 10 jaulas. Especies autorizadas: Salmón Atlántico, Salmón Coho. Estado: Vigente hasta 2031.
+- Centro Los Lagos: sector Seno Reloncaví, región Los Lagos (X), coordenadas -41.58333, -72.81667. Superficie autorizada de 16.50 ha con 12 jaulas. Especies autorizadas: Salmón Atlántico, Salmón Coho. Estado: Vigente hasta 2032.
+- Centro Quellón: sector Canal Apiao, región Los Lagos (X), coordenadas -43.25000, -73.61667. Superficie autorizada de 12.80 ha con 10 jaulas. Especies autorizadas: Salmón Atlántico, Salmón Coho. Estado: Vigente hasta 2033.
+
+Fuente: tabla concesiones / vista v_concesiones.

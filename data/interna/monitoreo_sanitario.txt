@@ -1,0 +1,49 @@
+MONITOREO SANITARIO Y AMBIENTAL MENSUAL - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- El lote con el mayor promedio de caligus (hembras ovígeras) del periodo es LOTE-B1.
+- Los niveles de caligus sobre el umbral de control (definido por la normativa) requieren tratamiento antiparasitario.
+
+La siguiente información detalla el monitoreo mensual de cada lote activo (abril a julio de 2025).
+
+- LOTE-A1 en Abril 2025: caligus promedio 1.2 hembras ovígeras, temperatura 11.8°C, oxígeno 7.9 mg/L y 420 mortalidades en el mes.
+- LOTE-A2 en Abril 2025: caligus promedio 0.8 hembras ovígeras, temperatura 12.0°C, oxígeno 8.1 mg/L y 380 mortalidades en el mes.
+- LOTE-B1 en Abril 2025: caligus promedio 2.4 hembras ovígeras, temperatura 11.5°C, oxígeno 7.5 mg/L y 510 mortalidades en el mes.
+- LOTE-B2 en Abril 2025: caligus promedio 1.5 hembras ovígeras, temperatura 11.0°C, oxígeno 6.3 mg/L y 1800 mortalidades en el mes.
+- LOTE-C1 en Abril 2025: caligus promedio 0.6 hembras ovígeras, temperatura 11.6°C, oxígeno 7.9 mg/L y 320 mortalidades en el mes.
+- LOTE-C2 en Abril 2025: caligus promedio 1.9 hembras ovígeras, temperatura 11.7°C, oxígeno 7.8 mg/L y 450 mortalidades en el mes.
+- LOTE-A1 en Mayo 2025: caligus promedio 2.1 hembras ovígeras, temperatura 11.2°C, oxígeno 7.6 mg/L y 510 mortalidades en el mes.
+- LOTE-A2 en Mayo 2025: caligus promedio 1.9 hembras ovígeras, temperatura 11.4°C, oxígeno 7.8 mg/L y 440 mortalidades en el mes.
+- LOTE-B1 en Mayo 2025: caligus promedio 3.8 hembras ovígeras, temperatura 10.9°C, oxígeno 7.1 mg/L y 580 mortalidades en el mes.
+- LOTE-B2 en Mayo 2025: caligus promedio 2.2 hembras ovígeras, temperatura 10.5°C, oxígeno 6.1 mg/L y 1420 mortalidades en el mes.
+- LOTE-C1 en Mayo 2025: caligus promedio 1.1 hembras ovígeras, temperatura 11.1°C, oxígeno 7.7 mg/L y 370 mortalidades en el mes.
+- LOTE-C2 en Mayo 2025: caligus promedio 3.1 hembras ovígeras, temperatura 11.0°C, oxígeno 7.4 mg/L y 520 mortalidades en el mes.
+- LOTE-F1 en Mayo 2025: caligus promedio 0.7 hembras ovígeras, temperatura 11.3°C, oxígeno 7.6 mg/L y 300 mortalidades en el mes.
+- LOTE-A1 en Junio 2025: caligus promedio 3.4 hembras ovígeras, temperatura 10.4°C, oxígeno 7.0 mg/L y 640 mortalidades en el mes.
+- LOTE-A2 en Junio 2025: caligus promedio 2.6 hembras ovígeras, temperatura 10.6°C, oxígeno 7.2 mg/L y 490 mortalidades en el mes.
+- LOTE-B1 en Junio 2025: caligus promedio 5.2 hembras ovígeras, temperatura 10.2°C, oxígeno 6.4 mg/L y 720 mortalidades en el mes.
+- LOTE-B2 en Junio 2025: caligus promedio 2.8 hembras ovígeras, temperatura 9.9°C, oxígeno 6.5 mg/L y 980 mortalidades en el mes.
+- LOTE-C1 en Junio 2025: caligus promedio 2.0 hembras ovígeras, temperatura 10.3°C, oxígeno 7.3 mg/L y 410 mortalidades en el mes.
+- LOTE-C2 en Junio 2025: caligus promedio 4.4 hembras ovígeras, temperatura 10.3°C, oxígeno 6.9 mg/L y 610 mortalidades en el mes.
+- LOTE-F1 en Junio 2025: caligus promedio 1.3 hembras ovígeras, temperatura 10.5°C, oxígeno 7.2 mg/L y 350 mortalidades en el mes.
+- LOTE-F2 en Junio 2025: caligus promedio 0.5 hembras ovígeras, temperatura 10.4°C, oxígeno 7.4 mg/L y 240 mortalidades en el mes.
+- LOTE-A1 en Julio 2025: caligus promedio 4.1 hembras ovígeras, temperatura 9.6°C, oxígeno 6.8 mg/L y 590 mortalidades en el mes.
+- LOTE-A2 en Julio 2025: caligus promedio 3.1 hembras ovígeras, temperatura 9.8°C, oxígeno 6.9 mg/L y 460 mortalidades en el mes.
+- LOTE-B1 en Julio 2025: caligus promedio 6.5 hembras ovígeras, temperatura 9.5°C, oxígeno 6.1 mg/L y 860 mortalidades en el mes.
+- LOTE-B2 en Julio 2025: caligus promedio 3.3 hembras ovígeras, temperatura 9.2°C, oxígeno 6.8 mg/L y 760 mortalidades en el mes.
+- LOTE-C1 en Julio 2025: caligus promedio 2.6 hembras ovígeras, temperatura 9.7°C, oxígeno 7.0 mg/L y 390 mortalidades en el mes.
+- LOTE-C2 en Julio 2025: caligus promedio 5.0 hembras ovígeras, temperatura 9.6°C, oxígeno 6.6 mg/L y 580 mortalidades en el mes.
+- LOTE-F1 en Julio 2025: caligus promedio 1.9 hembras ovígeras, temperatura 9.8°C, oxígeno 6.9 mg/L y 330 mortalidades en el mes.
+- LOTE-F2 en Julio 2025: caligus promedio 0.9 hembras ovígeras, temperatura 9.6°C, oxígeno 7.1 mg/L y 270 mortalidades en el mes.
+
+RESUMEN DEL PERIODO POR LOTE:
+- LOTE-B1: 4.48 caligus promedio, 10.5°C promedio, mínimo de oxígeno de 6.1 mg/L y 2670 mortalidades acumuladas.
+- LOTE-C2: 3.60 caligus promedio, 10.7°C promedio, mínimo de oxígeno de 6.6 mg/L y 2160 mortalidades acumuladas.
+- LOTE-A1: 2.70 caligus promedio, 10.8°C promedio, mínimo de oxígeno de 6.8 mg/L y 2160 mortalidades acumuladas.
+- LOTE-B2: 2.45 caligus promedio, 10.2°C promedio, mínimo de oxígeno de 6.1 mg/L y 4960 mortalidades acumuladas.
+- LOTE-A2: 2.10 caligus promedio, 11.0°C promedio, mínimo de oxígeno de 6.9 mg/L y 1770 mortalidades acumuladas.
+- LOTE-C1: 1.58 caligus promedio, 10.7°C promedio, mínimo de oxígeno de 7.0 mg/L y 1490 mortalidades acumuladas.
+- LOTE-F1: 1.30 caligus promedio, 10.5°C promedio, mínimo de oxígeno de 6.9 mg/L y 980 mortalidades acumuladas.
+- LOTE-F2: 0.70 caligus promedio, 10.0°C promedio, mínimo de oxígeno de 7.1 mg/L y 510 mortalidades acumuladas.
+
+Fuente: tabla monitoreo_sanitario / vista v_monitoreo_promedio.
