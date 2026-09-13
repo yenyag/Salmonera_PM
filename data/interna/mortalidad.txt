@@ -2,12 +2,23 @@ REPORTE DE MORTALIDAD ACUMULADA POR LOTE - SalmoSUR S.A.
 ========================================
 La siguiente información detalla la mortalidad acumulada (en unidades) de cada lote de cultivo.
 
-- El lote LOTE-B2 registró una mortalidad acumulada de 2300 unidades.
-- El lote LOTE-A2 registró una mortalidad acumulada de 1850 unidades.
-- El lote LOTE-C1 registró una mortalidad acumulada de 1450 unidades.
-- El lote LOTE-A1 registró una mortalidad acumulada de 1200 unidades.
-- El lote LOTE-B1 registró una mortalidad acumulada de 980 unidades.
+- El lote LOTE-E2 registró una mortalidad acumulada de 8100 unidades.
+- El lote LOTE-D1 registró una mortalidad acumulada de 7800 unidades.
+- El lote LOTE-B2 registró una mortalidad acumulada de 7500 unidades.
+- El lote LOTE-J1 registró una mortalidad acumulada de 6600 unidades.
+- El lote LOTE-A2 registró una mortalidad acumulada de 6600 unidades.
+- El lote LOTE-D2 registró una mortalidad acumulada de 6300 unidades.
+- El lote LOTE-A1 registró una mortalidad acumulada de 6200 unidades.
+- El lote LOTE-J2 registró una mortalidad acumulada de 5700 unidades.
+- El lote LOTE-E1 registró una mortalidad acumulada de 5300 unidades.
+- El lote LOTE-C1 registró una mortalidad acumulada de 5100 unidades.
+- El lote LOTE-C2 registró una mortalidad acumulada de 4900 unidades.
+- El lote LOTE-B1 registró una mortalidad acumulada de 4800 unidades.
+- El lote LOTE-F1 registró una mortalidad acumulada de 4200 unidades.
+- El lote LOTE-H1 registró una mortalidad acumulada de 3900 unidades.
+- El lote LOTE-G1 registró una mortalidad acumulada de 3400 unidades.
+- El lote LOTE-F2 registró una mortalidad acumulada de 3300 unidades.
 
-El lote con MAYOR mortalidad es LOTE-B2 con 2300 unidades, lo que indica un posible problema sanitario o de manejo que requiere atención.
+El lote con MAYOR mortalidad es LOTE-E2 con 8100 unidades, lo que indica un posible problema sanitario o de manejo que requiere atención.
 
 Fuente: tabla lotes / vista vista_mortalidad_acumulada.

@@ -5,11 +5,21 @@ FASE 2 - Generador de documentos internos para RAG (SalmoSUR S.A.)
 Lee la base de datos PostgreSQL de la salmonera y genera documentos de
 texto en español en data/interna/ para alimentar el pipeline RAG.
 
-Recorre 4 dimensiones operativas:
-  1. Ventas mensuales          (tabla ventas)
-  2. Distribución por calidad  (tabla cosechas)
-  3. Mortalidad por lote       (tabla lotes)
-  4. Rentabilidad por centro   (tabla centros)
+Recorre 14 dimensiones operativas:
+   1. Ventas mensuales          (tabla ventas)
+   2. Distribución por calidad  (tabla cosechas, en toneladas)
+   3. Mortalidad por lote       (tabla lotes)
+   4. Rentabilidad por centro   (tabla centros)
+   5. Planilla y dotación       (tabla empleados)
+   6. Inventario de insumos     (tabla inventario)
+   7. Compras y proveedores     (tablas compras, proveedores)
+   8. Exportaciones             (tabla exportaciones)
+   9. Lotes de cultivo          (tabla lotes_detalle)
+  10. Incidentes y seguridad    (tabla incidentes)
+  11. Concesiones acuícolas     (tabla concesiones)
+  12. Monitoreo sanitario       (tabla monitoreo_sanitario)
+  13. Alimentación por lote     (tabla alimentacion)
+  14. Clientes                  (tabla clientes)
 
 Uso:
     python scripts/generate_internal_docs.py
@@ -104,7 +114,7 @@ def generar_calidad(cur):
     doc = []
     doc.append("DISTRIBUCIÓN DE COSECHAS POR CALIDAD - SalmoSUR S.A.")
     doc.append("=" * 40)
-    doc.append("La siguiente información detalla el volumen cosechado según la clasificación de calidad del producto.")
+    doc.append("La siguiente información detalla el volumen cosechado (en toneladas) según la clasificación de calidad del producto.")
     doc.append("")
     etiquetas = {
         "premium": "calidad premium",
@@ -116,9 +126,9 @@ def generar_calidad(cur):
     for calidad, cantidad in filas:
         nombre = etiquetas.get(calidad, calidad)
         porc = (float(cantidad) / total * 100) if total else 0
-        doc.append(f"- Se cosecharon {int(cantidad)} unidades de {nombre} ({porc:.1f}% del total).")
+        doc.append(f"- Se cosecharon {int(cantidad)} toneladas de {nombre} ({porc:.1f}% del total).")
     doc.append("")
-    doc.append(f"El volumen total cosechado fue de {int(total)} unidades.")
+    doc.append(f"El volumen total cosechado fue de {int(total)} toneladas.")
     doc.append("")
     doc.append("Fuente: tabla cosechas / vista vista_distribucion_por_calidad.")
     return doc
@@ -177,6 +187,389 @@ def generar_rentabilidad(cur):
     return doc
 
 
+def generar_empleados(cur):
+    """Dotación y planilla de remuneraciones."""
+    cur.execute(
+        "SELECT nombre_completo, cargo, salario_clp FROM v_empleados ORDER BY salario_clp DESC"
+    )
+    filas = cur.fetchall()
+    if not filas:
+        return []
+
+    cur.execute("SELECT centro_nombre, planilla_clp FROM v_planilla_por_centro ORDER BY centro_nombre")
+    por_centro = cur.fetchall()
+    cur.execute("SELECT cargo, n_empleados, planilla_clp FROM v_planilla_por_cargo ORDER BY planilla_clp DESC")
+    por_cargo = cur.fetchall()
+
+    doc = []
+    doc.append("PLANILLA Y DOTACIÓN DE PERSONAL - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    mayor_centro, mayor_planilla = max(por_centro, key=lambda c: float(c[1]))
+    mayor_cargo, _, _ = por_cargo[0]
+    doc.append("SUMARIO EJECUTIVO:")
+    doc.append(f"- El centro con la mayor planilla mensual es {mayor_centro} con ${float(mayor_planilla):,.0f} CLP.")
+    doc.append(f"- El cargo con la mayor planilla es {mayor_cargo}.")
+    doc.append("")
+    doc.append("La siguiente información detalla la dotación de empleados y la planilla mensual de remuneraciones en CLP.")
+    doc.append("")
+    for nombre, cargo, salario in filas:
+        doc.append(f"- {nombre} se desempeña como {cargo} y recibe un salario mensual de ${float(salario):,.0f} CLP.")
+    doc.append("")
+    doc.append("Dotación por centro de cultivo:")
+    for centro, planilla in por_centro:
+        doc.append(f"- {centro}: planilla mensual de ${float(planilla):,.0f} CLP.")
+    doc.append("")
+    doc.append("Remuneraciones por cargo:")
+    for cargo, n, planilla in por_cargo:
+        doc.append(f"- {cargo}: {int(n)} personas, planilla total de ${float(planilla):,.0f} CLP.")
+    doc.append("")
+    doc.append("Fuente: tabla empleados / vistas v_empleados, v_planilla_por_centro, v_planilla_por_cargo.")
+    return doc
+
+
+def generar_inventario(cur):
+    """Inventario de insumos y alertas de stock bajo."""
+    cur.execute(
+        "SELECT categoria, n_items, valor_total_clp FROM v_inventario_resumen ORDER BY valor_total_clp DESC"
+    )
+    resumen = cur.fetchall()
+    cur.execute("SELECT nombre, stock, stock_minimo, categoria FROM v_stock_bajo ORDER BY (stock_minimo - stock) DESC")
+    bajo = cur.fetchall()
+    if not resumen:
+        return []
+
+    doc = []
+    doc.append("INVENTARIO DE INSUMOS (ALIMENTO, MEDICAMENTOS, HERRAMIENTAS, EQUIPOS) - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    mayor_cat, _, mayor_valor = resumen[0]
+    bajo_nombres = ", ".join(f[0] for f in bajo) if bajo else "ninguno"
+    doc.append("SUMARIO EJECUTIVO:")
+    doc.append(f"- La categoría de mayor valor es {mayor_cat} con ${float(mayor_valor):,.0f} CLP.")
+    doc.append(f"- Ítems bajo su stock mínimo: {bajo_nombres}.")
+    doc.append("")
+    doc.append("La siguiente información resume el valor del inventario de insumos por categoría.")
+    doc.append("")
+    for categoria, n, valor in resumen:
+        doc.append(f"- En la categoría {categoria} existen {int(n)} ítems con un valor total de ${float(valor):,.0f} CLP.")
+    doc.append("")
+    if bajo:
+        doc.append("ALERTAS DE STOCK BAJO (ítems bajo su stock mínimo):")
+        for nombre, stock, minimo, categoria in bajo:
+            doc.append(f"- {nombre} ({categoria}) tiene {float(stock):,.0f} unidades y su stock mínimo es {float(minimo):,.0f}.")
+    else:
+        doc.append("No existen ítems bajo su stock mínimo.")
+    doc.append("")
+    doc.append("Fuente: tabla inventario / vistas v_inventario_resumen, v_stock_bajo.")
+    return doc
+
+
+def generar_compras(cur):
+    """Gasto por proveedor y compras recientes."""
+    cur.execute("SELECT proveedor, rubro, total_clp FROM v_gasto_por_proveedor ORDER BY total_clp DESC")
+    por_proveedor = cur.fetchall()
+    cur.execute(
+        "SELECT proveedor, producto, cantidad, valor_clp, fecha FROM v_compras_recientes ORDER BY fecha DESC"
+    )
+    recientes = cur.fetchall()
+    if not por_proveedor:
+        return []
+
+    total_gastado = sum(float(f[2]) for f in por_proveedor)
+    mejor_proveedor, mejor_rubro = por_proveedor[0][0], por_proveedor[0][1]
+
+    doc = []
+    doc.append("REPORTE DE COMPRAS Y PROVEEDORES - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    doc.append("SUMARIO EJECUTIVO:")
+    doc.append(f"- El proveedor que MAYOR monto facturó fue {mejor_proveedor} con ${float(por_proveedor[0][2]):,.0f} CLP (rubro {mejor_rubro}).")
+    doc.append(f"- El gasto total en compras del periodo fue de ${total_gastado:,.0f} CLP.")
+    doc.append("")
+    doc.append("La siguiente información detalla el gasto en compras por proveedor durante el periodo.")
+    doc.append("")
+    for proveedor, rubro, total in por_proveedor:
+        doc.append(f"- {proveedor} (rubro {rubro}) facturó un total de ${float(total):,.0f} CLP.")
+    doc.append("")
+    doc.append("Compras recientes:")
+    for proveedor, producto, cantidad, valor, fecha in recientes[:10]:
+        doc.append(f"- El {fecha} se compraron {float(cantidad):,.0f} unidades de {producto} a {proveedor} por ${float(valor):,.0f} CLP.")
+    doc.append("")
+    doc.append("Fuente: tablas proveedores y compras / vistas v_gasto_por_proveedor, v_compras_recientes.")
+    return doc
+
+
+def generar_exportaciones(cur):
+    """Exportaciones por destino y resumen mensual (enero a junio 2025)."""
+    cur.execute(
+        "SELECT pais_destino, n_envios, total_kilos, total_fob_clp FROM v_exportaciones_por_destino ORDER BY total_fob_clp DESC"
+    )
+    por_destino = cur.fetchall()
+    cur.execute("SELECT mes, n_envios, total_kilos, total_fob_clp FROM v_exportaciones_resumen ORDER BY mes")
+    por_mes = cur.fetchall()
+    if not por_destino:
+        return []
+
+    total_fob = sum(float(f[3]) for f in por_destino)
+
+    doc = []
+    doc.append("REPORTE DE EXPORTACIONES - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    dest_max, _, _, fob_max = por_destino[0]
+    doc.append("SUMARIO EJECUTIVO:")
+    doc.append(f"- El principal destino por valor FOB es {dest_max} con ${float(fob_max):,.0f} CLP.")
+    doc.append(f"- El valor FOB acumulado del periodo fue de ${total_fob:,.0f} CLP.")
+    doc.append("")
+    doc.append("La siguiente información detalla las exportaciones de salmón entre enero y junio de 2025, en toneladas y valor FOB en CLP.")
+    doc.append("")
+    for pais, n, kilos, fob in por_destino:
+        doc.append(f"- Hacia {pais} se realizaron {int(n)} envíos por {float(kilos):,.0f} kg y un valor FOB de ${float(fob):,.0f} CLP.")
+    doc.append("")
+    for mes, n, kilos, fob in por_mes:
+        doc.append(f"- En {mes_en_espanol(str(mes))}: {int(n)} envíos, {float(kilos):,.0f} kg y ${float(fob):,.0f} CLP FOB.")
+    doc.append("")
+    doc.append(f"El valor FOB acumulado del periodo fue de ${total_fob:,.0f} CLP.")
+    doc.append("")
+    doc.append("Fuente: tabla exportaciones / vistas v_exportaciones_por_destino, v_exportaciones_resumen.")
+    return doc
+
+
+def generar_lotes(cur):
+    """Lotes de cultivo y biomasa por centro."""
+    cur.execute(
+        "SELECT lote_codigo, especie, centro_nombre, unidades_sembradas, biomasa_kg, peso_promedio_kg, fcr, estado FROM v_lotes_detalle ORDER BY estado, lote_codigo"
+    )
+    filas = cur.fetchall()
+    cur.execute("SELECT centro_nombre, biomasa_kg FROM v_biomasa_por_centro ORDER BY biomasa_kg DESC")
+    por_centro = cur.fetchall()
+    if not filas:
+        return []
+
+    doc = []
+    doc.append("LOTES DE CULTIVO DETALLADOS - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    mejor_lote, mejor_especie, mejor_centro, _, _, _, mejor_fcr, _ = min(filas, key=lambda f: float(f[6]))
+    mayor_centro, mayor_biomasa = por_centro[0]
+    doc.append("SUMARIO EJECUTIVO:")
+    doc.append(f"- El lote con el FCR más bajo (mejor eficiencia alimentaria) es {mejor_lote} de {mejor_especie} en {mejor_centro}, con un FCR de {float(mejor_fcr):.2f}.")
+    doc.append(f"- El centro con la mayor biomasa es {mayor_centro} con {float(mayor_biomasa):,.0f} kg.")
+    doc.append("")
+    doc.append("La siguiente información detalla los lotes de cultivo de salmón con su biomasa, peso promedio y FCR.")
+    doc.append("")
+    for lote, especie, centro, unidades, biomasa, peso, fcr, estado in filas:
+        doc.append(
+            f"- El lote {lote} de {especie} en {centro} ({estado}) tiene {int(unidades)} unidades sembradas, "
+            f"{float(biomasa):,.0f} kg de biomasa, un peso promedio de {float(peso):,.2f} kg y un FCR de {float(fcr):.2f}."
+        )
+    doc.append("")
+    doc.append("Biomasa por centro de cultivo:")
+    for centro, biomasa in por_centro:
+        doc.append(f"- {centro}: {float(biomasa):,.0f} kg de biomasa.")
+    doc.append("")
+    doc.append("Fuente: tabla lotes_detalle / vistas v_lotes_detalle, v_biomasa_por_centro.")
+    return doc
+
+
+def generar_incidentes(cur):
+    """Incidentes y seguridad: tipos, severidad, accidentes laborales y críticos con acciones."""
+    cur.execute("SELECT tipo, n_incidentes FROM v_incidentes_por_tipo ORDER BY n_incidentes DESC")
+    por_tipo = cur.fetchall()
+    cur.execute("SELECT severidad, n_incidentes FROM v_incidentes_por_severidad ORDER BY n_incidentes DESC")
+    por_severidad = cur.fetchall()
+    if not por_tipo:
+        return []
+
+    total = sum(int(f[1]) for f in por_tipo)
+
+    cur.execute(
+        """SELECT fecha, severidad, descripcion, accion_tomada, centro_nombre, estado
+           FROM incidentes WHERE tipo = 'accidente' ORDER BY fecha"""
+    )
+    accidentes = cur.fetchall()
+    cur.execute(
+        """SELECT fecha, tipo, descripcion, accion_tomada, centro_nombre, estado
+           FROM incidentes WHERE severidad = 'critico' ORDER BY fecha"""
+    )
+    criticos = cur.fetchall()
+
+    doc = []
+    doc.append("REPORTE DE INCIDENTES Y SEGURIDAD - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    criticos_n = next((int(n) for s, n in por_severidad if s == "critico"), 0)
+    accidentes_n = next((int(n) for t, n in por_tipo if t == "accidente"), 0)
+    doc.append("SUMARIO EJECUTIVO:")
+    doc.append(f"- Se registraron {criticos_n} incidentes de severidad crítica, todos del tipo escape.")
+    doc.append(f"- Se registraron {accidentes_n} accidentes laborales, ninguno fatal.")
+    doc.append(f"- El total de incidentes registrados en el periodo fue de {total}.")
+    doc.append("")
+    doc.append("La siguiente información resume los incidentes registrados entre enero y agosto de 2025.")
+    doc.append("")
+    for tipo, n in por_tipo:
+        doc.append(f"- Se registraron {int(n)} incidentes de tipo {tipo}.")
+    doc.append("")
+    for severidad, n in por_severidad:
+        doc.append(f"- {int(n)} incidentes fueron de severidad {severidad}.")
+    doc.append("")
+    doc.append(f"El total de incidentes registrados en el periodo fue de {total}.")
+    doc.append("")
+
+    if accidentes:
+        doc.append("ACCIDENTES LABORALES REGISTRADOS (TIPO ACCIDENTE):")
+        for fecha, severidad, descripcion, accion, centro, estado in accidentes:
+            doc.append(f"- {fecha}: {centro}. {descripcion} (severidad {severidad}, {estado}). Acción: {accion}")
+        doc.append("")
+
+    if criticos:
+        doc.append("INCIDENTES CRÍTICOS (SEVERIDAD CRÍTICA):")
+        for fecha, tipo, descripcion, accion, centro, estado in criticos:
+            doc.append(f"- {fecha}: {centro}. {descripcion} (tipo {tipo}, {estado}). Acción: {accion}")
+        doc.append("")
+
+    doc.append("Fuente: tabla incidentes / vistas v_incidentes_por_tipo, v_incidentes_por_severidad.")
+    return doc
+
+
+def generar_concesiones(cur):
+    """Concesiones acuícolas: ubicación, especies y capacidad autorizadas."""
+    cur.execute(
+        "SELECT centro_nombre, sector, region, latitude, longitude, superficie_ha, "
+        "n_jaulas, especies_autorizadas, vigencia FROM v_concesiones"
+    )
+    filas = cur.fetchall()
+    if not filas:
+        return []
+
+    doc = []
+    doc.append("CONCESIONES ACUÍCOLAS - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    doc.append("Las concesiones son los títulos de cultivo otorgados por la autoridad (Sernapesca).")
+    max_centro, _, _, _, _, max_ha, _, _, _ = max(filas, key=lambda f: float(f[5]))
+    max_jaulas_centro, _, _, _, _, _, max_jaulas, _, _ = max(filas, key=lambda f: int(f[6]))
+    doc.append("SUMARIO EJECUTIVO:")
+    doc.append(f"- La concesión con la MAYOR superficie autorizada es {max_centro} con {float(max_ha):.2f} hectáreas.")
+    doc.append(f"- La concesión con la mayor cantidad de jaulas es {max_jaulas_centro} con {int(max_jaulas)} jaulas.")
+    doc.append("")
+    doc.append("Detalle de cada concesión de la empresa:")
+    doc.append("")
+    for centro, sector, region, lat, lon, ha, jaulas, especies, vigencia in filas:
+        doc.append(
+            f"- {centro}: sector {sector}, región {region}, coordenadas {float(lat):.5f}, "
+            f"{float(lon):.5f}. Superficie autorizada de {float(ha):.2f} ha con {int(jaulas)} jaulas. "
+            f"Especies autorizadas: {especies}. Estado: {vigencia}."
+        )
+    doc.append("")
+    doc.append("Fuente: tabla concesiones / vista v_concesiones.")
+    return doc
+
+
+def generar_monitoreo(cur):
+    """Monitoreo sanitario y ambiental: caligus, temperatura, oxígeno y mortalidad mensual."""
+    cur.execute(
+        "SELECT lote_codigo, mes, caligus_hembras_ovigeras_prom, temperatura_c, "
+        "oxigeno_mg_l, mortalidad_mes FROM monitoreo_sanitario ORDER BY mes, lote_codigo"
+    )
+    filas = cur.fetchall()
+    if not filas:
+        return []
+
+    cur.execute(
+        "SELECT lote_codigo, caligus_promedio, temperatura_promedio_c, oxigeno_minimo_mg_l, "
+        "mortalidad_total_periodo FROM v_monitoreo_promedio"
+    )
+    resumen = cur.fetchall()
+
+    doc = []
+    doc.append("MONITOREO SANITARIO Y AMBIENTAL MENSUAL - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    if resumen:
+        peor_caligus, _, _, _, _ = resumen[0]
+        doc.append("SUMARIO EJECUTIVO:")
+        doc.append(f"- El lote con el mayor promedio de caligus (hembras ovígeras) del periodo es {peor_caligus}.")
+        doc.append("- Los niveles de caligus sobre el umbral de control (definido por la normativa) requieren tratamiento antiparasitario.")
+        doc.append("")
+    doc.append("La siguiente información detalla el monitoreo mensual de cada lote activo (abril a julio de 2025).")
+    doc.append("")
+    for lote, mes, caligus, temp, oxi, mortalidad in filas:
+        doc.append(
+            f"- {lote} en {mes_en_espanol(str(mes))}: caligus promedio {float(caligus):.1f} hembras ovígeras, "
+            f"temperatura {float(temp):.1f}°C, oxígeno {float(oxi):.1f} mg/L y {int(mortalidad)} mortalidades en el mes."
+        )
+    doc.append("")
+    if resumen:
+        doc.append("RESUMEN DEL PERIODO POR LOTE:")
+        for lote, caligus, temp, oxi_min, mortalidad in resumen:
+            doc.append(
+                f"- {lote}: {float(caligus):.2f} caligus promedio, {float(temp):.1f}°C promedio, "
+                f"mínimo de oxígeno de {float(oxi_min):.1f} mg/L y {int(mortalidad)} mortalidades acumuladas."
+            )
+        doc.append("")
+    doc.append("Fuente: tabla monitoreo_sanitario / vista v_monitoreo_promedio.")
+    return doc
+
+
+def generar_alimentacion(cur):
+    """Alimentación: raciones entregadas por lote y mes (kg y costo CLP)."""
+    cur.execute("SELECT lote_codigo, total_kg, total_costo_clp FROM v_alimentacion_resumen")
+    resumen = cur.fetchall()
+    cur.execute(
+        "SELECT lote_codigo, mes, tipo_alimento, kg_entregados, costo_clp "
+        "FROM alimentacion ORDER BY lote_codigo, mes"
+    )
+    detalle = cur.fetchall()
+    if not detalle:
+        return []
+
+    total_kg = sum(float(f[3]) for f in detalle)
+    total_costo = sum(float(f[4]) for f in detalle)
+    mayor_lote, mayor_kg, mayor_costo = max(resumen, key=lambda r: float(r[2]))
+
+    doc = []
+    doc.append("ALIMENTACIÓN POR LOTE (RACIONES ENTREGADAS) - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    doc.append("SUMARIO EJECUTIVO:")
+    doc.append(f"- El lote con mayor gasto en alimento es {mayor_lote} con ${float(mayor_costo):,.0f} CLP.")
+    doc.append(f"- El total de alimento entregado en el periodo fue de {total_kg:,.0f} kg por ${total_costo:,.0f} CLP.")
+    doc.append("")
+    doc.append("Detalle mensual de raciones entregadas (abril a julio de 2025):")
+    doc.append("")
+    for lote, mes, tipo, kg, costo in detalle:
+        doc.append(
+            f"- {lote} en {mes_en_espanol(str(mes))}: {float(kg):,.0f} kg de {tipo} por ${float(costo):,.0f} CLP."
+        )
+    doc.append("")
+    doc.append("Resumen por lote:")
+    for lote, kg, costo in resumen:
+        doc.append(f"- {lote}: {float(kg):,.0f} kg entregados por ${float(costo):,.0f} CLP.")
+    doc.append("")
+    doc.append("Estas raciones deben contrastarse con el FCR de cada lote para evaluar la eficiencia alimentaria.")
+    doc.append("")
+    doc.append("Fuente: tabla alimentacion / vista v_alimentacion_resumen.")
+    return doc
+
+
+def generar_clientes(cur):
+    """Clientes vigentes: mercados, contacto y condiciones comerciales."""
+    cur.execute(
+        "SELECT nombre, pais, contacto, producto_principal, condiciones_pago, contrato_tipo "
+        "FROM clientes ORDER BY pais"
+    )
+    filas = cur.fetchall()
+    if not filas:
+        return []
+
+    doc = []
+    doc.append("CLIENTES VIGENTES - SalmoSUR S.A.")
+    doc.append("=" * 40)
+    doc.append("La siguiente información detalla la cartera de clientes de la empresa con sus condiciones comerciales.")
+    doc.append("")
+    for nombre, pais, contacto, producto, pago, contrato in filas:
+        doc.append(
+            f"- {nombre} ({pais}). Contacto: {contacto}. Producto principal: {producto}. "
+            f"Condiciones de pago: {pago}. {contrato}."
+        )
+    doc.append("")
+    doc.append("Fuente: tabla clientes.")
+    return doc
+
+
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -193,6 +586,16 @@ def main():
         "calidad.txt": generar_calidad,
         "mortalidad.txt": generar_mortalidad,
         "rentabilidad.txt": generar_rentabilidad,
+        "empleados.txt": generar_empleados,
+        "inventario.txt": generar_inventario,
+        "compras.txt": generar_compras,
+        "exportaciones.txt": generar_exportaciones,
+        "lotes_detalle.txt": generar_lotes,
+        "incidentes.txt": generar_incidentes,
+        "concesiones.txt": generar_concesiones,
+        "monitoreo_sanitario.txt": generar_monitoreo,
+        "alimentacion.txt": generar_alimentacion,
+        "clientes.txt": generar_clientes,
     }
 
     for nombre, fn in generadores.items():
@@ -207,7 +610,7 @@ def main():
     cur.close()
     conn.close()
     print("\n✔ Documentos internos generados en data/interna/")
-    print("  (ventas.txt, calidad.txt, mortalidad.txt, rentabilidad.txt)")
+    print("  (ventas, calidad, mortalidad, rentabilidad, empleados, inventario, compras, exportaciones, lotes_detalle, incidentes, concesiones, monitoreo_sanitario, alimentacion, clientes)")
 
 
 if __name__ == "__main__":

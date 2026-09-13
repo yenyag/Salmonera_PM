@@ -1,12 +1,12 @@
 DISTRIBUCIÓN DE COSECHAS POR CALIDAD - SalmoSUR S.A.
 ========================================
-La siguiente información detalla el volumen cosechado según la clasificación de calidad del producto.
+La siguiente información detalla el volumen cosechado (en toneladas) según la clasificación de calidad del producto.
 
-- Se cosecharon 540 unidades de calidad de exportación (46.4% del total).
-- Se cosecharon 320 unidades de calidad premium (27.5% del total).
-- Se cosecharon 210 unidades de calidad mercado local (18.0% del total).
-- Se cosecharon 95 unidades de calidad descarte (8.2% del total).
+- Se cosecharon 880 toneladas de calidad de exportación (54.7% del total).
+- Se cosecharon 480 toneladas de calidad premium (29.8% del total).
+- Se cosecharon 200 toneladas de calidad mercado local (12.4% del total).
+- Se cosecharon 50 toneladas de calidad descarte (3.1% del total).
 
-El volumen total cosechado fue de 1165 unidades.
+El volumen total cosechado fue de 1610 toneladas.
 
 Fuente: tabla cosechas / vista vista_distribucion_por_calidad.

@@ -1,0 +1,83 @@
+========================================================================
+PRUEBA DE MEDICIÓN - CHUNKS DEL ÍNDICE Y TOKENS DEL LLM
+Ejecución: 2026-09-10
+========================================================================
+
+[1] CHUNKS DEL ÍNDICE FAISS
+------------------------------------------------------------------------
+>>> NOTA: esta medición corresponde al índice original (57 chunks). Tras ampliar
+>>> el corpus (detalle de accidentes/críticos en incidentes.txt + documento externo
+>>> protocolo_accidentes_laborales.txt) el índice se reconstruyó a 65 chunks
+>>> (16 documentos: 10 internos + 6 externos) — ver docs/informe.md sección C.
+Chunks totales en data/faiss_index: 57
+  - interna: 41 chunks
+  - externa: 16 chunks
+  Desglose por documento:
+    - empleados.txt: 12 chunks
+    - lotes_detalle.txt: 9 chunks
+    - compras.txt: 6 chunks
+    - bioseguridad.txt: 4 chunks
+    - exportacion_calidad.txt: 4 chunks
+    - exportaciones.txt: 3 chunks
+    - inventario.txt: 3 chunks
+    - mercado_salmon.txt: 3 chunks
+    - sernapesca_normativa.txt: 3 chunks
+    - incidentes.txt: 2 chunks
+    - mortalidad.txt: 2 chunks
+    - ventas.txt: 2 chunks
+    - requisitos_exportacion.txt: 2 chunks
+    - calidad.txt: 1 chunks
+    - rentabilidad.txt: 1 chunks
+  Modelo de embeddings: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 (384 dims)
+
+[2] TOKENS DEL LLM POR CONSULTA (Groq, modelo openai/gpt-oss-120b, k=5)
+    (temperature=0.1, max_tokens=1500)
+------------------------------------------------------------------------
+  ID   Pregunta                                                 prompt  comp  total  cache razonam latencia(s)
+  P1   ¿Qué lote tiene mayor mortalidad acumulada?                 799   159    958    256     108       1.47
+  P2   ¿Cuáles fueron las ventas de enero de 2025 y cuál fue e     949   330   1279    768     234       2.33
+  P3   ¿Qué centro es el más rentable y cuánto generó?             820   144    964    256      95       1.45
+  P4   ¿Cuántas unidades se cosecharon de calidad premium y de     991   124   1115    256      77       1.24
+  P5   ¿Qué lote tiene mayor mortalidad y qué recomiendas segú     757   497   1254      0     184       1.09
+  P6   ¿Qué requisitos debe cumplir el salmón para su exportac     846   647   1493      0     399       1.42
+  P7   ¿Cuánto pagó la empresa en impuestos a la renta durante    1020   126   1146      0      96       0.33
+  P8   ¿Cuál es la planilla mensual del centro de cultivo Los      871   237   1108      0     193       0.55
+  P9   ¿Qué productos del inventario están bajo su stock mínim     767   236   1003    256     108       1.63
+  P10  ¿Qué proveedor facturó más durante el periodo y en qué      755   200    955    256     125       0.69
+  P11  ¿Cuál es el principal destino de las exportaciones por     1068   123   1191      0      59       0.31
+  P12  ¿Qué centro de cultivo concentra la mayor biomasa y cuá     960   233   1193      0     170       0.54
+  P13  ¿Cuántos incidentes de severidad crítica se registraron     821   189   1010    256     136       2.14
+  P14  ¿Qué lote tiene el FCR más bajo y en qué centro se encu     750   196    946    256     131       0.56
+
+[3] TOTALES DE LA PRUEBA (14 consultas)
+------------------------------------------------------------------------
+  Tokens de entrada (prompt) sumados  : 12,174
+  Tokens de salida (completion) sumad.: 3,441
+  Tokens totales de la prueba          : 15,615
+  Tokens en caché (prompt)            : 2,560 (21.0% del prompt)
+  Tokens de razonamiento (completion) : 2,115 (61.5% del completion)
+  Caracteres de contexto recuperados  : 28,654
+  Latencia total (suma)               : 15.8 s
+  Promedio tokens por consulta         : 1,115
+  Promedio latencia por consulta       : 1.13 s
+  Proporción entrada/salida            : 3.54:1
+  Consultas aproximadas con cuota diaria (100,000 tokens): ~90
+
+[4] MUESTRA DE RESPUESTAS (evidencia de coherencia)
+------------------------------------------------------------------------
+  [P1] El lote con mayor mortalidad acumulada es **LOTE‑B2**, con 2 300 unidades mortales.   [Fuente: tabla lotes / v
+  [P2] - Ventas en enero 2025: **$125,000,000 CLP**.   - Total semestral (enero‑junio 2025): **$905,000,000 CLP**.  [
+  [P3] El centro más rentable es **Los Lagos**, con ingresos de **$510,000,000 CLP**.   [Fuente: tabla centros / vist
+  [P4] Se cosecharon **320 unidades de calidad premium** y **95 unidades de calidad descarte**.   [Fuente: tabla cose
+  [P5] El lote con mayor mortalidad es **LOTE‑B2**, con **2300 unidades** fallecidas. [Fuente: tabla lotes / vista vi
+  [P6] Los requisitos que debe cumplir el salmón chileno para ser exportado son:  1. **Trazabilidad completa del lote
+  [P7] No tengo información suficiente para responder eso. [Fuente: tabla ventas / vista v_ventas_por_mes]
+  [P8] La planilla mensual del centro de cultivo Los Lagos es **$18,050,000 CLP**.   [Fuente: PLANILLA Y DOTACIÓN DE 
+  [P9] Los productos que están bajo su stock mínimo son:  - **Alimento Extruido 9 mm** (categoría: alimento) – tiene 
+  [P10] El proveedor que facturó más durante el periodo fue **Transportes Austral**, con un total de **$60,500,000 CLP
+  [P11] El principal destino de nuestras exportaciones por valor FOB es **Estados Unidos**, con un valor de **$4,940,0
+  [P12] El centro de cultivo que concentra la mayor biomasa es **Los Lagos**, con **6 750 000 kg** de biomasa.   [Fuen
+  [P13] Se registraron **2 incidentes de severidad crítica** y **todos fueron del tipo escape**.   [Fuente: tabla inci
+  [P14] El lote con el FCR más bajo es **LOTE‑K1** de Salmón Atlántico, y se encuentra en el centro de **Quellón**.   
+
+✔ Medición completada.

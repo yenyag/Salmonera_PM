@@ -1,0 +1,33 @@
+REPORTE DE INCIDENTES Y SEGURIDAD - SalmoSUR S.A.
+========================================
+SUMARIO EJECUTIVO:
+- Se registraron 2 incidentes de severidad crítica, todos del tipo escape.
+- Se registraron 4 accidentes laborales, ninguno fatal.
+- El total de incidentes registrados en el periodo fue de 18.
+
+La siguiente información resume los incidentes registrados entre enero y agosto de 2025.
+
+- Se registraron 4 incidentes de tipo bioseguridad.
+- Se registraron 4 incidentes de tipo escape.
+- Se registraron 4 incidentes de tipo accidente.
+- Se registraron 3 incidentes de tipo ambiental.
+- Se registraron 3 incidentes de tipo sanitario.
+
+- 6 incidentes fueron de severidad medio.
+- 6 incidentes fueron de severidad alto.
+- 4 incidentes fueron de severidad bajo.
+- 2 incidentes fueron de severidad critico.
+
+El total de incidentes registrados en el periodo fue de 18.
+
+ACCIDENTES LABORALES REGISTRADOS (TIPO ACCIDENTE):
+- 2025-03-02: Quellón. Operario resbaló en cubierta mojada y sufrió contusión leve en rodilla (severidad bajo, resuelto). Acción: Atención en enfermería y entrega de calzado con mayor agarre.
+- 2025-04-09: Quellón. Operario de planta sufrió corte en antebrazo al manipular fileteadora (severidad alto, resuelto). Acción: Primeros auxilios y derivación a centro asistencial.
+- 2025-05-23: Chiloé. Buzo presentó otitis por presión durante mantención de red del lote A2 (severidad medio, resuelto). Acción: Suspensión de la faena y derivación al médico laboral.
+- 2025-07-05: Chiloé. Operario sufrió fractura de muñeca al caer desde la escala de la balsa-metralla (severidad alto, abierto). Acción: Traslado a urgencia, investigación del accidente y revisión de la escala.
+
+INCIDENTES CRÍTICOS (SEVERIDAD CRÍTICA):
+- 2025-03-15: Los Lagos. Falla de traba de jaula en el lote A1 dejó la puerta parcialmente abierta; fuga estimada de 3.200 unidades (tipo escape, en_seguimiento). Acción: Reparación por buzo, censo de stock y reporte oficial a Sernapesca.
+- 2025-06-28: Quellón. La puerta de muestreo quedó abierta y se estima una fuga de 2.100 peces del lote F1 (tipo escape, abierto). Acción: Censo al día siguiente y cambio del procedimiento de muestreo.
+
+Fuente: tabla incidentes / vistas v_incidentes_por_tipo, v_incidentes_por_severidad.

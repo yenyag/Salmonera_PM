@@ -78,7 +78,7 @@ def evaluar(pregunta, esperado, respuesta, fuentes, tipo) -> dict:
 
     # Las pistas del dato esperado se separan por espacios (cada token relevante)
     resp_norm = normalizar(respuesta)
-    pistas = [p for p in esperado.split() if len(p.strip()) >= 2]
+    pistas = [p for p in esperado.split() if len(p.strip()) >= 2 or p.strip().isdigit()]
     aciertos = sum(1 for p in pistas if normalizar(p) in resp_norm)
     ratio = aciertos / len(pistas) if pistas else 0
 
@@ -102,7 +102,7 @@ def main():
     resultados = []
     for p in preguntas:
         print(f"  • [{p['id']}] {p['pregunta'][:60]}...")
-        resultado = consultar(p["pregunta"], k=3)
+        resultado = consultar(p["pregunta"], k=7)
         caso = evaluar(
             p, p["dato_esperado"], resultado["respuesta"], resultado["fuentes"], p["tipo"]
         )

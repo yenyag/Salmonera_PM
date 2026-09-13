@@ -1,0 +1,112 @@
+════════════════════════════════════════════════════════════
+             PRUEBAS: SANITARIAS + ACCIDENTE + ESTRÉS
+════════════════════════════════════════════════════════════
+
+[1] SANITARIAS
+  PRUEBAS SANITARIAS - SalmoSUR S.A.
+  Fecha: 2026-09-10 12:35:15
+  
+  [HTTP]
+    Entorno: http://localhost:4000
+    [OK] GET / (login): 200 (login servido)
+    [OK] GET /dashboard.html: 200 (panel de chat presente: true)
+    [OK] POST /api/login (válido): 200
+    [OK] POST /api/login (inválido → 401): 401
+    [OK] GET /api/ventas: 200 · array de 6 filas
+    [OK] GET /api/calidad: 200 · array de 4 filas
+    [OK] GET /api/mortalidad: 200 · array de 5 filas
+    [OK] GET /api/rentabilidad: 200 · array de 4 filas
+    [OK] GET /api/empleados: 200 · array de 25 filas
+    [OK] GET /api/empleados/planilla: 200 · array de 21 filas
+    [OK] GET /api/inventario: 200 · array de 4 filas
+    [OK] GET /api/inventario/bajo: 200 · array de 3 filas
+    [OK] GET /api/compras: 200 · array de 8 filas
+    [OK] GET /api/exportaciones: 200 · array de 5 filas
+    [OK] GET /api/exportaciones/mensual: 200 · array de 6 filas
+    [OK] GET /api/lotes: 200 · array de 20 filas
+    [OK] GET /api/lotes/biomasa: 200 · array de 4 filas
+    [OK] GET /api/incidentes: 200 · array de 5 filas
+    [OK] GET /api/incidentes/severidad: 200 · array de 4 filas
+    [OK] POST /api/consultar (dato + fuentes): 200 · fuentes=3 · dato 18 presente=true
+    [OK] POST /api/consultar (sin pregunta → 400): 400
+  
+  [BASE DE DATOS (PostgreSQL salmonera_pm)]
+    [OK] Tabla ventas: 6 filas
+    [OK] Tabla empleados: 25 filas
+    [OK] Tabla inventario: 22 filas
+    [OK] Tabla compras: 30 filas
+    [OK] Tabla exportaciones: 28 filas
+    [OK] Tabla lotes_detalle: 20 filas
+    [OK] Tabla incidentes: 18 filas
+    [OK] Vista v_incidentes_por_tipo: 5 filas (5 tipos)
+  
+  [ÍNDICE VECTORIAL (FAISS)]
+    [OK] Índice FAISS: 57 chunks (esperado 57)
+  
+  RESULTADO: TODAS LAS PRUEBAS SANITARIAS PASARON ✔
+
+[2] ACCIDENTE LABORAL (resumen)
+  # Prueba de Escenario de Accidente Laboral - SalmoSUR S.A.
+  
+  **Fecha de ejecución:** 2026-09-10 12:38
+  **Pipeline:** Groq `openai/gpt-oss-120b`, temperature 0.1, max_tokens 1500, retriever k=5
+  **Resultado de coherencia:** 8/8
+  
+  | ID | Pregunta | Total tokens | Prompt | Completion | ¿Coherente? | Razón |
+  |----|----------|-------------|--------|------------|-------------|-------|
+  | A1 | ¿Cuántos incidentes de tipo accidente se registrar… | 930 | 808 | 122 | Sí | Coincide con 100% de los datos esperados y cita 5 fuente(s) |
+  | A2 | Durante la faena de cosecha se registró un acciden… | 1322 | 883 | 439 | Sí | Coincide con 86% de los datos esperados y cita 5 fuente(s) |
+  | A3 | ¿Cuántos incidentes de severidad crítica se regist… | 1005 | 821 | 184 | Sí | Coincide con 100% de los datos esperados y cita 5 fuente(s) |
+  | A4 | ¿Cuál es el número de emergencia al que debe llama… | 1090 | 972 | 118 | Sí | El asistente reconoce que no tiene el dato (evita alucinar) |
+  | A5 | ¿Con qué seguro de accidentes del trabajo cuenta u… | 973 | 806 | 167 | Sí | El asistente reconoce que no tiene el dato (evita alucinar) |
+  | A6 | Ante una mortalidad acumulada elevada tras un inci… | 1104 | 801 | 303 | Sí | Coincide con 100% de los datos esperados y cita 5 fuente(s) |
+  | A7 | Del total de incidentes registrados, ¿cuántos fuer… | 1021 | 825 | 196 | Sí | Coincide con 100% de los datos esperados y cita 5 fuente(s) |
+  | A8 | ¿Cuántos incidentes registró SalmoSUR por severida… | 1058 | 861 | 197 | Sí | Coincide con 100% de los datos esperados y cita 5 fuente(s) |
+  
+  **Totales (8 consultas):** prompt 6,777 · completion 1,726 · **total 8,503 tokens** · promedio 1,063/consulta
+  (detalle completo con respuestas en pruebas/resultados_accidente.md)
+
+[3] ESTRÉS
+  PRUEBA DE ESTRÉS - SalmoSUR S.A.
+  Fecha: 2026-09-10 12:38:11
+  Servidor: http://localhost:4000 · PID 17307
+  Memoria servidor antes del estrés: 71.7 MB
+  
+  [1] RÁFAGAS ENDPOINTS REST (3 rondas x 15 endpoints en paralelo)
+    Ronda 1: 15/15 OK · dur 90 ms · p50 29 ms · p95 85 ms · max 85 ms · timeouts/errores 0
+    Ronda 2: 15/15 OK · dur 11 ms · p50 7 ms · p95 10 ms · max 10 ms · timeouts/errores 0
+    Ronda 3: 15/15 OK · dur 10 ms · p50 7 ms · p95 10 ms · max 10 ms · timeouts/errores 0
+  
+  [2] 10 CONSULTAS RAG EN PARALELO (/api/consultar)
+    (cada consulta lanza un subproceso Python: embeddings + Groq)
+    Resultado: 2/10 OK · duración total del lote 17180 ms · p50 16587 ms · p95 17176 ms · max 17176 ms
+    [OK] ¿Qué lote tiene mayor mortalidad acumulada?        HTTP 200 · 17057 ms · fuentes=4
+    [OK] ¿Cuál es la planilla mensual del centro Los Lago   HTTP 200 · 17176 ms · fuentes=3
+    [✘] ¿Cuáles fueron las ventas de enero de 2025?        HTTP 500 · 16750 ms · fuentes=0 · {}
+    [✘] ¿Qué productos del inventario están bajo su stoc   HTTP 500 · 16507 ms · fuentes=0 · {}
+    [✘] ¿Qué proveedor facturó más en el periodo?          HTTP 500 · 16450 ms · fuentes=0 · {}
+    [✘] ¿Cuántos incidentes de severidad crítica hay y d   HTTP 500 · 16503 ms · fuentes=0 · {}
+    [✘] ¿Cuánto pagó la empresa en impuestos a la renta    HTTP 500 · 16587 ms · fuentes=0 · {}
+    [✘] ¿Qué centro concentra la mayor biomasa?            HTTP 500 · 16583 ms · fuentes=0 · {}
+    [✘] ¿Cuál es el principal destino de exportaciones p   HTTP 500 · 16593 ms · fuentes=0 · {}
+    [✘] ¿Qué lote tiene el FCR más bajo?                   HTTP 500 · 16448 ms · fuentes=0 · {}
+  
+  [3] TOKENS DEL ESTRÉS RAG
+    Consultas OK: 2 × promedio real 1 115 tokens = ≈ 2.230 tokens
+    Nota: /api/consultar no expone el usage; el promedio 1 115 proviene de `medir_chunks_tokens.py` (usage real de Groq).
+  
+  Memoria servidor después del estrés: 74.1 MB
+  RESULTADO GENERAL: 8 ERROR(ES) DETECTADO(S) ✘
+
+═══════════════ DIAGNÓSTICO DEL HALLAZGO (ESTRÉS RAG) ═══════════════
+
+  - GPU detectada: NVIDIA GeForce RTX 3050 Laptop GPU, 4096 MiB de VRAM.
+  - /api/consultar lanza un subproceso Python por consulta; cada uno
+    carga el modelo de embeddings en CUDA. Con 10 consultas en paralelo
+    la VRAM se agota (torch.OutOfMemoryError) y el servidor responde
+    HTTP 500 a 8 de 10. Las 2 que completaron tardaron ~17 s.
+  - El servidor NO cayó: REST 45/45 OK (p95 <= 85 ms) y memoria del
+    proceso node estable (71.7 -> 74.1 MB).
+  - RECOMENDACIÓN: limitar la concurrencia de /api/consultar con un
+    semáforo (máx. 2 subprocesos simultáneos) para que bajo carga las
+    consultas se encolen en vez de fallar por VRAM.

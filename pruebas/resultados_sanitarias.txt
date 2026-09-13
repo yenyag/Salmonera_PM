@@ -1,0 +1,41 @@
+PRUEBAS SANITARIAS - SalmoSUR S.A.
+Fecha: 2026-09-10 13:30:32
+
+[HTTP]
+  Entorno: http://localhost:4000
+  [OK] GET / (login): 200 (login servido)
+  [OK] GET /dashboard.html: 200 (panel de chat presente: true)
+  [OK] POST /api/login (válido): 200
+  [OK] POST /api/login (inválido → 401): 401
+  [OK] GET /api/ventas: 200 · array de 6 filas
+  [OK] GET /api/calidad: 200 · array de 4 filas
+  [OK] GET /api/mortalidad: 200 · array de 5 filas
+  [OK] GET /api/rentabilidad: 200 · array de 4 filas
+  [OK] GET /api/empleados: 200 · array de 25 filas
+  [OK] GET /api/empleados/planilla: 200 · array de 21 filas
+  [OK] GET /api/inventario: 200 · array de 4 filas
+  [OK] GET /api/inventario/bajo: 200 · array de 3 filas
+  [OK] GET /api/compras: 200 · array de 8 filas
+  [OK] GET /api/exportaciones: 200 · array de 5 filas
+  [OK] GET /api/exportaciones/mensual: 200 · array de 6 filas
+  [OK] GET /api/lotes: 200 · array de 20 filas
+  [OK] GET /api/lotes/biomasa: 200 · array de 4 filas
+  [OK] GET /api/incidentes: 200 · array de 5 filas
+  [OK] GET /api/incidentes/severidad: 200 · array de 4 filas
+  [OK] POST /api/consultar (dato + fuentes): 200 · fuentes=3 · dato 18 presente=true
+  [OK] POST /api/consultar (sin pregunta → 400): 400
+
+[BASE DE DATOS (PostgreSQL salmonera_pm)]
+  [OK] Tabla ventas: 6 filas
+  [OK] Tabla empleados: 25 filas
+  [OK] Tabla inventario: 22 filas
+  [OK] Tabla compras: 30 filas
+  [OK] Tabla exportaciones: 28 filas
+  [OK] Tabla lotes_detalle: 20 filas
+  [OK] Tabla incidentes: 18 filas
+  [OK] Vista v_incidentes_por_tipo: 5 filas (5 tipos)
+
+[ÍNDICE VECTORIAL (FAISS)]
+  [OK] Índice FAISS: 65 chunks (esperado 65)
+
+RESULTADO: TODAS LAS PRUEBAS SANITARIAS PASARON ✔

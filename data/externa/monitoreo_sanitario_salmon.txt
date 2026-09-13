@@ -1,0 +1,60 @@
+MONITOREO SANITARIO Y AMBIENTAL EN CENTROS DE CULTIVO DE SALMÓN (CHILE)
+=======================================================================
+
+El monitoreo periódico del estado sanitario y ambiental de los centros de cultivo
+es obligatorio y es la base del sistema de alerta temprana del sector. Los
+indicadores clave que registra la empresa SalmoSUR S.A. son el caligus, la
+temperatura, el oxígeno disuelto y la mortalidad mensual.
+
+CALIGUS (PIOJO DE MAR)
+----------------------
+Caligus rogercresseyi es el principal ectoparásito del salmón en Chile. El
+programa de vigilancia define umbrales de control por macrozona y centro. En
+términos prácticos:
+
+- Menos de 2 hembras ovígeras promedio: nivel bajo, monitoreo normal.
+- Entre 2 y 4 hembras ovígeras promedio: nivel de alerta, aumentar frecuencia
+  de muestreo.
+- Sobre 4-4,5 hembras ovígeras promedio: se debe aplicar tratamiento
+  antiparasitario autorizado (baños o alimento medicado) y reportar.
+
+Los tratamientos deben realizarse con productos autorizados por Sernapesca y
+respetando los tiempos de carencia para no comprometer la inocuidad del producto.
+
+OXÍGENO DISUELTO
+----------------
+El oxígeno disuelto es el parámetro ambiental más crítico en la engorda.
+
+- Mayores a 6,5 mg/L: condición adecuada.
+- Entre 6 y 6,5 mg/L: monitoreo atento.
+- Menores a 6 mg/L: riesgo de estrés y mortalidad; activar oxigenación o
+  traslado.
+- Menores a 4,5 mg/L: nivel crítico, puede generar mortalidad masiva.
+
+TEMPERATURA DEL AGUA
+--------------------
+La temperatura modula el metabolismo y la susceptibilidad a enfermedades.
+
+- En la zona sur (Los Lagos y Aysén) el rango típico es 8-15°C según estación.
+- Temperaturas prolongadas sobre 14°C elevan el estrés y favorecen florecimientos
+  algales y brotes de piscirickettsiosis (SRS).
+- En otoño-invierno (abril a agosto) la columna de agua se enfría (9-12°C) y la
+  probabilidad de oxigenación baja disminuye, pero aumentan las enfermedades de
+  invierno como SRS.
+
+MORTALIDAD MENSUAL
+------------------
+La mortalidad es el último indicador agregado del estado del lote.
+
+- Normal: menos de 0,3% de la biomasa al mes.
+- Alerta: entre 0,3% y 0,5% mensual.
+- Alto: sobre 0,5% mensual, activar plan de contingencia y notificar a Sernapesca.
+
+FLORACIONES ALGALES
+-------------------
+Las floraciones algales nocivas (FAN) provocan desoxigenación del agua. Ante
+avisos de FAN se debe incrementar el monitoreo de oxígeno, activar oxigenación,
+reducir la alimentación y, si corresponde, adelantar cosecha parcial.
+
+Fuente: Sernapesca - Programa sanitario y monitoreo ambiental en acuicultura
+(https://www.sernapesca.cl/)

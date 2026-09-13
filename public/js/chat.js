@@ -4,6 +4,11 @@ import { api } from './api.js';
 const chatBody = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
+const fabBtn = document.getElementById('fab-chat');
+const chatPanel = document.getElementById('chat-panel');
+const cerrarBtn = document.getElementById('cerrar-chat');
+
+let bienvenidaMostrada = false;
 
 const sujerencias = [
   '¿Qué lote tiene mayor mortalidad?',
@@ -107,14 +112,35 @@ function renderSugerencias() {
   });
 }
 
+function abrirChat() {
+  chatPanel.classList.remove('hidden');
+  if (!bienvenidaMostrada) {
+    bienvenidaMostrada = true;
+    agregarMensaje(
+      'Hola, soy el asistente de SalmoSUR S.A. Puedo responder preguntas sobre ' +
+      'ventas, mortalidad, calidad, rentabilidad y normativa del sector. ¿Qué deseas saber?',
+      'asistente'
+    );
+  }
+  chatInput.focus();
+}
+
+function cerrarChat() {
+  chatPanel.classList.add('hidden');
+}
+
+fabBtn.addEventListener('click', () => {
+  if (chatPanel.classList.contains('hidden')) {
+    abrirChat();
+  } else {
+    cerrarChat();
+  }
+});
+cerrarBtn.addEventListener('click', cerrarChat);
+
 sendBtn.addEventListener('click', () => enviarPregunta(chatInput.value));
 chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') enviarPregunta(chatInput.value);
 });
 
 renderSugerencias();
-agregarMensaje(
-  'Hola, soy el asistente de SalmoSUR S.A. Puedo responder preguntas sobre ' +
-  'ventas, mortalidad, calidad, rentabilidad y normativa del sector. ¿Qué deseas saber?',
-  'asistente'
-);
