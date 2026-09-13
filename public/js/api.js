@@ -42,5 +42,10 @@ export const api = {
   lotesBiomasa: () => getJSON('/lotes/biomasa'),
   incidentes: () => getJSON('/incidentes'),
   incidentesSeveridad: () => getJSON('/incidentes/severidad'),
+  concesiones: () => getJSON('/concesiones'),
+  monitoreo: () => getJSON('/monitoreo'),
+  monitoreoPromedio: () => getJSON('/monitoreo/promedio'),
+  alimentacion: () => getJSON('/alimentacion'),
+  clientes: () => getJSON('/clientes'),
   consultar: (pregunta) => postJSON('/consultar', { pregunta }),
 };

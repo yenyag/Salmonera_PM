@@ -499,7 +499,7 @@ async function renderTablaExportaciones() {
   });
 }
 
-// 10. Incidentes por tipo
+// 10. Incidentes por tipo (barras horizontales con conteo visible)
 async function renderIncidentesChart() {
   let data;
   try {
@@ -509,27 +509,41 @@ async function renderIncidentesChart() {
     return;
   }
 
-  const paleta = ['rgba(239, 68, 68, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(139, 92, 246, 0.8)'];
+  const paleta = data.map((_, i) =>
+    ['rgba(239, 68, 68, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(139, 92, 246, 0.8)'][i % 5]
+  );
 
   new Chart(document.getElementById('incidentesChart'), {
-    type: 'pie',
+    type: 'bar',
     data: {
-      labels: data.map(row => `${row.tipo} (${row.n_incidentes})`),
+      labels: data.map(row => row.tipo),
       datasets: [{
+        label: 'N° de incidentes',
         data: data.map(row => Number(row.n_incidentes)),
-        backgroundColor: data.map((_, i) => paleta[i % paleta.length]),
+        backgroundColor: paleta,
+        borderColor: '#fff',
         borderWidth: 2,
-        borderColor: '#fff'
+        borderRadius: 6
       }]
     },
     options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'right' },
+        legend: { display: false },
         tooltip: {
           callbacks: {
             label: (ctx) => `${ctx.raw} incidentes`
           }
         }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        },
+        y: { grid: { display: false } }
       }
     }
   });
@@ -557,22 +571,145 @@ async function renderTablaIncidentes() {
   });
 }
 
-// Inicializar todos los gráficos al cargar la página
+// Escapado básico para evitar inyección de HTML en las tablas
+function esc(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// 11. KPIs del resumen (Estado de la empresa)
+async function renderResumenKpis() {
+  try {
+    const [ventas, exportaciones, calidad, stock] = await Promise.all([
+      api.ventas(), api.exportaciones(), api.calidad(), api.inventarioBajo()
+    ]);
+    const totalVentas = ventas.reduce((a, r) => a + Number(r.total_mensual), 0);
+    const totalFob = exportaciones.reduce((a, r) => a + Number(r.total_fob_clp), 0);
+    const totalCosecha = calidad.reduce((a, r) => a + Number(r.cantidad_cosechas), 0);
+    document.getElementById('kpiVentas').textContent = `$${totalVentas.toLocaleString('es-CL')}`;
+    document.getElementById('kpiExportaciones').textContent = `$${totalFob.toLocaleString('es-CL')}`;
+    document.getElementById('kpiCosecha').textContent = totalCosecha.toLocaleString('es-CL');
+    document.getElementById('kpiStock').textContent = stock.length;
+  } catch (error) {
+    console.error('Error cargando KPIs:', error);
+  }
+}
+
+// 12. Tabla de concesiones acuícolas
+async function renderTablaConcesiones() {
+  let data;
+  try {
+    data = await api.concesiones();
+  } catch (error) {
+    console.error('Error cargando concesiones:', error);
+    return;
+  }
+
+  const tbody = document.getElementById('tablaConcesionesBody');
+  tbody.innerHTML = '';
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.className = 'border-b border-gray-100 text-sm';
+    tr.innerHTML = `
+      <td class="px-4 py-2 font-medium text-gray-800">${esc(row.centro_nombre)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.sector)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.region)}</td>
+      <td class="px-4 py-2 text-gray-600">${Number(row.superficie_ha).toLocaleString('es-CL')} ha</td>
+      <td class="px-4 py-2 text-gray-600">${row.n_jaulas}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.especies_autorizadas)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.vigencia)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// 13. Tabla de clientes
+async function renderTablaClientes() {
+  let data;
+  try {
+    data = await api.clientes();
+  } catch (error) {
+    console.error('Error cargando clientes:', error);
+    return;
+  }
+
+  const tbody = document.getElementById('tablaClientesBody');
+  tbody.innerHTML = '';
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.className = 'border-b border-gray-100 text-sm';
+    tr.innerHTML = `
+      <td class="px-4 py-2 font-medium text-gray-800">${esc(row.nombre)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.pais)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.contacto)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.producto_principal)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.condiciones_pago)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.contrato_tipo)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// 14. Tabla de monitoreo sanitario (con alertas de caligus y oxígeno)
+async function renderTablaMonitoreo() {
+  let data;
+  try {
+    data = await api.monitoreo();
+  } catch (error) {
+    console.error('Error cargando monitoreo:', error);
+    return;
+  }
+
+  const tbody = document.getElementById('tablaMonitoreoBody');
+  tbody.innerHTML = '';
+  data.forEach(row => {
+    const caligus = Number(row.caligus_hembras_ovigeras_prom);
+    const oxigeno = Number(row.oxigeno_mg_l);
+    const caligusClass = caligus > 4 ? 'text-red-600 font-bold' : (caligus > 2 ? 'text-amber-600 font-bold' : 'text-gray-600');
+    const oxigenoClass = oxigeno < 6 ? 'text-red-600 font-bold' : 'text-gray-600';
+    const tr = document.createElement('tr');
+    tr.className = 'border-b border-gray-100 text-sm';
+    tr.innerHTML = `
+      <td class="px-4 py-2 font-medium text-gray-800">${esc(row.lote_codigo)}</td>
+      <td class="px-4 py-2 text-gray-600">${esc(row.mes)}</td>
+      <td class="px-4 py-2 ${caligusClass}">${caligus.toFixed(2)}</td>
+      <td class="px-4 py-2 text-gray-600">${Number(row.temperatura_c).toFixed(1)}</td>
+      <td class="px-4 py-2 ${oxigenoClass}">${oxigeno.toFixed(1)}</td>
+      <td class="px-4 py-2 text-gray-600">${Number(row.mortalidad_mes).toLocaleString('es-CL')}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// --- Navegación por pestañas ------------------------------------------------
+
+// Renderiza cada sección solo la primera vez que se activa (los gráficos
+// Chart.js necesitan un contenedor visible para calcular bien sus dimensiones).
+const RENDER_POR_TAB = {
+  resumen: [renderResumenKpis, renderVentasChart, renderRentabilidadChart, renderCalidadChart, renderMortalidadChart],
+  produccion: [renderBiomasaChart, renderTablaLotes, renderTablaConcesiones],
+  rrhh: [renderEmpleadosChart, renderTablaEmpleados],
+  suministros: [renderInventarioChart, renderTablaStockBajo, renderComprasChart, renderTablaCompras],
+  comercial: [renderExportacionesChart, renderTablaExportaciones, renderTablaClientes],
+  seguridad: [renderIncidentesChart, renderTablaIncidentes, renderTablaMonitoreo],
+};
+
+const renderizados = new Set();
+
+function mostrarTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === id);
+  });
+  document.querySelectorAll('.panel').forEach(panel => {
+    panel.classList.toggle('hidden', panel.dataset.panel !== id);
+  });
+  if (!renderizados.has(id)) {
+    renderizados.add(id);
+    (RENDER_POR_TAB[id] || []).forEach(fn => fn());
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  renderVentasChart();
-  renderCalidadChart();
-  renderMortalidadChart();
-  renderRentabilidadChart();
-  renderEmpleadosChart();
-  renderTablaEmpleados();
-  renderBiomasaChart();
-  renderTablaLotes();
-  renderInventarioChart();
-  renderTablaStockBajo();
-  renderComprasChart();
-  renderTablaCompras();
-  renderExportacionesChart();
-  renderTablaExportaciones();
-  renderIncidentesChart();
-  renderTablaIncidentes();
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => mostrarTab(btn.dataset.tab));
+  });
+  mostrarTab('resumen');
 });
