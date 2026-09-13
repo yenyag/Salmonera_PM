@@ -15,8 +15,24 @@ CREATE TABLE IF NOT EXISTS usuarios (
   id SERIAL PRIMARY KEY,
   nombre TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
+  rol TEXT DEFAULT 'Administrador',
+  cargo TEXT,
+  centro_nombre TEXT,
+  fecha_ingreso DATE,
+  tema TEXT DEFAULT 'claro'
 );
+
+-- Historial de consultas al asistente (perfil)
+CREATE TABLE IF NOT EXISTS chat_historial (
+  id SERIAL PRIMARY KEY,
+  usuario_email TEXT NOT NULL,
+  pregunta TEXT NOT NULL,
+  respuesta TEXT NOT NULL,
+  fuentes JSONB DEFAULT '[]',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_chat_historial_email ON chat_historial(usuario_email);
 
 -- Datos base para los gráficos
 CREATE TABLE IF NOT EXISTS ventas (
@@ -75,9 +91,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Datos de prueba: usuario admin (credenciales restablecidas)
-INSERT INTO usuarios (nombre, email, password) VALUES
-  ('Administrador', 'admin@salmonera.com', 'admin123'),
-  ('Juan Pérez', 'juan@salmonera.com', 'juan123')
+INSERT INTO usuarios (nombre, email, password, rol, cargo, centro_nombre, fecha_ingreso, tema) VALUES
+  ('Administrador', 'admin@salmonera.com', 'admin123', 'Administrador', 'Gerente General', 'Los Lagos', '2011-03-01', 'claro'),
+  ('Juan Pérez', 'juan@salmonera.com', 'juan123', 'Administrador', 'Analista de datos', 'Los Lagos', '2015-06-10', 'claro')
 ON CONFLICT (email) DO NOTHING;
 
 -- Ventas mensuales (CLP). Coherentes con exportaciones (FOB) + mercado local.

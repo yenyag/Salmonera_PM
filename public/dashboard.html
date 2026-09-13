@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./css/tema.css">
   <style>
     .chart-container {
       height: 300px;
@@ -25,10 +26,17 @@
         <i class="fas fa-fish text-sky-300 text-2xl"></i>
         <h1 class="text-xl font-bold text-white">Panel de Control</h1>
       </div>
-      <button id="logoutBtn" class="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Cerrar sesión</span>
-      </button>
+      <div class="flex items-center space-x-2">
+        <a href="perfil.html" id="btnPerfil" title="Mi perfil"
+           class="flex items-center gap-2 bg-sky-800 hover:bg-sky-700 text-white px-4 py-2 rounded-lg transition">
+          <i class="fas fa-user"></i>
+          <span>Mi perfil</span>
+        </a>
+        <button id="logoutBtn" class="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -353,13 +361,25 @@
   </div>
 
   <!-- Scripts -->
+  <script src="./js/theme.js"></script>
   <script type="module" src="./js/charts.js"></script>
   <script type="module" src="./js/chat.js"></script>
   <script type="module">
+    import { api, setUsuario } from './js/api.js';
+
     // Cargar nombre de usuario
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) window.location.href = 'index.html';
     document.getElementById('username').textContent = user.nombre;
+
+    // Refrescar el perfil guardado (tema y datos) desde el servidor
+    (async () => {
+      try {
+        const perfil = await api.perfil(user.email);
+        setUsuario(perfil);
+        document.getElementById('username').textContent = perfil.nombre;
+      } catch (_e) { /* config local es suficiente */ }
+    })();
 
     // Cerrar sesión
     document.getElementById('logoutBtn').addEventListener('click', () => {

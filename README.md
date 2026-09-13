@@ -168,9 +168,10 @@ Flujo de una consulta RAG:
 Salmonera_PM/
 ├── caso/README.md            # Caso organizacional (propuesta, objetivos)
 ├── db/
-│   ├── schema.sql            # Esquema base + datos (ventas, calidad, mortalidad, rentabilidad)
+│   ├── schema.sql            # Esquema base + datos (ventas, calidad, mortalidad, rentabilidad, usuarios/perfil)
 │   ├── schema_modulos.sql    # Módulos: RRHH, inventario, compras, exportaciones, lotes,
 │   │                         #   incidentes, concesiones, monitoreo sanitario, alimentación, clientes
+│   ├── perfil.sql            # Migración perfil: columnas de usuario (rol, cargo, centro, tema) + chat_historial
 │   └── setup-postgres.sh
 ├── data/
 │   ├── interna/              # 14 reportes generados desde la BD (una dimensión por archivo)
@@ -188,8 +189,10 @@ Salmonera_PM/
 ├── public/
 │   ├── index.html             # Login
 │   ├── dashboard.html         # Panel con 6 pestañas + asistente IA
-│   └── js/                    # api.js, charts.js, chat.js
-├── server.js                  # Backend Express (22 endpoints REST + /api/consultar)
+│   ├── perfil.html            # Mi perfil: ver/editar datos, tema, contraseña e historial IA
+│   ├── css/tema.css           # Variante de tema claro (oscuro es el por defecto)
+│   └── js/                    # api.js, charts.js, chat.js, perfil.js, theme.js
+├── server.js                  # Backend Express (27 endpoints REST + /api/consultar)
 ├── package.json               # npm start / npm run dev
 └── .env.example               # Copiar a .env (GROQ_API_KEY, BD, PYTHON_BIN)
 ```
@@ -246,7 +249,7 @@ python scripts/run_pruebas.py
 node  pruebas/sanitarias.cjs
 ```
 
-**Sistema web**: abrir `http://localhost:4000` → credenciales `admin@salmonera.com` / `admin123`. En el dashboard usar las 6 pestañas (Estado de la Empresa, Producción y Lotes, RRHH, Suministros, Comercial y Clientes, Seguridad y Sanidad) y el botón flotante para consultar al asistente.
+**Sistema web**: abrir `http://localhost:4000` → credenciales `admin@salmonera.com` / `admin123`. En el dashboard usar las 6 pestañas (Estado de la Empresa, Producción y Lotes, RRHH, Suministros, Comercial y Clientes, Seguridad y Sanidad) y el botón flotante para consultar al asistente. En **"Mi perfil"** (botón del encabezado) se puede ver/editar la información personal, cambiar el tema claro/oscuro, cambiar la contraseña y revisar el historial de consultas al asistente.
 
 ---
 
@@ -269,7 +272,12 @@ node  pruebas/sanitarias.cjs
 | GET | `/api/monitoreo` · `/api/monitoreo/promedio` | Monitoreo sanitario mensual / promedio |
 | GET | `/api/alimentacion` | Alimentación (raciones) por lote |
 | GET | `/api/clientes` | Cartera de clientes |
-| POST | `/api/consultar` | Asistente RAG `{ pregunta }` |
+| GET | `/api/perfil/:email` | Datos de perfil del usuario |
+| PUT | `/api/perfil/:email` | Actualizar perfil (nombre, cargo, centro, tema) |
+| POST | `/api/perfil/clave` | Cambiar contraseña (valida la actual) |
+| GET | `/api/perfil/:email/consultas` | Historial de consultas al asistente |
+| DELETE | `/api/perfil/:email/consultas` | Limpiar historial de consultas |
+| POST | `/api/consultar` | Asistente RAG `{ pregunta, email }` (registra historial) |
 
 ---
 

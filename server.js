@@ -27,7 +27,7 @@ app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const { rows } = await pool.query(
-      'SELECT nombre, email FROM usuarios WHERE email = $1 AND password = $2',
+      'SELECT nombre, email, rol, cargo, centro_nombre, fecha_ingreso, tema FROM usuarios WHERE email = $1 AND password = $2',
       [email, password]
     );
     if (rows.length === 0) {
@@ -225,6 +225,85 @@ app.get('/api/clientes', async (_req, res) => {
   }
 });
 
+// --- Perfil de usuario ------------------------------------------------
+
+const CAMPOS_PERFIL = 'nombre, email, rol, cargo, centro_nombre, fecha_ingreso, tema';
+
+app.get('/api/perfil/:email', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT ${CAMPOS_PERFIL} FROM usuarios WHERE email = $1`, [req.params.email]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/perfil/:email', async (req, res) => {
+  const { nombre, cargo, centro_nombre, tema } = req.body || {};
+  try {
+    const { rows } = await pool.query(
+      `UPDATE usuarios
+          SET nombre = COALESCE($2, nombre),
+              cargo = COALESCE($3, cargo),
+              centro_nombre = COALESCE($4, centro_nombre),
+              tema = COALESCE($5, tema)
+        WHERE email = $1
+        RETURNING ${CAMPOS_PERFIL}`,
+      [req.params.email, nombre ?? null, cargo ?? null, centro_nombre ?? null, tema ?? null]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/perfil/clave', async (req, res) => {
+  const { email, password_actual, password_nueva } = req.body || {};
+  if (!email || !password_actual || !password_nueva) {
+    return res.status(400).json({ error: 'Faltan campos (email, password_actual, password_nueva)' });
+  }
+  try {
+    const { rows } = await pool.query(
+      'SELECT id FROM usuarios WHERE email = $1 AND password = $2',
+      [email, password_actual]
+    );
+    if (rows.length === 0) return res.status(401).json({ error: 'La contraseña actual es incorrecta' });
+    await pool.query('UPDATE usuarios SET password = $2 WHERE email = $1', [email, password_nueva]);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/perfil/:email/consultas', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, pregunta, respuesta, fuentes, created_at
+         FROM chat_historial
+        WHERE usuario_email = $1
+        ORDER BY created_at DESC, id DESC
+        LIMIT 50`,
+      [req.params.email]
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/perfil/:email/consultas', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM chat_historial WHERE usuario_email = $1', [req.params.email]);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- Asistente RAG (FASE 4) ------------------------------------------------
 
 const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada⁄IngenierInteligencia-Artificial/.venv/bin/python';
@@ -252,7 +331,7 @@ function releaseRag() {
 }
 
 app.post('/api/consultar', (req, res) => {
-  const { pregunta } = req.body || {};
+  const { pregunta, email } = req.body || {};
 
   if (!pregunta || !pregunta.trim()) {
     return res.status(400).json({ error: 'Falta el campo "pregunta"' });
@@ -276,6 +355,18 @@ app.post('/api/consultar', (req, res) => {
         try {
           const resultado = JSON.parse(stdout.trim());
           res.json({ respuesta: resultado.respuesta, fuentes: resultado.fuentes });
+
+          // Registrar la consulta en el historial del perfil (no bloquea la respuesta)
+          if (email) {
+            const historial = `INSERT INTO chat_historial (usuario_email, pregunta, respuesta, fuentes)
+                               VALUES ($1, $2, $3, $4)`;
+            pool.query(historial, [
+              email,
+              texto,
+              resultado.respuesta,
+              JSON.stringify(resultado.fuentes || []),
+            ]).catch((e) => console.error('Error guardando historial:', e.message));
+          }
         } catch (e) {
           console.error('Respuesta RAG no parseable:', stdout);
           res.status(500).json({ error: 'Respuesta inválida del asistente IA' });

@@ -1,0 +1,16 @@
+/* Tema claro para dashboard y perfil (por defecto el diseño es oscuro) */
+body.tema-claro {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+}
+
+body.tema-claro header { background: #ffffff; border-bottom: 1px solid #e2e8f0; }
+body.tema-claro header h1 { color: #075985; }
+body.tema-claro header i.fa-fish { color: #0ea5e9; }
+
+body.tema-claro main h2.text-white { color: #0c4a6e; }
+body.tema-claro main p.text-sky-200 { color: #475a77; }
+
+body.tema-claro nav { background: rgba(12, 74, 110, 0.06); border-color: rgba(12, 74, 110, 0.2); }
+body.tema-claro .tab-btn { background: rgba(12, 74, 110, 0.08); color: #0c4a6e; }
+body.tema-claro .tab-btn:hover { background: rgba(12, 74, 110, 0.15); }
+body.tema-claro .tab-btn.active { background: #0c4a6e; color: #ffffff; box-shadow: none; }
