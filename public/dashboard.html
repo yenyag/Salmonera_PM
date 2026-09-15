@@ -21,18 +21,23 @@
 <body class="min-h-screen bg-gradient-to-b from-sky-950 via-sky-900 to-sky-950">
   <!-- Barra Superior -->
   <header class="bg-sky-900 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <i class="fas fa-fish text-sky-300 text-2xl"></i>
-        <h1 class="text-xl font-bold text-white">Panel de Control</h1>
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="bg-sky-700 rounded-xl w-12 h-12 flex items-center justify-center shadow-lg">
+          <i class="fas fa-fish text-sky-200 text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white leading-tight">Sistema Salmonero</h1>
+          <p class="text-xs text-sky-300">Panel de Control</p>
+        </div>
       </div>
       <div class="flex items-center space-x-2">
         <a href="perfil.html" id="btnPerfil" title="Mi perfil"
-           class="flex items-center gap-2 bg-sky-800 hover:bg-sky-700 text-white px-4 py-2 rounded-lg transition">
+           class="flex items-center gap-2 bg-sky-800 hover:bg-sky-700 text-white px-4 py-2.5 rounded-lg transition">
           <i class="fas fa-user"></i>
           <span>Mi perfil</span>
         </a>
-        <button id="logoutBtn" class="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+        <button id="logoutBtn" class="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-lg transition">
           <i class="fas fa-sign-out-alt"></i>
           <span>Cerrar sesión</span>
         </button>
@@ -41,9 +46,12 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-4 py-6">
-    <div class="mb-6">
-      <h2 class="text-2xl font-bold text-white">Bienvenido, <span id="username" class="text-sky-300">Administrador</span></h2>
-      <p class="text-sky-200">Selecciona una sección para ver su información</p>
+    <div class="panel-hero mb-6 bg-sky-900/40 border border-sky-700 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Bienvenido, <span id="username" class="text-sky-300">Administrador</span></h2>
+        <p class="text-sky-200">Selecciona una sección para ver su información</p>
+      </div>
+      <span id="fechaHoy" class="hidden md:block text-sm font-medium text-sky-200"></span>
     </div>
 
     <!-- Barra de Pestañas -->
@@ -71,37 +79,37 @@
     <!-- ============ Pestaña: Estado de la Empresa ============ -->
     <section data-panel="resumen" class="panel">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-[#f4f4f4] p-4 rounded-xl shadow-sm border border-gray-200">
+        <div class="card card-kpi">
           <p class="text-xs text-gray-500 uppercase font-semibold">Ventas semestrales</p>
-          <p id="kpiVentas" class="text-xl font-bold text-gray-800">-</p>
+          <p id="kpiVentas" class="text-2xl font-extrabold text-sky-700 mt-1">-</p>
         </div>
-        <div class="bg-[#f4f4f4] p-4 rounded-xl shadow-sm border border-gray-200">
+        <div class="card card-kpi">
           <p class="text-xs text-gray-500 uppercase font-semibold">Exportaciones FOB</p>
-          <p id="kpiExportaciones" class="text-xl font-bold text-gray-800">-</p>
+          <p id="kpiExportaciones" class="text-2xl font-extrabold text-violet-700 mt-1">-</p>
         </div>
-        <div class="bg-[#f4f4f4] p-4 rounded-xl shadow-sm border border-gray-200">
+        <div class="card card-kpi">
           <p class="text-xs text-gray-500 uppercase font-semibold">Cosecha total (unid.)</p>
-          <p id="kpiCosecha" class="text-xl font-bold text-gray-800">-</p>
+          <p id="kpiCosecha" class="text-2xl font-extrabold text-emerald-700 mt-1">-</p>
         </div>
-        <div class="bg-[#f4f4f4] p-4 rounded-xl shadow-sm border border-gray-200">
+        <div class="card card-kpi">
           <p class="text-xs text-gray-500 uppercase font-semibold">Ítems bajo stock</p>
-          <p id="kpiStock" class="text-xl font-bold text-gray-800">-</p>
+          <p id="kpiStock" class="text-2xl font-extrabold text-red-600 mt-1">-</p>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Ventas Mensuales (CLP)</h3>
           <div class="chart-container"><canvas id="ventasChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Rentabilidad por Centro</h3>
           <div class="chart-container"><canvas id="rentabilidadChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Distribución por Calidad</h3>
           <div class="chart-container"><canvas id="calidadChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Mortalidad Acumulada</h3>
           <div class="chart-container"><canvas id="mortalidadChart"></canvas></div>
         </div>
@@ -113,11 +121,11 @@
       <h2 class="text-xl font-bold text-white mb-1">Producción y Lotes</h2>
       <p class="text-sky-200 text-sm mb-4">Biomasa, lotes activos y concesiones de cultivo</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Biomasa por Centro (kg)</h3>
           <div class="chart-container"><canvas id="biomasaChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Lotes Activos</h3>
           <div class="overflow-x-auto max-h-72 overflow-y-auto">
             <table class="min-w-full">
@@ -136,7 +144,7 @@
           </div>
         </div>
       </div>
-      <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+      <div class="card p-6">
         <h3 class="text-lg font-semibold mb-4">Concesiones Acuícolas</h3>
         <div class="overflow-x-auto max-h-96 overflow-y-auto">
           <table class="min-w-full">
@@ -162,11 +170,11 @@
       <h2 class="text-xl font-bold text-white mb-1">Recursos Humanos</h2>
       <p class="text-sky-200 text-sm mb-4">Dotación, remuneraciones por cargo y planilla</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Planilla Mensual por Cargo (CLP)</h3>
           <div class="chart-container"><canvas id="empleadosChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Top Remuneraciones</h3>
           <div class="overflow-x-auto max-h-72 overflow-y-auto">
             <table class="min-w-full">
@@ -190,11 +198,11 @@
       <h2 class="text-xl font-bold text-white mb-1">Suministros</h2>
       <p class="text-sky-200 text-sm mb-4">Inventario de insumos, alertas de stock y compras por proveedor</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Valor de Inventario por Categoría</h3>
-          <div class="chart-container"><canvas id="inventarioChart"></canvas></div>
+          <div class="chart-container" style="height: 460px;"><canvas id="inventarioChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Alertas de Stock Bajo</h3>
           <div class="overflow-x-auto max-h-72 overflow-y-auto">
             <table class="min-w-full">
@@ -212,11 +220,11 @@
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Gasto por Proveedor (CLP)</h3>
           <div class="chart-container"><canvas id="comprasChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Compras por Proveedor</h3>
           <div class="overflow-x-auto max-h-72 overflow-y-auto">
             <table class="min-w-full">
@@ -240,11 +248,11 @@
       <h2 class="text-xl font-bold text-white mb-1">Comercial y Clientes</h2>
       <p class="text-sky-200 text-sm mb-4">Exportaciones por destino (enero a junio 2025) y cartera de clientes</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Valor FOB por Destino (CLP)</h3>
           <div class="chart-container"><canvas id="exportacionesChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Exportaciones por Destino</h3>
           <div class="overflow-x-auto max-h-72 overflow-y-auto">
             <table class="min-w-full">
@@ -261,7 +269,7 @@
           </div>
         </div>
       </div>
-      <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+      <div class="card p-6">
         <h3 class="text-lg font-semibold mb-4">Cartera de Clientes</h3>
         <div class="overflow-x-auto max-h-96 overflow-y-auto">
           <table class="min-w-full">
@@ -286,11 +294,11 @@
       <h2 class="text-xl font-bold text-white mb-1">Seguridad y Sanidad</h2>
       <p class="text-sky-200 text-sm mb-4">Incidentes registrados y monitoreo sanitario/ambiental de los lotes</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Incidentes por Tipo</h3>
           <div class="chart-container"><canvas id="incidentesChart"></canvas></div>
         </div>
-        <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="card p-6">
           <h3 class="text-lg font-semibold mb-4">Incidentes por Severidad</h3>
           <div class="overflow-x-auto">
             <table class="min-w-full">
@@ -305,7 +313,7 @@
           </div>
         </div>
       </div>
-      <div class="bg-[#f4f4f4] p-6 rounded-xl shadow-sm border border-gray-200">
+      <div class="card p-6">
         <h3 class="text-lg font-semibold mb-4">Monitoreo Sanitario Mensual (abril a julio 2025)</h3>
         <p class="text-xs text-gray-500 mb-3">Caligus en hembras ovígeras promedio; niveles sobre 4 indican tratamiento, oxígeno bajo 6 mg/L es riesgo.</p>
         <div class="overflow-x-auto max-h-96 overflow-y-auto">
@@ -329,13 +337,13 @@
 
   <!-- Botón flotante del Asistente IA (fijo abajo a la derecha) -->
   <button id="fab-chat" title="Abrir asistente IA"
-          class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:scale-105 transition flex items-center justify-center">
-    <i class="fas fa-robot text-2xl"></i>
+          class="fixed bottom-12 right-8 z-50 w-20 h-20 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:scale-105 transition flex items-center justify-center">
+    <i class="fas fa-robot text-3xl"></i>
   </button>
 
   <!-- Panel flotante del chat -->
   <div id="chat-panel"
-       class="hidden fixed bottom-24 right-6 z-50 w-[42rem] sm:w-[48rem] max-h-[94vh] bg-blue-900 rounded-2xl shadow-2xl border border-blue-700 flex flex-col overflow-hidden">
+       class="hidden fixed bottom-44 right-8 z-50 w-[46rem] sm:w-[54rem] max-h-[92vh] bg-blue-900 rounded-2xl shadow-2xl border border-blue-700 flex flex-col overflow-hidden">
     <div class="bg-blue-600 text-white px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <i class="fas fa-robot"></i>
@@ -380,6 +388,12 @@
         document.getElementById('username').textContent = perfil.nombre;
       } catch (_e) { /* config local es suficiente */ }
     })();
+
+    // Cargar fecha actual
+    const fechaHoy = new Date().toLocaleDateString('es-CL', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+    document.getElementById('fechaHoy').textContent = fechaHoy.charAt(0).toUpperCase() + fechaHoy.slice(1);
 
     // Cerrar sesión
     document.getElementById('logoutBtn').addEventListener('click', () => {

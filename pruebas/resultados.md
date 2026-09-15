@@ -1,6 +1,6 @@
 # Resultados de Pruebas de Coherencia - SalmoSUR S.A.
 
-**Fecha de ejecución:** 2026-09-13 16:25
+**Fecha de ejecución:** 2026-09-14 10:53
 **Resultado general:** 18/18 pruebas coherentes
 
 | ID | Pregunta | ¿Coherente? | Razón |
@@ -18,7 +18,7 @@
 | P11 | ¿Cuál es el principal destino de las exportaciones por valor... | ✅ Sí | Coincide con 100% de los datos esperados y cita 4 fuente(s) |
 | P12 | ¿Qué centro de cultivo concentra la mayor biomasa y cuántos ... | ✅ Sí | Coincide con 100% de los datos esperados y cita 2 fuente(s) |
 | P13 | ¿Cuántos incidentes de severidad crítica se registraron y de... | ✅ Sí | Coincide con 100% de los datos esperados y cita 3 fuente(s) |
-| P14 | ¿Qué lote tiene el FCR más bajo y en qué centro se encuentra... | ✅ Sí | Coincide con 67% de los datos esperados y cita 5 fuente(s) |
+| P14 | ¿Qué lote tiene el FCR más bajo y en qué centro se encuentra... | ✅ Sí | Coincide con 100% de los datos esperados y cita 5 fuente(s) |
 | P15 | ¿Qué lote tiene el mayor promedio de caligus según el monito... | ✅ Sí | Coincide con 100% de los datos esperados y cita 2 fuente(s) |
 | P16 | ¿Qué concesión de la empresa tiene la mayor superficie autor... | ✅ Sí | Coincide con 100% de los datos esperados y cita 5 fuente(s) |
 | P17 | ¿Cuánto alimento se entregó al lote A1 en mayo de 2025?... | ✅ Sí | Coincide con 100% de los datos esperados y cita 5 fuente(s) |
@@ -30,7 +30,7 @@
 
 **Respuesta del asistente:**
 
-> El lote con mayor mortalidad acumulada es **LOTE‑E2**, con **8 100 unidades** de mortalidad.  
+> El lote con mayor mortalidad acumulada es **LOTE‑E2**, con 8 100 unidades.  
 [Fuente: tabla lotes / vista vista_mortalidad_acumulada]
 
 **Fuentes citadas:** mortalidad.txt, monitoreo_sanitario_salmon.txt, monitoreo_sanitario.txt, bioseguridad.txt, sernapesca_normativa.txt
@@ -40,9 +40,9 @@
 **Respuesta del asistente:**
 
 > - Ventas de enero 2025: **$1 510 000 000 CLP**.  
-- Total semestral (enero‑junio 2025): **$11 234 000 000 CLP**.
+- Total semestral (enero – junio 2025): **$11 234 000 000 CLP**.
 
-[Fuente: REPORTE DE VENTAS MENSUALES - SalmoSUR S.A.; El total acumulado del periodo fue de $11,234,000,000 CLP.]
+[Fuente: “REPORTE DE VENTAS MENSUALES - SalmoSUR S.A.” y “El total acumulado del periodo fue de $11,234,000,000 CLP.”]
 
 **Fuentes citadas:** ventas.txt, exportaciones.txt, compras.txt, monitoreo_sanitario.txt, alimentacion.txt
 
@@ -50,7 +50,7 @@
 
 **Respuesta del asistente:**
 
-> El centro más rentable es **Los Lagos**, que generó ingresos por **$3,550,000,000 CLP**.  
+> El centro más rentable es **Centro Los Lagos**, que generó **$3 550 000 000 CLP** en ingresos.  
 [Fuente: tabla centros / vista vista_rentabilidad_por_centro]
 
 **Fuentes citadas:** empleados.txt, rentabilidad.txt, mercado_salmon.txt, concesiones.txt, compras.txt, ventas.txt, alimentacion.txt
@@ -68,21 +68,23 @@
 
 **Respuesta del asistente:**
 
-> El lote con mayor mortalidad es **LOTE‑E2**, con **8 100 unidades** acumuladas【Fuente: tabla lotes / vista vista_mortalidad_acumulada】.  
+> El lote con mayor mortalidad es **LOTE‑E2**, que acumuló **8 100 unidades** de mortalidad.  
 
 **Recomendaciones según la normativa de bioseguridad**  
 
-1. **Activar el plan de contingencia sanitaria** y notificar a Sernapesca, ya que la mortalidad supera los umbrales establecidos【Fuente: Sernapesca - Buenas prácticas en acuicultura】.  
-2. **Implementar el programa obligatorio de bioseguridad**:  
+1. **Activar el plan de contingencia sanitaria** y notificar a Sernapesca, ya que la mortalidad supera los umbrales establecidos.  
+2. **Retirar a diario las mortalidades del agua** para evitar su descomposición y la diseminación de patógenos, gestionándolas conforme a la normativa de Sernapesca.  
+3. **Implementar el programa de bioseguridad** que incluye:  
    - Control de acceso al centro.  
    - Desinfección de embarcaciones, equipos y personal.  
-   - Manejo adecuado de mortalidades (retirar a diario del agua y eliminar conforme a la normativa)【Fuente: 2. Es obligatorio implementar un programa de bioseguridad…】.  
-3. **Retirar diariamente las mortalidades** para evitar descomposición y diseminación de patógenos【Fuente: 3. CONTROL DE MORTALIDADES】.  
-4. **Realizar exámenes sanitarios periódicos** al stock y vigilar indicadores como la mortalidad acumulada y la condición de los peces【Fuente: 4. MONITOREO SANITARIO】.  
-5. **Mantener en cuarentena a los peces recién introducidos** o de procedencia desconocida antes de integrarlos a la producción【Fuente: 5. CUARENTENA】.  
-6. **Monitorear el oxígeno disuelto** y, si está por debajo de 6 mg/L, activar oxigenación o traslado para evitar estrés y mortalidad adicional【Fuente: OXÍGENO DISUELTO】.  
+   - Manejo adecuado de mortalidades.  
+4. **Realizar exámenes de salud periódicos** al stock y vigilar indicadores como la mortalidad acumulada y la condición de los peces.  
+5. **Mantener en cuarentena a los peces recién introducidos** o de procedencia desconocida antes de integrarlos a la producción.  
+6. **Monitorear el oxígeno disuelto**; si está por debajo de 6 mg/L activar oxigenación o considerar traslado del lote.  
+7. **Aplicar tratamientos solo con productos autorizados por Sernapesca**, respetando los tiempos de carencia para garantizar la inocuidad del producto.  
 
-Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el riesgo sanitario asociado al lote LOTE‑E2.
+[Fuente: tabla lotes / vista vista_mortalidad_acumulada]  
+[Fuente: Sernapesca - Buenas prácticas en acuicultura (https://www.sernapesca.cl/)]
 
 **Fuentes citadas:** sernapesca_normativa.txt, bioseguridad.txt, monitoreo_sanitario_salmon.txt, mortalidad.txt
 
@@ -94,12 +96,11 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 1. **Trazabilidad completa del lote de origen**: poder rastrear el producto hasta el centro de cultivo de procedencia.  
 2. **Certificado sanitario de exportación** emitido por Sernapesca.  
-3. **Cumplimiento de los estándares del país de destino** (Unión Europea, Estados Unidos, Japón y Brasil).  
+3. **Cumplimiento de los estándares de calidad e inocuidad del país de destino** (principalmente Unión Europea, Estados Unidos, Japón y Brasil).  
 4. **Control de residuos de medicamentos veterinarios** dentro de los límites permitidos por la normativa internacional.  
-5. **Cumplimiento de los protocolos de vacunación** contra enfermedades como la anemia infecciosa del salmón (ISA), la piscirickettsiosis y la caligidosis.  
-6. **Autorización sanitaria para todo movimiento de peces** (siembra, traslado, cosecha) emitida por Sernapesca.  
 
-[Fuente: Sernapesca - Exportaciones de salmón]
+[Fuente: Sernapesca - Exportaciones de salmón]  
+[Fuente: Sernapesca - Requisitos de exportación de salmón]
 
 **Fuentes citadas:** exportacion_calidad.txt, requisitos_exportacion.txt, sernapesca_normativa.txt, exportaciones.txt, mercado_salmon.txt
 
@@ -115,7 +116,7 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> La planilla mensual del centro de cultivo Los Lagos es de **$18,050,000 CLP**.  
+> La planilla mensual del centro de cultivo Los Lagos es **$18,050,000 CLP**.  
 [Fuente: tabla empleados / vistas v_empleados, v_planilla_por_centro, v_planilla_por_cargo]
 
 **Fuentes citadas:** empleados.txt, rentabilidad.txt, concesiones.txt, lotes_detalle.txt, calidad.txt
@@ -126,9 +127,9 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 > Los ítems que están bajo su stock mínimo son:
 
-- **Alimento Extruido 9 mm** (alimento) – 8 500 unidades (stock mínimo 16 000).  
-- **Vacuna ISA** (medicamentos) – 600 unidades (stock mínimo 800).  
-- **Red de cultivo 30 mm** (herramientas) – 15 unidades (stock mínimo 18).  
+- **Alimento Extruido 9 mm** (alimento): 8 500 unidades (stock mínimo 16 000).  
+- **Vacuna ISA** (medicamentos): 600 unidades (stock mínimo 800).  
+- **Red de cultivo 30 mm** (herramientas): 15 unidades (stock mínimo 18).  
 
 [Fuente: tabla inventario / vistas v_inventario_resumen, v_stock_bajo]
 
@@ -139,7 +140,7 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 **Respuesta del asistente:**
 
 > El proveedor que facturó más durante el periodo fue **Transportes Austral**, con un total de **$60 500 000 CLP**, perteneciente al rubro **Logística y transporte**.  
-[Fuente: tabla proveedores y compras / vistas v_gasto_por_proveedor, v_compras_recientes]
+[Fuente: REPORTE DE COMPRAS Y PROVEEDORES - SalmoSUR S.A.]
 
 **Fuentes citadas:** compras.txt, clientes.txt, ventas.txt, inventario.txt
 
@@ -147,7 +148,7 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> El principal destino de las exportaciones por valor FOB es **Estados Unidos**, con un valor FOB de **$3 435 300 000 CLP**.  
+> El principal destino de las exportaciones por valor FOB es **Estados Unidos**, con un valor FOB de $3 435 300 000 CLP.  
 [Fuente: tabla exportaciones / vistas v_exportaciones_por_destino, v_exportaciones_resumen]
 
 **Fuentes citadas:** exportaciones.txt, exportacion_calidad.txt, calidad.txt, compras.txt
@@ -156,7 +157,7 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> El centro de cultivo con la mayor biomasa es **Los Lagos**, con **835 200 kg** de biomasa.  
+> El centro de cultivo que concentra la mayor biomasa es **Los Lagos**, con **835 200 kg** de biomasa.  
 [Fuente: tabla lotes_detalle / vistas v_lotes_detalle, v_biomasa_por_centro]
 
 **Fuentes citadas:** lotes_detalle.txt, calidad.txt
@@ -165,7 +166,7 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> Se registraron **2 incidentes de severidad crítica**, y ambos fueron del **tipo escape**.  
+> Se registraron **2 incidentes de severidad crítica**, y **ambos fueron del tipo escape**.  
 [Fuente: REPORTE DE INCIDENTES Y SEGURIDAD - SalmoSUR S.A.]
 
 **Fuentes citadas:** incidentes.txt, protocolo_accidentes_laborales.txt, mortalidad.txt
@@ -174,8 +175,8 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> El lote con el FCR más bajo es **LOTE‑H1**, y se encuentra en el centro de **Quellón**.  
-[Fuente: LOTES DE CULTIVO DETALLADOS - SalmoSUR S.A.]
+> El lote con el FCR más bajo es **LOTE‑H1** (Salmón Coho) y se encuentra en el centro de **Quellón**, con un FCR de 1.10.  
+[Fuente: LOTES DE CULTIVO DETALLADOS]
 
 **Fuentes citadas:** lotes_detalle.txt, inventario.txt, empleados.txt, monitoreo_sanitario.txt, concesiones.txt
 
@@ -183,8 +184,7 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> El lote con el mayor promedio de caligus (hembras ovígeras) del periodo es **LOTE‑B1**.  
-[Fuente: MONITOREO SANITARIO Y AMBIENTAL MENSUAL - SalmoSUR S.A.]
+> El lote con el mayor promedio de caligus (hembras ovígeras) del periodo es **LOTE‑B1**. [Fuente: MONITOREO_SANITARIO_Y_AMBIENTAL_MENSUAL]
 
 **Fuentes citadas:** monitoreo_sanitario.txt, monitoreo_sanitario_salmon.txt
 
@@ -192,7 +192,7 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> La concesión con la mayor superficie autorizada es **Centro Aysén**, con **18.00 hectáreas**.  
+> La concesión con la mayor superficie autorizada es **Centro Aysén**, con **18.00 hectáreas**.  
 [Fuente: CONCESIONES ACUÍCOLAS - SalmoSUR S.A.]
 
 **Fuentes citadas:** concesiones.txt, empleados.txt, calidad.txt, mercado_salmon.txt, rentabilidad.txt
@@ -201,8 +201,8 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> Se entregaron **105 000 kg** de alimento (Extruido 9 mm) al lote A1 en mayo 2025.  
-[Fuente: ALIMENTACIÓN POR LOTE (RACIONES ENTREGADAS) - SalmoSUR S.A.]
+> Se entregaron **105 000 kg** de alimento (Extruido 9 mm) al lote A1 en mayo de 2025.  
+[Fuente: ALIMENTACIÓN POR LOTE (RACIONES ENTREGADAS)]
 
 **Fuentes citadas:** alimentacion.txt, exportaciones.txt, ventas.txt, inventario.txt, lotes_detalle.txt
 
@@ -210,7 +210,7 @@ Estas acciones cumplen con los requisitos de bioseguridad y permiten mitigar el 
 
 **Respuesta del asistente:**
 
-> El cliente de Japón es **Nippon Marine Trading**, cuyo contacto es Kenji Tanaka, gerente de importación. El producto principal que adquiere es **salmón Coho entero fresco**.  
+> Nippon Marine Trading (Japón) es el cliente que compra salmón a la empresa, y su producto principal es **Salmón Coho entero fresco**.  
 [Fuente: contexto]
 
 **Fuentes citadas:** clientes.txt, mercado_salmon.txt, exportacion_calidad.txt, exportaciones.txt, requisitos_exportacion.txt

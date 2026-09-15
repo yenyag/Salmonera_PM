@@ -1,5 +1,6 @@
 import express from 'express';
 import { Pool } from 'pg';
+import bcrypt from 'bcryptjs';
 import { execFile } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -27,13 +28,19 @@ app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const { rows } = await pool.query(
-      'SELECT nombre, email, rol, cargo, centro_nombre, fecha_ingreso, tema FROM usuarios WHERE email = $1 AND password = $2',
-      [email, password]
+      'SELECT nombre, email, rol, cargo, centro_nombre, fecha_ingreso, tema, password AS pw FROM usuarios WHERE email = $1',
+      [email]
     );
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
-    res.json(rows[0]);
+    const user = rows[0];
+    const match = await bcrypt.compare(password, user.pw);
+    if (!match) {
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+    const { pw: _pw, ...userData } = user;
+    res.json(userData);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -268,11 +275,14 @@ app.post('/api/perfil/clave', async (req, res) => {
   }
   try {
     const { rows } = await pool.query(
-      'SELECT id FROM usuarios WHERE email = $1 AND password = $2',
-      [email, password_actual]
+      'SELECT id, password AS pw FROM usuarios WHERE email = $1',
+      [email]
     );
     if (rows.length === 0) return res.status(401).json({ error: 'La contraseña actual es incorrecta' });
-    await pool.query('UPDATE usuarios SET password = $2 WHERE email = $1', [email, password_nueva]);
+    const match = await bcrypt.compare(password_actual, rows[0].pw);
+    if (!match) return res.status(401).json({ error: 'La contraseña actual es incorrecta' });
+    const nuevaHash = await bcrypt.hash(password_nueva, 10);
+    await pool.query('UPDATE usuarios SET password = $2 WHERE email = $1', [email, nuevaHash]);
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
