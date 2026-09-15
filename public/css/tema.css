@@ -1,0 +1,88 @@
+/* Aumenta proporcionalmente todo el layout (Tailwind usa rem):
+   18px base (estándar 16px) hace tarjetas, letras y espaciados ~12% más grandes */
+html {
+  font-size: 20px;
+}
+
+/* Gráficos un poco más altos para aprovechar el espacio */
+.chart-container {
+  height: 400px;
+}
+
+/* Tema claro para dashboard y perfil (por defecto el diseño es oscuro) */
+body.tema-claro {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+}
+
+body.tema-claro header { background: #ffffff; border-bottom: 1px solid #e2e8f0; }
+body.tema-claro header h1 { color: #075985; }
+body.tema-claro header i.fa-fish { color: #0ea5e9; }
+
+body.tema-claro main h2.text-white { color: #0c4a6e; }
+body.tema-claro main p.text-sky-200 { color: #475a77; }
+
+body.tema-claro .panel-hero {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(12, 74, 110, 0.15);
+}
+
+body.tema-claro nav { background: rgba(12, 74, 110, 0.06); border-color: rgba(12, 74, 110, 0.2); }
+body.tema-claro .tab-btn { background: rgba(12, 74, 110, 0.08); color: #0c4a6e; }
+body.tema-claro .tab-btn:hover { background: rgba(12, 74, 110, 0.15); }
+body.tema-claro .tab-btn.active { background: #0c4a6e; color: #ffffff; box-shadow: none; }
+
+/* ================= Pulido general ================= */
+
+/* Tarjetas únicas para todo el sistema */
+.card {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 1rem;
+  box-shadow: 0 6px 24px rgba(2, 6, 23, 0.14);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  color: #0f172a;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.2);
+}
+.card-kpi {
+  padding: 1rem 1.25rem;
+}
+
+/* Encabezados de tablas pegajosos y filas con hover */
+.card thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.card thead th {
+  background: #f1f5f9;
+  color: #475a77;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.card tbody tr:hover td {
+  background: rgba(2, 132, 199, 0.06);
+}
+
+/* Barras de desplazamiento discretas */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
+
+::selection {
+  background: rgba(14, 165, 233, 0.3);
+}

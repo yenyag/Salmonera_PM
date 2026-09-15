@@ -47,5 +47,40 @@ export const api = {
   monitoreoPromedio: () => getJSON('/monitoreo/promedio'),
   alimentacion: () => getJSON('/alimentacion'),
   clientes: () => getJSON('/clientes'),
-  consultar: (pregunta) => postJSON('/consultar', { pregunta }),
+  perfil: (email) => getJSON(`/perfil/${encodeURIComponent(email)}`),
+  actualizarPerfil: (email, data) => putJSON(`/perfil/${encodeURIComponent(email)}`, data),
+  cambiarClave: (data) => postJSON('/perfil/clave', data),
+  consultas: (email) => getJSON(`/perfil/${encodeURIComponent(email)}/consultas`),
+  limpiarConsultas: (email) => deleteJSON(`/perfil/${encodeURIComponent(email)}/consultas`),
+  consultar: (pregunta) => postJSON('/consultar', { pregunta, email: usuarioEmail() }),
 };
+
+function usuarioEmail() {
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return user && user.email ? user.email : null;
+  } catch {
+    return null;
+  }
+}
+
+async function putJSON(path, body) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'Error de red');
+  return res.json();
+}
+
+async function deleteJSON(path) {
+  const res = await fetch(`${BASE}${path}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error((await res.json()).error || 'Error de red');
+  return res.json();
+}
+
+export function setUsuario(user) {
+  localStorage.setItem('user', JSON.stringify(user));
+  window.dispatchEvent(new CustomEvent('usuario-actualizado', { detail: user }));
+}

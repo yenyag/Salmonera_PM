@@ -3,6 +3,60 @@ import { api } from './api.js';
 // Configuración global de Chart.js
 Chart.defaults.font.family = 'Inter, sans-serif';
 Chart.defaults.color = '#6b7280';
+Chart.defaults.font.size = 14;
+
+// Tooltips y ejes más legibles (aplica a todos los gráficos)
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.92)';
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+Chart.defaults.plugins.tooltip.titleFont = { size: 14, weight: '600' };
+Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+Chart.defaults.scale.ticks.font = { size: 13, color: '#64748b' };
+Chart.defaults.scale.grid.color = 'rgba(148, 163, 184, 0.25)';
+
+// Formato compacto para los valores de los ejes (K = miles, M = millones, B = mil-millones)
+function ejeCLP(valor) {
+  const abs = Math.abs(valor);
+  const n = (v) => v.toLocaleString('es-CL', { maximumFractionDigits: 1 });
+  if (abs >= 1e9) return `$${n(valor / 1e9)}B`;
+  if (abs >= 1e6) return `$${n(valor / 1e6)}M`;
+  if (abs >= 1e3) return `$${n(valor / 1e3)}k`;
+  return `$${Math.round(valor)}`;
+}
+
+function ejeKG(valor) {
+  const abs = Math.abs(valor);
+  if (abs >= 1e6) return `${(valor / 1e6).toLocaleString('es-CL', { maximumFractionDigits: 1 })}M kg`;
+  if (abs >= 1e3) return `${(valor / 1e3).toLocaleString('es-CL', { maximumFractionDigits: 0 })}k kg`;
+  return `${Math.round(valor)} kg`;
+}
+
+// Plugin para mostrar un total en el centro de los doughnut
+const textoCentro = {
+  id: 'textoCentro',
+  afterDraw(chart, _args, opciones) {
+    if (!chart.canvas || !chart.canvas.id) return;
+    const meta = chart.getDatasetMeta(0);
+    const primerArco = meta.data && meta.data[0];
+    if (!primerArco) return;
+    const ctx = chart.ctx;
+    const cx = primerArco.x;
+    const cy = primerArco.y;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 22px Inter, sans-serif';
+    ctx.fillText(opciones.linea1, cx, cy - 6);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '13px Inter, sans-serif';
+    if (opciones.arriba) {
+      ctx.fillText(opciones.linea2, cx, chart.chartArea.top + 18);
+    } else {
+      ctx.fillText(opciones.linea2, cx, cy + 18);
+    }
+    ctx.restore();
+  },
+};
 
 // 1. Gráfico de Ventas Mensuales
 async function renderVentasChart() {
@@ -49,9 +103,8 @@ async function renderVentasChart() {
         y: {
           beginAtZero: true,
           ticks: {
-            callback: (value) => `$${value.toLocaleString('es-CL')}`
-          },
-          grid: { color: 'rgba(229, 231, 235, 0.5)' }
+            callback: (value) => ejeCLP(value)
+          }
         },
         x: { grid: { display: false } }
       }
@@ -78,6 +131,7 @@ async function renderCalidadChart() {
 
   new Chart(document.getElementById('calidadChart'), {
     type: 'doughnut',
+    plugins: [textoCentro],
     data: {
       labels: data.map(row => `${row.calidad.toUpperCase()} (${row.cantidad_cosechas})`),
       datasets: [{
@@ -88,9 +142,17 @@ async function renderCalidadChart() {
       }]
     },
     options: {
-      cutout: '70%',
+      cutout: '60%',
       plugins: {
-        legend: { position: 'right' },
+        textoCentro: {
+          linea1: data.reduce((a, r) => a + Number(r.cantidad_cosechas), 0).toLocaleString('es-CL'),
+          linea2: 'unidades cosechadas',
+          arriba: true,
+        },
+        legend: {
+          position: 'right',
+          labels: { font: { size: 16 }, padding: 12, boxWidth: 18, boxHeight: 18 }
+        },
         tooltip: {
           callbacks: {
             label: (ctx) => `${ctx.label}: ${ctx.raw} unidades`
@@ -122,7 +184,9 @@ async function renderMortalidadChart() {
         backgroundColor: 'rgba(185, 37, 37, 0.33)',
         borderWidth: 3,
         tension: 0.3,
-        fill: true
+        fill: true,
+        pointRadius: 5,
+        pointBackgroundColor: 'rgba(185, 37, 37, 1)'
       }]
     },
     options: {
@@ -131,12 +195,13 @@ async function renderMortalidadChart() {
       plugins: {
         tooltip: {
           callbacks: {
-            label: (ctx) => `${ctx.raw} peces muertos`
+            label: (ctx) => `${ctx.raw.toLocaleString('es-CL')} peces muertos`
           }
         }
       },
       scales: {
-        y: { beginAtZero: true }
+        y: { beginAtZero: true, ticks: { precision: 0 } },
+        x: { grid: { display: false } }
       }
     }
   });
@@ -161,7 +226,8 @@ async function renderRentabilidadChart() {
         data: data.map(row => Number(row.total_ingresos_clp)),
         backgroundColor: 'rgba(85, 238, 118, 0.8)',
         borderColor: 'rgba(48, 174, 97, 1)',
-        borderWidth: 1
+        borderWidth: 1,
+        maxBarThickness: 30
       }]
     },
     options: {
@@ -175,6 +241,10 @@ async function renderRentabilidadChart() {
             label: (ctx) => `$${ctx.raw.toLocaleString('es-CL')}`
           }
         }
+      },
+      scales: {
+        x: { ticks: { callback: (value) => ejeCLP(value) } },
+        y: { grid: { display: false } }
       }
     }
   });
@@ -199,7 +269,8 @@ async function renderEmpleadosChart() {
         data: data.map(row => Number(row.planilla_clp)),
         backgroundColor: 'rgba(16, 185, 129, 0.8)',
         borderColor: 'rgba(4, 120, 87, 1)',
-        borderWidth: 1
+        borderWidth: 1,
+        maxBarThickness: 30
       }]
     },
     options: {
@@ -213,6 +284,10 @@ async function renderEmpleadosChart() {
             label: (ctx) => `$${ctx.raw.toLocaleString('es-CL')}`
           }
         }
+      },
+      scales: {
+        x: { ticks: { callback: (value) => ejeCLP(value) } },
+        y: { grid: { display: false } }
       }
     }
   });
@@ -262,7 +337,8 @@ async function renderBiomasaChart() {
         backgroundColor: 'rgba(59, 130, 246, 0.75)',
         borderColor: 'rgba(37, 99, 235, 1)',
         borderWidth: 1,
-        borderRadius: 4
+        borderRadius: 4,
+        maxBarThickness: 30
       }]
     },
     options: {
@@ -277,7 +353,7 @@ async function renderBiomasaChart() {
         }
       },
       scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(229, 231, 235, 0.5)' } },
+        y: { beginAtZero: true, ticks: { callback: (value) => ejeKG(value) } },
         x: { grid: { display: false } }
       }
     }
@@ -324,6 +400,7 @@ async function renderInventarioChart() {
 
   new Chart(document.getElementById('inventarioChart'), {
     type: 'doughnut',
+    plugins: [textoCentro],
     data: {
       labels: data.map(row => `${row.categoria} (${row.n_items})`),
       datasets: [{
@@ -334,9 +411,16 @@ async function renderInventarioChart() {
       }]
     },
     options: {
-      cutout: '70%',
+      cutout: '52%',
       plugins: {
-        legend: { position: 'right' },
+        textoCentro: {
+          linea1: ejeCLP(data.reduce((a, r) => a + Number(r.valor_total_clp), 0)),
+          linea2: 'valor total',
+        },
+        legend: {
+          position: 'right',
+          labels: { font: { size: 17 }, padding: 14, boxWidth: 20, boxHeight: 20 }
+        },
         tooltip: {
           callbacks: {
             label: (ctx) => `$${ctx.raw.toLocaleString('es-CL')}`
@@ -390,7 +474,8 @@ async function renderComprasChart() {
         data: data.map(row => Number(row.total_clp)),
         backgroundColor: 'rgba(245, 158, 11, 0.8)',
         borderColor: 'rgba(217, 119, 6, 1)',
-        borderWidth: 1
+        borderWidth: 1,
+        maxBarThickness: 30
       }]
     },
     options: {
@@ -404,6 +489,10 @@ async function renderComprasChart() {
             label: (ctx) => `$${ctx.raw.toLocaleString('es-CL')}`
           }
         }
+      },
+      scales: {
+        x: { ticks: { callback: (value) => ejeCLP(value) } },
+        y: { grid: { display: false } }
       }
     }
   });
@@ -453,7 +542,8 @@ async function renderExportacionesChart() {
         backgroundColor: 'rgba(139, 92, 246, 0.8)',
         borderColor: 'rgba(109, 40, 217, 1)',
         borderWidth: 1,
-        borderRadius: 4
+        borderRadius: 4,
+        maxBarThickness: 30
       }]
     },
     options: {
@@ -468,7 +558,7 @@ async function renderExportacionesChart() {
         }
       },
       scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(229, 231, 235, 0.5)' } },
+        y: { beginAtZero: true, ticks: { callback: (value) => ejeCLP(value) } },
         x: { grid: { display: false } }
       }
     }
@@ -523,7 +613,8 @@ async function renderIncidentesChart() {
         backgroundColor: paleta,
         borderColor: '#fff',
         borderWidth: 2,
-        borderRadius: 6
+        borderRadius: 6,
+        maxBarThickness: 30
       }]
     },
     options: {
