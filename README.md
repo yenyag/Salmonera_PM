@@ -112,7 +112,7 @@ Veredicto: **un "8/10"**: creíble como piloto para demostración y didáctica, 
 | **Frontend** | HTML + Tailwind CSS + Chart.js | Dashboard con 6 vistas (pestañas) + chat flotante |
 | **Embeddings** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Vectores multilingües (384 dims), 100% local |
 | **Índice vectorial** | FAISS (`faiss-cpu`) | Búsqueda semántica `k=7` (+ refuerzo de keywords) |
-| **LLM** | Groq API (`openai/gpt-oss-120b`, alternativo `gpt-oss-20b`) | Síntesis de respuestas, `temperature=0.1` |
+| **LLM** | Groq API (`qwen/qwen3.8-27b`, alternativo `openai/gpt-oss-120b`) | Síntesis de respuestas, `temperature=0.1` |
 | **RAG / Agente** | LangChain + **LangGraph** | Pipeline RAG → **agente ReAct** (herramientas + memoria + planificación) |
 | **Pruebas** | Python + Node (CLI) | Coherencia, **decisión**, **memoria**, estrés, sanitarias y métricas de tokens |
 
@@ -156,8 +156,8 @@ Flujo de una consulta:
 
 | Componente | Modelo / Tecnología | Proveedor | Notas |
 |------------|---------------------|-----------|-------|
-| LLM principal | `openai/gpt-oss-120b` | Groq | `temperature=0.1`, `max_tokens=1500` |
-| LLM rápido | `openai/gpt-oss-20b` | Groq | `GROQ_MODEL_FAST` alternativo |
+| LLM principal | `qwen/qwen3.8-27b` | Groq | `temperature=0.1`, `max_tokens=1500` |
+| LLM alternativo | `openai/gpt-oss-120b` | Groq | cupo diario independiente (200k tokens/día) |
 | Embeddings | `paraphrase-multilingual-MiniLM-L12-v2` | Local (Hugging Face) | 384 dims, optimizado español |
 | Vector store | FAISS | Local | Corpus: **21 documentos (14 internos + 7 externos) → 101 chunks** |
 | Agente | LangGraph | — | `create_react_agent` con 4 herramientas + checkpointer de memoria |
@@ -267,7 +267,7 @@ Variables de entorno del agente (opcionales, con su valor por defecto):
 
 | Variable | Defecto | Descripción |
 |----------|---------|-------------|
-| `GROQ_MODEL` | `openai/gpt-oss-120b` | Modelo LLM usado por el agente (Groq) |
+| `GROQ_MODEL` | `qwen/qwen3.8-27b` | Modelo LLM usado por el agente (Groq) |
 | `AGENTE_PACING` | `2.5` | Sleep (seg) antes de cada llamada LLM para no romper el TPM del tier gratuito |
 | `GROQ_MAX_RETRIES` | `5` | Reintentos con backoff ante HTTP 429 (rate limit) |
 | `AGENTE_MAX_TOKENS` | `1400` | Límite de tokens de salida por respuesta |

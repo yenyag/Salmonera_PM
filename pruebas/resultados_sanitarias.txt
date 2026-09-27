@@ -1,5 +1,5 @@
 PRUEBAS SANITARIAS - SalmoSUR S.A.
-Fecha: 2026-09-27 14:57:18
+Fecha: 2026-09-27 17:10:31
 
 [HTTP]
   Entorno: http://localhost:4000
@@ -22,8 +22,8 @@ Fecha: 2026-09-27 14:57:18
   [OK] GET /api/lotes/biomasa: 200 · array de 4 filas
   [OK] GET /api/incidentes: 200 · array de 5 filas
   [OK] GET /api/incidentes/severidad: 200 · array de 4 filas
-  [OK] POST /api/consultar (dato + fuentes): 200 · fuentes=1 · dato 18 presente=true
-  [OK] POST /api/consultar (acciones del agente): acciones=2
+  [OK] POST /api/consultar (dato + fuentes): 200 · fuentes=5 · dato 18 presente=true
+  [OK] POST /api/consultar (acciones del agente): acciones=1
   [OK] POST /api/consultar (sin pregunta → 400): 400
   [OK] GET /api/reportes (lista): 200 · reportes=0
 

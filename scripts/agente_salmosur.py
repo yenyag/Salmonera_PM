@@ -67,7 +67,7 @@ PG_CFG = {
     "database": os.getenv("PGDATABASE", "salmonera_pm"),
 }
 
-MAX_HISTORIAL_TURNS = 4  # interacciones previas inyectadas como memoria
+MAX_HISTORIAL_TURNS = 10  # interacciones previas inyectadas como memoria
 
 
 class _PacedGroq(ChatGroq):
@@ -261,7 +261,14 @@ def _leer_historial_usuario(email: str | None, max_turnos: int = MAX_HISTORIAL_T
         finally:
             conn.close()
     except Exception as e:  # noqa: BLE001
-        print(f"[memoria] no se pudo leer historial: {e}")
+        sys.stderr.write(f"[memoria] no se pudo leer historial: {e}\n")
+    if filas:
+        sys.stderr.write(f"[memoria] historial inyectado para {email}: {len(filas)} turnos\n")
+        for i, (preg, resp) in enumerate(filas):
+            sys.stderr.write(f"  {i+1}. Q: {preg[:80]}\n")
+            sys.stderr.write(f"     A: {resp[:80]}\n")
+    else:
+        sys.stderr.write(f"[memoria] sin historial previo para {email}\n")
         return ""
     if not filas:
         return ""
@@ -441,6 +448,29 @@ def responder(
     }
 
 
+# ---------------------------------------------------------------------------
+# Persistencia en chat_historial (para CLI y servidor)
+# ---------------------------------------------------------------------------
+def _guardar_en_historial(usuario: str | None, pregunta: str, respuesta: str, fuentes: list, acciones: list) -> None:
+    if not usuario:
+        return
+    try:
+        import json as _json
+        conn = psycopg2.connect(**PG_CFG)
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """INSERT INTO chat_historial (usuario_email, pregunta, respuesta, fuentes, acciones)
+                       VALUES (%s, %s, %s, %s, %s)""",
+                    (usuario, pregunta, respuesta, _json.dumps(fuentes), _json.dumps(acciones)),
+                )
+                conn.commit()
+        finally:
+            conn.close()
+    except Exception as e:  # noqa: BLE001
+        sys.stderr.write(f"[memoria] no se pudo guardar historial: {e}\n")
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -452,6 +482,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     resultado = responder(args.pregunta, usuario=args.usuario, hilo=args.hilo)
+
+    # Guardar en historial si hay usuario (memoria larga plazo)
+    _guardar_en_historial(args.usuario, args.pregunta, resultado["respuesta"], resultado["fuentes"], resultado["acciones"])
 
     if args.json:
         print(json.dumps(resultado, ensure_ascii=False))

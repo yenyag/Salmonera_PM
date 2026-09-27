@@ -49,16 +49,21 @@ proveedor ni cambiar la infraestructura.
 | `escribir_reporte` | Escritura | Genera informe Markdown en `data/reportes/` y devuelve su ruta (auto-indexable y descargable) | `data/reportes/` |
 | `guardar_recuerdo` | Memoria | Persiste un dato (clave=valor) en `data/memoria/*.json` para reutilizarlo en futuras conversaciones | `data/memoria/` |
 
-El razonamiento lo ejecuta el **experto LLM** (`openai/gpt-oss-120b` de Groq,
+El razonamiento lo ejecuta el **experto LLM** (`qwen/qwen3.8-27b` de Groq,
 `temperature=0.1`), que analiza la pregunta, decide qué herramientas invocar,
 procesa sus resultados y compone la respuesta final. Para operar dentro del cupo del
-**tier gratuito de Groq (TPM ≈ 8.000)**, se incorporó *pacing* (sleep configurable
-`AGENTE_PACING`) antes de cada llamada y **reintentos con backoff** ante HTTP 429
-(`GROQ_MAX_RETRIES`), de modo que un agente que encadena varias llamadas de
-herramientas no rompe el límite de tokens por minuto (las baterías de pruebas lo
-demuestran de forma reproducible). Los embeddings funcionan 100 % en local y usan
-CPU por defecto (`RAG_DEVICE=cpu`) para no competir por la VRAM de la tarjeta
+**tier gratuito de Groq (TPD ≈ 200k tokens/día por modelo)**, se incorporó *pacing*
+(sleep configurable `AGENTE_PACING`) antes de cada llamada y **reintentos con backoff**
+ante HTTP 429 (`GROQ_MAX_RETRIES`), de modo que un agente que encadena varias
+llamadas de herramientas no rompe el límite de tokens por minuto (las baterías de
+pruebas lo demuestran de forma reproducible). Los embeddings funcionan 100 % en local
+y usan CPU por defecto (`RAG_DEVICE=cpu`) para no competir por la VRAM de la tarjeta
 compartida; el índice FAISS se conserva en `data/faiss_index`.
+
+> **Nota de ingeniería:** el modelo principal `qwen/qwen3.8-27b` tiene su propio
+> cupo diario de 200k tokens (TPD) independiente del `openai/gpt-oss-120b`
+> (usado en la fase de desarrollo y validación inicial). Ambos modelos pueden
+> alternarse según disponibilidad de cupo; la arquitectura no cambia.
 
 **Integración.** `/api/consultar` (Express) invoca al agente en un subproceso Python con
 semáforo de concurrencia (máx. 2), conserva el registro en `chat_historial` y devuelve
