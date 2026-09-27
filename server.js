@@ -2,6 +2,7 @@ import express from 'express';
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 import { execFile } from 'child_process';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -317,7 +318,7 @@ app.delete('/api/perfil/:email/consultas', async (req, res) => {
 // --- Asistente RAG (FASE 4) ------------------------------------------------
 
 const PYTHON = process.env.PYTHON_BIN || '/home/vrayirax/Documentos/actualizada⁄IngenierInteligencia-Artificial/.venv/bin/python';
-const RAG_SCRIPT = join(__dirname, 'scripts', 'query_rag.py');
+const AGENTE_SCRIPT = join(__dirname, 'scripts', 'agente_salmosur.py');
 const RAG_MAX_CONCURRENT = 2;
 let ragActive = 0;
 const ragQueue = [];
@@ -350,21 +351,33 @@ app.post('/api/consultar', (req, res) => {
   const maxLen = 300;
   const texto = String(pregunta).trim().slice(0, maxLen);
 
+  // El agente usa el email para la memoria de largo plazo (chat_historial + recuerdos)
+  // y un hilo de conversación derivado del email para continuidad entre consultas.
+  const hilo = email || 'anon';
+
   enqueueRag(() => {
+    const args = [AGENTE_SCRIPT, texto, '--hilo', hilo, '--json'];
+    if (email) {
+      args.push('--usuario', email);
+    }
     execFile(
       PYTHON,
-      [RAG_SCRIPT, texto, '--json'],
-      { timeout: 60000, maxBuffer: 1024 * 1024 },
+      args,
+      { timeout: 90000, maxBuffer: 1024 * 1024 },
       (err, stdout, stderr) => {
         releaseRag();
         if (err) {
-          console.error('Error ejecutando RAG:', stderr || err.message);
+          console.error('Error ejecutando agente:', stderr || err.message);
           return res.status(500).json({ error: 'Error al consultar el asistente IA' });
         }
 
         try {
           const resultado = JSON.parse(stdout.trim());
-          res.json({ respuesta: resultado.respuesta, fuentes: resultado.fuentes });
+          res.json({
+            respuesta: resultado.respuesta,
+            fuentes: Array.isArray(resultado.fuentes) ? resultado.fuentes : [],
+            acciones: Array.isArray(resultado.acciones) ? resultado.acciones : [],
+          });
 
           // Registrar la consulta en el historial del perfil (no bloquea la respuesta)
           if (email) {
@@ -378,12 +391,52 @@ app.post('/api/consultar', (req, res) => {
             ]).catch((e) => console.error('Error guardando historial:', e.message));
           }
         } catch (e) {
-          console.error('Respuesta RAG no parseable:', stdout);
+          console.error('Respuesta del agente no parseable:', stdout);
           res.status(500).json({ error: 'Respuesta inválida del asistente IA' });
         }
       }
     );
   });
+});
+
+// --- Reportes generados por el agente (herramienta de escritura) --------------
+
+app.get('/api/reportes', (_req, res) => {
+  try {
+    const dir = join(__dirname, 'data', 'reportes');
+    if (!fs.existsSync(dir)) return res.json([]);
+    const archivos = fs.readdirSync(dir)
+      .filter((f) => f.endsWith('.md'))
+      .sort()
+      .reverse();
+    const reportes = archivos.map((f) => {
+      const stats = fs.statSync(join(dir, f));
+      return {
+        nombre: f,
+        ruta: `/api/reportes/${encodeURIComponent(f)}`,
+        creado: stats.mtime.toISOString(),
+        tamano_kb: Math.round(stats.size / 1024),
+      };
+    });
+    res.json(reportes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/reportes/:nombre', (req, res) => {
+  try {
+    const dir = join(__dirname, 'data', 'reportes');
+    const nombre = req.params.nombre;
+    const ruta = join(dir, nombre);
+    if (!fs.existsSync(ruta) || !ruta.startsWith(dir)) {
+      return res.status(404).json({ error: 'Reporte no encontrado' });
+    }
+    res.type('text/markdown; charset=utf-8');
+    res.send(fs.readFileSync(ruta, 'utf-8'));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.use(express.static(join(__dirname, 'public')));

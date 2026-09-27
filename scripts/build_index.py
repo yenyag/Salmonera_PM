@@ -71,9 +71,11 @@ def main():
     print(f"   Total chunks: {len(chunks)}\n")
 
     print("🧮 Generando embeddings y creando índice FAISS...")
+    device = os.getenv("RAG_DEVICE", "cpu")
     embeddings = HuggingFaceEmbeddings(
         model_name=EMBEDDING_MODEL,
         encode_kwargs={"normalize_embeddings": True},
+        model_kwargs={"device": device},
     )
 
     vector_db = FAISS.from_documents(documents=chunks, embedding=embeddings)

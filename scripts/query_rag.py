@@ -64,10 +64,16 @@ PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
 
 
 def cargar_vector_db():
-    """Carga el índice FAISS desde data/faiss_index."""
+    """Carga el índice FAISS desde data/faiss_index.
+
+    Los embeddings se ejecutan en CPU por defecto (RAG_DEVICE=cpu) para no
+    competir por la VRAM con la GPU (tarjeta compartida / juegos). Se puede
+    forzar GPU con RAG_DEVICE=cuda en el entorno."""
+    device = os.getenv("RAG_DEVICE", "cpu")
     embeddings = HuggingFaceEmbeddings(
         model_name=EMBEDDING_MODEL,
         encode_kwargs={"normalize_embeddings": True},
+        model_kwargs={"device": device},
     )
     return FAISS.load_local(
         str(INDEX_DIR), embeddings, allow_dangerous_deserialization=True

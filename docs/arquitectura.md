@@ -1,155 +1,101 @@
-# Arquitectura de la Solución - Asistente RAG SalmoSUR S.A.
+# Arquitectura de la Solución — Agente Funcional SalmoSUR S.A. (EP2)
 
-## Diagrama de arquitectura (Mermaid)
+> Proyecto ISY0101 · Evaluación Parcial 2 · Desarrollo de un **Agente Funcional** con
+> consulta, escritura y razonamiento, memoria y planificación (LangGraph).
+
+## 1. Diagrama de orquestación del agente (Mermaid)
 
 ```mermaid
 flowchart TD
-    subgraph Usuario
-        U[Administrador / Jefe de Operaciones]
+    U[Usuario / jefe de operaciones] -->|pregunta en lenguaje natural| API[POST /api/consultar]
+    API --> AG[Agente LangGraph<br/>create_react_agent]
+    AG --> RX[Experto LLM Groq<br/>razonamiento + planificación]
+
+    subgraph HERRAMIENTAS["Herramientas (tools)"]
+        RAG[consultar_rag<br/>FAISS semántico + keywords]
+        BD[consultar_bd<br/>SQL solo lectura]
+        REP[escribir_reporte<br/>data/reportes/]
+        MEM[guardar_recuerdo<br/>data/memoria/]
     end
 
-    subgraph Frontend
-        DB[Dashboard.html + chat.js]
+    RX -->|decide y ejecuta| RAG
+    RX -->|decide y ejecuta| BD
+    RX -->|decide y ejecuta| REP
+    RX -->|decide y ejecuta| MEM
+
+    subgraph MEMORIA["Memoria"]
+        LP[Largo plazo:<br/>chat_historial + recuerdos JSON]
+        CP[Corto plazo:<br/>LangGraph checkpointer]
     end
 
-    subgraph Backend_Node["Backend (Node.js / Express :4000)"]
-        API[/api/consultar/]
-        VENTAS[/api/ventas/]
-        CALIDAD[/api/calidad/]
-        MORT[/api/mortalidad/]
-        RENTA[/api/rentabilidad/]
-        RRHH[/api/empleados/planilla/]
-        INVENT[/api/inventario/bajo/]
-        COMPRAS[/api/compras/]
-        EXPOR[/api/exportaciones/]
-        LOTES[/api/lotes/biomasa/]
-        INCID[/api/incidentes/severidad/]
-    end
+    RAG --> VOC[Vector store FAISS<br/>101 chunks · 21 documentos]
+    BD --> PG[(PostgreSQL salmonera_pm)]
+    REP --> FILES[(data/reportes/*.md)]
+    MEM --> FILES2[(data/memoria/*.json)]
 
-    subgraph Fuentes["Fuentes de datos"]
-        PG[(PostgreSQL<br/>salmonera_pm)]
-        DOCS["data/interna<br/>(10 reportes de BD)"]
-        EXT["data/externa<br/>(6 documentos normativos)"]
-    end
+    LP -.contexto inyectado.-> AG
+    CP -.hilo de conversación.-> AG
 
-    subgraph Pipeline_RAG["Pipeline RAG (Python)"]
-        GEN["generate_internal_docs.py<br/>BD -> texto"]
-        CHUNK["Chunking<br/>(RecursiveCharacterTextSplitter)"]
-        EMB["Embeddings locales<br/>(paraphrase-multilingual-MiniLM)"]
-        FAISS[(FAISS<br/>data/faiss_index)]
-        RET[Retriever<br/>búsqueda vectorial k=5]
-        LLM[LLM Groq<br/>openai/gpt-oss-120b]
-        PROMPT[Prompt del sistema<br/>rol + citar fuente]
-    end
-
-    U --> DB
-    DB --> API
-    DB --> VENTAS
-    DB --> CALIDAD
-    DB --> MORT
-    DB --> RENTA
-    DB --> RRHH
-    DB --> INVENT
-    DB --> COMPRAS
-    DB --> EXPOR
-    DB --> LOTES
-    DB --> INCID
-
-    VENTAS --> PG
-    CALIDAD --> PG
-    MORT --> PG
-    RENTA --> PG
-    RRHH --> PG
-    INVENT --> PG
-    COMPRAS --> PG
-    EXPOR --> PG
-    LOTES --> PG
-    INCID --> PG
-
-    API --> GEN
-    GEN --> PG
-    GEN --> DOCS
-
-    DOCS --> CHUNK
-    EXT --> CHUNK
-    CHUNK --> EMB
-    EMB --> FAISS
-
-    API --> RET
-    RET --> FAISS
-    RET --> LLM
-
-    API --> PROMPT
-    PROMPT --> LLM
-
-    LLM -->|respuesta + fuentes| API
-    API -->|JSON| DB
+    AG -->|respuesta + fuentes + acciones| API --> D[Dashboard<br/>chat con trazabilidad]
+    API --> REP2[GET /api/reportes<br/>lista reportes generados]
 ```
 
-## Diagrama de integración (ASCII - vista general)
+## 2. Ciclo de decisión del agente (ReAct)
 
 ```
-┌───────────────────────┐
-│      USUARIO          │
-│  (dashboard/chats)    │
-└──────────┬────────────┘
-           │  pregunta en lenguaje natural
-           ▼
-┌───────────────────────┐
-│  BACKEND (Express)    │
-│  POST /api/consultar  │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────────────────────────────────────────────┐
-│                PIPELINE RAG (Python)                           │
-│                                                               │
-│   ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌────────┐ │
-│   │ FAISS    │◄───│ Embeddings│◄───│ Chunking │◄───│Datos   │ │
-│   │ (índice) │    │ (local)   │    │          │    │internos│ │
-│   └────┬─────┘    └──────────┘    └──────────┘    │externos│ │
-│        │                                          └────────┘ │
-│        ▼                                                    │
-│   ┌──────────┐    ┌─────────────┐                          │
-│   │ Retriever│───▶│ LLM (Groq)  │                          │
-│   │  (k=5)   │    │ gpt-oss-120b│                          │
-│   └──────────┘    └──────┬──────┘                          │
-│                          ▼                                 │
-│                 respuesta + fuentes (JSON)                  │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-                           ▼
-┌──────────────────────────────────────────────┐
-│          DASHBOARD (Frontend)                │
-│   muestra respuesta + chips de fuente        │
-└──────────────────────────────────────────────┘
+1. Router/intención → el experto LLM analiza la pregunta.
+2. Selecciona y ejecuta herramienta(s):
+     - pregunta de negocio o normativa  → consultar_rag
+     - cruce / cálculo sobre cifras      → consultar_bd
+     - pedido de informe/documentación   → escribir_reporte
+     - dato personal a recordar          → guardar_recuerdo
+3. Racionaliza los resultados (razonamiento multi-paso).
+4. Responde citando fuente, o declara "No tengo información suficiente".
 ```
 
-## Componentes y justificación
+## 3. Componentes y justificación
 
-| Componente | Tecnología | Justificación |
-|------------|------------|---------------|
-| **Frontend** | HTML + Tailwind + Chart.js | Se integra al dashboard existente (mismo estilo y stack); cero fricción para el usuario final |
-| **Backend** | Node.js + Express | Reutiliza la infraestructura actual del sistema de gestión (mismo patrón de endpoints) |
-| **Vector Store** | FAISS (local) | Gratuito, sin API key, rápido para corpus pequeño (65 chunks); se guarda en `data/faiss_index/` |
-| **Embeddings** | `paraphrase-multilingual-MiniLM-L12-v2` (local) | Groq no ofrece embeddings; modelo multilingüe apto para español; 384 dims = poco espacio y búsquedas rápidas; los datos no salen de la máquina (privacidad) |
-| **LLM** | Groq `openai/gpt-oss-120b` | Capa gratuita, baja latencia, sin tarjeta de crédito; permite consultas de bajo volumen dentro del límite diario de 100K tokens |
-| **Chunking** | `RecursiveCharacterTextSplitter` (size=600, overlap=80) | Preserva contexto semántico por chunk; el ajuste de tamaño 600 mejoró la recuperación (7/7 pruebas vs 3/7 inicial) |
-| **Prompt** | Sistema con reglas (rol, citar fuente, "no sé") | Controla alucinaciones y garantiza trazabilidad de cada dato respondido |
+| Componente | Tecnología | Rol / justificación |
+|------------|------------|---------------------|
+| **Framework de agentes** | **LangGraph** (`create_react_agent`) | Orquestación ReAct con grafo de estados; escalable a grafos custom y compatible con el stack LangChain existente (ie2) |
+| **Herramientas** | `@tool` de LangChain | Envuelven capacidades específicas (consulta BD, RAG, escritura, memoria) y las exponen al LLM como JSON-schema (ie1) |
+| **Consulta semántica** | FAISS + embeddings locales | Recuperación vectorial con metadata de fuente; los datos no salen de la máquina (ie4) |
+| **Consulta a BD** | `psycopg2` (solo SELECT) | Respuestas con cifras verificables cruzando vistas del sistema de gestión |
+| **Escritura** | `data/reportes/` + `GET /api/reportes` | El agente genera reportes Markdown visibles/descargables (ie1: escritura) |
+| **Memoria corto plazo** | `InMemorySaver` (checkpointer) | Hilo de conversación dentro de una ejecución multi-paso |
+| **Memoria largo plazo** | `chat_historial` (PostgreSQL) + `data/memoria/*.json` | Re-inyección de interacciones pasadas y recuerdos persistentes al inicio de cada llamada (ie3) |
+| **LLM** | Groq `openai/gpt-oss-120b` | Motor de razonamiento, temp 0.1, `max_tokens=2000` |
+| **Frontend** | dashboard + `chat.js` | Muestra respuesta, fuentes y **trazabilidad del agente** (herramientas usadas en cada turno) |
 
-## Flujo de datos (dos rutas)
+## 4. Flujo de datos
 
-1. **Ingesta (una vez por actualización de datos):**
-   PostgreSQL (`ventas`, `cosechas`, `lotes`, `centros`, `empleados`, `inventario`, `compras`, `exportaciones`, `lotes_detalle`, `incidentes`) → `scripts/generate_internal_docs.py` → `data/interna/*.txt` (10 reportes, cada uno con sumario ejecutivo)
-   Documentos normativos → `data/externa/*.txt`
-   Ambos → Chunking → Embeddings → `FAISS.save_local(data/faiss_index)`
+### 4.1 Ingesta (una vez por actualización de datos)
 
-2. **Consulta (por cada pregunta del usuario):**
-   Pregunta → retriever busca en FAISS (k=5) → 5 chunks relevantes → prompt (sistema + contexto + pregunta) → LLM → respuesta + fuentes → /api/consultar → dashboard.
+```
+PostgreSQL (17 tablas) ──generate_internal_docs.py──▶ data/interna/ (14 reportes)
+                                                       data/externa/ (7 normativos)
+                                                                     │
+                                                     chunking (600/80) → embeddings locales → FAISS (101 chunks)
+```
 
-## Decisiones de diseño clave
+### 4.2 Consulta (por cada turno del usuario)
 
-- **Separación de fuentes internas/externas:** los documentos `interna/` vienen de la BD (datos operativos) y `externa/` de normativa (Sernapesca, mercado). El RAG las indexa por separado pero las recupera de forma unificada, lo que permite combinar "dato" + "recomendación normativa" en una sola respuesta.
-- **Sumarios ejecutivos en los reportes internos:** cada documento de `data/interna/` inicia con un sumario que enuncia los datos salientes (máximo de planilla, proveedor mayor, mejor FCR, alertas de stock…). Así las consultas puntuales recuperan la conclusión en el primer chunk y las respuestas son precisas (14/14 pruebas).
-- **Descarga del LLM:** El LLM solo actúa sobre el contexto recuperado, forzado por el prompt. Esto evita alucinaciones: cuando no hay datos, responde "No tengo información suficiente".
-- **Trazabilidad:** cada chunk guarda metadata `fuente`; el LLM cita la fuente y el frontend la muestra como chips.
+```
+pregunta ─▶ server.js ─▶ subproceso agente_salmosur.py ─▶ memoria LP inyectada
+     ─▶ agente LangGraph (ReAct) ─▶ decide herramienta(s) ─▶ respuesta+fuentes+acciones
+     ─▶ guarda en chat_historial ─▶ dashboard (chat + trazabilidad + reportes)
+```
+
+## 5. Decisiones de diseño clave (EP2)
+
+- **Reemplazo del pipeline lineal por un agente**: `/api/consultar` invoca el agente
+  LangGraph en vez del RAG pasivo; misma interfaz JSON (respuesta + fuentes) + `acciones`
+  (trazabilidad de decisiones).
+- **Memoria dual**: corto plazo (checkpointer por hilo) y largo plazo (historial por
+  usuario + recuerdos persistidos). Cada turno nuevo re-inyecta el historial del usuario
+  para mantener continuidad en flujos prolongados (ie3).
+- **Varias herramientas en una misma tarea**: el agente puede encadenar
+  `consultar_rag` → `consultar_bd` → `escribir_reporte` en una sola respuesta, lo que
+  demuestra planificación multi-etapa (ie5/ie6).
+- **Anti-alucinación preservado**: regla "No tengo información suficiente" y citación
+  de fuente se mantienen en el prompt del agente.

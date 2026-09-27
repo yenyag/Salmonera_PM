@@ -25,7 +25,14 @@ function formatearRespuesta(texto) {
     .replace(/\n/g, '<br>');
 }
 
-function agregarMensaje(contenido, autor, fuentes = []) {
+const ICONOS_HERRAMIENTA = {
+  consultar_rag: '🔍',
+  consultar_bd: '🗄️',
+  escribir_reporte: '📝',
+  guardar_recuerdo: '🧠',
+};
+
+function agregarMensaje(contenido, autor, fuentes = [], acciones = []) {
   const esUsuario = autor === 'usuario';
 
   const wrap = document.createElement('div');
@@ -42,6 +49,21 @@ function agregarMensaje(contenido, autor, fuentes = []) {
     burbuja.textContent = contenido;
   } else {
     burbuja.innerHTML = formatearRespuesta(contenido);
+    if (acciones.length > 0) {
+      const plan = document.createElement('div');
+      plan.className = 'mt-3 pt-2 border-t border-gray-200';
+      const titulo = document.createElement('div');
+      titulo.className = 'text-xs text-gray-400 mb-1';
+      titulo.textContent = '🧠 Trazabilidad del agente (herramientas usadas):';
+      plan.appendChild(titulo);
+      acciones.forEach((a) => {
+        const chip = document.createElement('span');
+        chip.className = 'inline-flex items-center gap-1 mr-1.5 mb-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md border border-blue-100 text-[11px]';
+        chip.innerHTML = `${ICONOS_HERRAMIENTA[a.herramienta] || '🔧'} ${a.herramienta.replace(/_/g, ' ')} <span class="text-blue-400">·</span> <span class="text-gray-500 truncate max-w-[180px] whitespace-nowrap overflow-hidden align-bottom">${a.detalle}</span>`;
+        plan.appendChild(chip);
+      });
+      burbuja.appendChild(plan);
+    }
     if (fuentes.length > 0) {
       const pie = document.createElement('div');
       pie.className = 'mt-3 pt-2 border-t border-gray-200 text-xs text-gray-500';
@@ -87,7 +109,7 @@ async function enviarPregunta(textoPregunta) {
   try {
     const resultado = await api.consultar(textoPregunta.trim());
     quitarPensando();
-    agregarMensaje(resultado.respuesta, 'asistente', resultado.fuentes);
+    agregarMensaje(resultado.respuesta, 'asistente', resultado.fuentes, resultado.acciones);
   } catch (error) {
     quitarPensando();
     agregarMensaje('⚠️ Ocurrió un error al consultar el asistente. Intenta nuevamente.', 'asistente');

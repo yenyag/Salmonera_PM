@@ -69,19 +69,25 @@ async function main() {
     await r('GET ' + ep, res.status === 200 && Array.isArray(cuerpo), `${res.status} · array de ${Array.isArray(cuerpo) ? cuerpo.length : '?'} filas`);
   }
 
-  // 4) /api/consultar
+  // 4) /api/consultar (agente)
   const c1 = await fetch(BASE + '/api/consultar', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ pregunta: '¿Cuál es la planilla mensual del centro Los Lagos?' }),
+    body: JSON.stringify({ pregunta: '¿Cuál es la planilla mensual del centro Los Lagos?', email: `sanitarias+${Date.now()}@test.cl` }),
   });
   let j1 = {};
   if (c1.status === 200) try { j1 = await c1.json(); } catch (e) { /* noop */ }
   const respOk = String(j1.respuesta || '').includes('18') && (j1.fuentes || []).length > 0;
   await r('POST /api/consultar (dato + fuentes)', c1.status === 200 && respOk, c1.status + ' · fuentes=' + (j1.fuentes || []).length + ' · dato 18 presente=' + String(j1.respuesta || '').includes('18'));
+  await r('POST /api/consultar (acciones del agente)', c1.status === 200 && Array.isArray(j1.acciones), 'acciones=' + (j1.acciones || []).length);
   const cB = await fetch(BASE + '/api/consultar', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}),
   });
   await r('POST /api/consultar (sin pregunta → 400)', cB.status === 400, cB.status + '');
+
+  // 5) Reportes del agente (herramienta de escritura)
+  const rp = await fetch(BASE + '/api/reportes');
+  const rpJson = rp.status === 200 ? await rp.json().catch(() => []) : null;
+  await r('GET /api/reportes (lista)', rp.status === 200 && Array.isArray(rpJson), rp.status + ' · reportes=' + (rpJson || []).length);
 
   // [BD]
   pr('');
@@ -126,7 +132,7 @@ from query_rag import cargar_vector_db
 db = cargar_vector_db()
 print(db.index.ntotal)`;
     const salida = execFileSync(PYTHON, ['-c', script], { timeout: 120000 }).toString().trim();
-    await r('Índice FAISS', parseInt(salida) === 65, salida + ' chunks (esperado 65)');
+    await r('Índice FAISS', parseInt(salida) === 101, salida + ' chunks (esperado 101)');
   } catch (e) {
     await r('Índice FAISS', false, String(e.message || e).split('\n')[0]);
   }
