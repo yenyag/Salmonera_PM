@@ -381,10 +381,11 @@ app.post('/api/consultar', (req, res) => {
 
           // Registrar la consulta en el historial del perfil (no bloquea la respuesta)
           if (email) {
-            const historial = `INSERT INTO chat_historial (usuario_email, pregunta, respuesta, fuentes)
-                               VALUES ($1, $2, $3, $4)`;
+            const historial = `INSERT INTO chat_historial (usuario_email, hilo, pregunta, respuesta, fuentes)
+                               VALUES ($1, $2, $3, $4, $5)`;
             pool.query(historial, [
               email,
+              hilo,
               texto,
               resultado.respuesta,
               JSON.stringify(resultado.fuentes || []),

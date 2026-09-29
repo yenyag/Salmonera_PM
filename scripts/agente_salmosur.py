@@ -244,7 +244,7 @@ def guardar_recuerdo(clave: str, valor: str) -> str:
 # ---------------------------------------------------------------------------
 # Memoria de largo plazo: historial del usuario (chat_historial)
 # ---------------------------------------------------------------------------
-def _leer_historial_usuario(email: str | None, max_turnos: int = MAX_HISTORIAL_TURNS) -> str:
+def _leer_historial_usuario(email: str | None, hilo: str | None = None, max_turnos: int = MAX_HISTORIAL_TURNS) -> str:
     if not email:
         return ""
     try:
@@ -253,25 +253,22 @@ def _leer_historial_usuario(email: str | None, max_turnos: int = MAX_HISTORIAL_T
             with conn.cursor() as cur:
                 cur.execute(
                     """SELECT pregunta, respuesta FROM chat_historial
-                       WHERE usuario_email = %s
+                       WHERE usuario_email = %s AND hilo = %s
                        ORDER BY created_at DESC, id DESC LIMIT %s""",
-                    (email, max_turnos),
+                    (email, hilo or 'anon', max_turnos),
                 )
                 filas = list(reversed(cur.fetchall()))
         finally:
             conn.close()
     except Exception as e:  # noqa: BLE001
         sys.stderr.write(f"[memoria] no se pudo leer historial: {e}\n")
-    if filas:
-        sys.stderr.write(f"[memoria] historial inyectado para {email}: {len(filas)} turnos\n")
-        for i, (preg, resp) in enumerate(filas):
-            sys.stderr.write(f"  {i+1}. Q: {preg[:80]}\n")
-            sys.stderr.write(f"     A: {resp[:80]}\n")
-    else:
-        sys.stderr.write(f"[memoria] sin historial previo para {email}\n")
-        return ""
     if not filas:
+        sys.stderr.write(f"[memoria] sin historial previo para {email}/{hilo or 'anon'}\n")
         return ""
+    sys.stderr.write(f"[memoria] historial inyectado para {email}/{hilo or 'anon'}: {len(filas)} turnos\n")
+    for i, (preg, resp) in enumerate(filas):
+        sys.stderr.write(f"  {i+1}. Q: {preg[:80]}\n")
+        sys.stderr.write(f"     A: {resp[:80]}\n")
     bloques = []
     for pregunta, respuesta in filas:
         respuesta_corta = respuesta[:400].replace("\n", " ")
@@ -319,7 +316,7 @@ def _render_recuerdos(recuerdos: dict[str, Any]) -> str:
 def _construir_prompt_sistema(usuario: str | None, hilo: str | None) -> str:
     bloques = [SYSTEM_TEMPLATE]
 
-    historial = _leer_historial_usuario(usuario, MAX_HISTORIAL_TURNS)
+    historial = _leer_historial_usuario(usuario, hilo, MAX_HISTORIAL_TURNS)
     if historial:
         bloques.append(
             "\n\nCONTEXTO DE CONVERSACIONES PREVIAS DE ESTE USUARIO (memoria de largo plazo):\n"
@@ -407,7 +404,7 @@ def responder(
     llm = _PacedGroq(
         model=GROQ_MODEL,
         temperature=0.1,
-        max_tokens=int(os.getenv("AGENTE_MAX_TOKENS", "1400")),
+        max_tokens=int(os.getenv("AGENTE_MAX_TOKENS", "900")),
         max_retries=int(os.getenv("GROQ_MAX_RETRIES", "5")),
         request_timeout=60,
     )
@@ -451,7 +448,7 @@ def responder(
 # ---------------------------------------------------------------------------
 # Persistencia en chat_historial (para CLI y servidor)
 # ---------------------------------------------------------------------------
-def _guardar_en_historial(usuario: str | None, pregunta: str, respuesta: str, fuentes: list, acciones: list) -> None:
+def _guardar_en_historial(usuario: str | None, hilo: str | None, pregunta: str, respuesta: str, fuentes: list, acciones: list) -> None:
     if not usuario:
         return
     try:
@@ -460,9 +457,9 @@ def _guardar_en_historial(usuario: str | None, pregunta: str, respuesta: str, fu
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    """INSERT INTO chat_historial (usuario_email, pregunta, respuesta, fuentes, acciones)
-                       VALUES (%s, %s, %s, %s, %s)""",
-                    (usuario, pregunta, respuesta, _json.dumps(fuentes), _json.dumps(acciones)),
+                    """INSERT INTO chat_historial (usuario_email, hilo, pregunta, respuesta, fuentes, acciones)
+                       VALUES (%s, %s, %s, %s, %s, %s)""",
+                    (usuario, hilo or 'anon', pregunta, respuesta, _json.dumps(fuentes), _json.dumps(acciones)),
                 )
                 conn.commit()
         finally:
@@ -484,7 +481,7 @@ if __name__ == "__main__":
     resultado = responder(args.pregunta, usuario=args.usuario, hilo=args.hilo)
 
     # Guardar en historial si hay usuario (memoria larga plazo)
-    _guardar_en_historial(args.usuario, args.pregunta, resultado["respuesta"], resultado["fuentes"], resultado["acciones"])
+    _guardar_en_historial(args.usuario, args.hilo, args.pregunta, resultado["respuesta"], resultado["fuentes"], resultado["acciones"])
 
     if args.json:
         print(json.dumps(resultado, ensure_ascii=False))

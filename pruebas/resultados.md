@@ -1,6 +1,6 @@
 # Resultados de Pruebas de Coherencia - SalmoSUR S.A.
 
-**Fecha de ejecución:** 2026-09-27 17:10
+**Fecha de ejecución:** 2026-09-29 16:41
 **Resultado general:** 18/18 pruebas coherentes
 
 | ID | Pregunta | ¿Coherente? | Razón |
@@ -72,11 +72,13 @@
 
 > El lote con mayor mortalidad acumulada es el **LOTE-E2**, con **8100 unidades**.
 
-Según la normativa de bioseguridad y las buenas prácticas descritas, se recomienda:
-1. Activar los planes de contingencia sanitaria de la empresa.
-2. Notificar a Sernapesca, ya que una mortalidad acumulada elevada es un indicador de alerta temprana.
-3. Retirar a diario las mortalidades del agua para evitar su descomposición y la diseminación de patógenos, manejándolas conforme a la normativa de Sernapesca.
-4. Realizar monitoreo sanitario periódico del stock.
+Según la normativa de bioseguridad y las buenas prácticas indicadas en el contexto, se recomienda:
+
+1.  **Activar el plan de contingencia sanitaria** de la empresa, ya que una mortalidad acumulada elevada es un indicador de alerta temprana.
+2.  **Notificar a Sernapesca**, organismo regulador, si corresponde según los umbrales establecidos por la normativa sanitaria.
+3.  **Monitorear y reportar** la mortalidad acumulada del lote.
+4.  **Retirar a diario las mortalidades** del agua para evitar su descomposición y la diseminación de patógenos, manejándolas conforme a la normativa de Sernapesca.
+5.  **Realizar monitoreo sanitario** periódico al stock, vigilando indicadores como la mortalidad acumulada y la condición de los peces.
 
 [Fuente: tabla lotes / vista vista_mortalidad_acumulada]
 [Fuente: Sernapesca - Buenas prácticas en acuicultura (https://www.sernapesca.cl/)]
@@ -95,9 +97,7 @@ Según la normativa de bioseguridad y las buenas prácticas descritas, se recomi
 3. Cumplimiento de los estándares de calidad e inocuidad del país de destino (los principales mercados son Unión Europea, Estados Unidos, Japón y Brasil).
 4. Control de residuos de medicamentos veterinarios dentro de los límites permitidos por la normativa internacional.
 
-Adicionalmente, se establecen los siguientes requisitos normativos:
-5. Los centros de cultivo deben cumplir con los protocolos de vacunación contra las enfermedades que afectan a los salmónidos, como la anemia infecciosa del salmón (ISA), la piscirickettsiosis y la caligidosis.
-6. Todo movimiento de peces (siembra, traslado, cosecha) debe contar con la autorización sanitaria correspondiente emitida por Sernapesca.
+Adicionalmente, los centros de cultivo deben cumplir con protocolos de vacunación contra enfermedades como la anemia infecciosa del salmón (ISA), la piscirickettsiosis y la caligidosis, y todo movimiento de peces (siembra, traslado, cosecha) debe contar con la autorización sanitaria correspondiente emitida por Sernapesca.
 
 [Fuente: Sernapesca - Exportaciones de salmón (https://www.sernapesca.cl/)]
 [Fuente: Sernapesca - Requisitos de exportación de salmón (https://www.sernapesca.cl/)]
@@ -129,9 +129,9 @@ Adicionalmente, se establecen los siguientes requisitos normativos:
 
 > Los productos del inventario que están bajo su stock mínimo son:
 
-1. **Alimento Extruido 9mm** (categoría: alimento): tiene 8,500 unidades, con un stock mínimo de 16,000.
-2. **Vacuna ISA** (categoría: medicamentos): tiene 600 unidades, con un stock mínimo de 800.
-3. **Red de cultivo 30mm** (categoría: herramientas): tiene 15 unidades, con un stock mínimo de 18.
+1. **Alimento Extruido 9mm** (categoría: alimento): tiene 8,500 unidades, mientras que su stock mínimo es de 16,000.
+2. **Vacuna ISA** (categoría: medicamentos): tiene 600 unidades, mientras que su stock mínimo es de 800.
+3. **Red de cultivo 30mm** (categoría: herramientas): tiene 15 unidades, mientras que su stock mínimo es de 18.
 
 [Fuente: tabla inventario / vistas v_inventario_resumen, v_stock_bajo]
 
